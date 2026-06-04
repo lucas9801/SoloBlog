@@ -1,0 +1,533 @@
+# 博客操作手册
+
+这份文档说明如何日常维护当前博客：新增文章、设置分类和标签、设置精选文章、本地预览、发布到 Cloudflare Pages。
+
+## 项目目录
+
+```text
+D:\MyBlog
+├─ content/
+│  ├─ posts/          # 所有博客文章，Markdown 格式
+│  ├─ about.md        # 关于页
+│  └─ site.json       # 站点标题、描述、导航、作者、域名
+├─ assets/            # 图片等静态资源
+├─ src/               # 主题样式和前端搜索脚本
+├─ scripts/           # 构建、预览、新建文章脚本
+├─ public/            # Cloudflare Pages headers / redirects
+├─ dist/              # 构建产物，自动生成，不手动编辑
+└─ docs/              # 项目说明文档
+```
+
+日常最常改的是：
+
+```text
+content/posts/
+content/site.json
+content/about.md
+assets/
+```
+
+不要手动编辑 `dist/`。它是 `npm run build` 自动生成的发布目录。
+
+## 常用命令
+
+在 PowerShell 里进入项目：
+
+```powershell
+cd D:\MyBlog
+```
+
+新增文章：
+
+```powershell
+npm run new:post -- "文章标题"
+```
+
+检查内容和配置：
+
+```powershell
+npm run lint
+```
+
+生成静态网站：
+
+```powershell
+npm run build
+```
+
+本地预览：
+
+```powershell
+npm run preview
+```
+
+本地打开：
+
+```text
+http://localhost:4173
+```
+
+## 新增一篇文章
+
+运行：
+
+```powershell
+npm run new:post -- "Unity 性能优化记录"
+```
+
+脚本会在 `content/posts/` 里生成一个 Markdown 文件，例如：
+
+```text
+content/posts/2026-06-04-unity-性能优化记录.md
+```
+
+打开这个文件，会看到类似内容：
+
+```yaml
+---
+title: Unity 性能优化记录
+slug: unity-性能优化记录
+date: 2026-06-04
+category: 未分类
+tags: []
+summary: 这里写一句文章摘要。
+status: draft
+---
+```
+
+下面就是正文区域，可以直接写 Markdown。
+
+## 发布文章
+
+文章默认是草稿：
+
+```yaml
+status: draft
+```
+
+草稿不会出现在首页、文章列表、分类、标签、归档、RSS 里。
+
+写完后改成：
+
+```yaml
+status: published
+```
+
+然后运行：
+
+```powershell
+npm run lint
+npm run build
+```
+
+本地确认没问题后提交并推送：
+
+```powershell
+git add .
+git commit -m "Add new post"
+git push
+```
+
+Cloudflare Pages 会自动重新部署。
+
+## 文章字段说明
+
+每篇文章顶部的 `---` 区域叫 front matter。
+
+完整示例：
+
+```yaml
+---
+title: 渲染优化排查清单
+slug: render-optimization-checklist
+date: 2026-06-04
+updated: 2026-06-05
+category: 图形渲染
+tags: [渲染, Shader, 性能]
+summary: 一份用于定位渲染性能问题的实践清单。
+featured: true
+status: published
+---
+```
+
+字段含义：
+
+| 字段 | 必填 | 说明 |
+| --- | --- | --- |
+| `title` | 是 | 文章标题 |
+| `slug` | 推荐 | 文章网址的一部分，例如 `/posts/render-optimization-checklist/` |
+| `date` | 是 | 发布日期，格式 `YYYY-MM-DD` |
+| `updated` | 否 | 更新日期，格式 `YYYY-MM-DD` |
+| `category` | 推荐 | 分类，一个文章只能设置一个分类 |
+| `tags` | 推荐 | 标签，一个文章可以设置多个 |
+| `summary` | 推荐 | 摘要，会显示在首页、列表页、RSS 和搜索结果 |
+| `featured` | 否 | 是否作为首页精选文章 |
+| `status` | 是 | `draft` 草稿，`published` 发布 |
+
+## 设置分类
+
+分类直接写在文章 front matter 里：
+
+```yaml
+category: Unity
+```
+
+或：
+
+```yaml
+category: 图形渲染
+```
+
+不需要手动创建分类页。构建时会自动生成：
+
+```text
+/categories/unity/
+/categories/图形渲染/
+```
+
+建议分类数量不要太多。个人技术博客可以先用这些：
+
+```text
+Unity
+图形渲染
+工具链
+架构设计
+项目复盘
+随笔
+```
+
+## 设置标签
+
+标签写成数组：
+
+```yaml
+tags: [Unity, 性能, Profiler]
+```
+
+或：
+
+```yaml
+tags: [Shader, 渲染, 移动端]
+```
+
+构建时会自动生成标签页：
+
+```text
+/tags/unity/
+/tags/性能/
+/tags/shader/
+```
+
+标签可以比分类更细。建议用来描述技术点、工具、问题类型。
+
+## 设置精选文章
+
+在文章里加：
+
+```yaml
+featured: true
+```
+
+首页会优先展示最新的一篇精选文章。
+
+建议同一时间只保留一篇文章为精选。如果多篇都是 `featured: true`，系统会选择日期最新的那篇。
+
+取消精选：
+
+```yaml
+featured: false
+```
+
+或者直接删除 `featured` 字段。
+
+## 修改文章网址
+
+文章网址由 `slug` 决定。
+
+例如：
+
+```yaml
+slug: unity-performance-start
+```
+
+生成的网址是：
+
+```text
+/posts/unity-performance-start/
+```
+
+建议 `slug` 使用英文、小写、短横线：
+
+```yaml
+slug: shader-variant-cleanup
+slug: unity-gc-optimization
+slug: renderdoc-frame-debugging
+```
+
+如果文章已经发布到网上，不建议随便改 `slug`，否则旧链接会失效。
+
+## 正文 Markdown 写法
+
+标题：
+
+```markdown
+## 二级标题
+### 三级标题
+```
+
+列表：
+
+```markdown
+- 第一项
+- 第二项
+- 第三项
+```
+
+代码块：
+
+````markdown
+```csharp
+Debug.Log("Hello");
+```
+````
+
+链接：
+
+```markdown
+[Unity 官方文档](https://docs.unity3d.com/)
+```
+
+引用：
+
+```markdown
+> 这里是一段引用。
+```
+
+## 添加图片
+
+把图片放进：
+
+```text
+assets/
+```
+
+例如：
+
+```text
+assets/unity-profiler.png
+```
+
+文章里这样引用：
+
+```markdown
+![Unity Profiler 截图](/assets/unity-profiler.png)
+```
+
+注意路径前面要有 `/assets/`。
+
+## 修改博客标题、描述和导航
+
+编辑：
+
+```text
+content/site.json
+```
+
+常用字段：
+
+```json
+{
+  "title": "My Game Dev Blog",
+  "brand": "LUMIO.GAMES",
+  "description": "记录游戏开发、图形渲染、Unity 工程实践、工具链和技术复盘的个人博客。",
+  "author": "站长",
+  "baseUrl": "http://localhost:4173"
+}
+```
+
+字段说明：
+
+| 字段 | 说明 |
+| --- | --- |
+| `title` | 网站标题 |
+| `brand` | 左上角品牌名 |
+| `description` | 网站描述 |
+| `author` | 作者名 |
+| `baseUrl` | 本地默认地址，Cloudflare 部署时会自动使用 `CF_PAGES_URL` 或 `SITE_URL` |
+| `navigation` | 顶部导航 |
+| `hero` | 首页 Hero 文案 |
+
+## 修改关于页
+
+编辑：
+
+```text
+content/about.md
+```
+
+写法和普通文章一样，也是 Markdown。
+
+## 本地预览流程
+
+每次改完文章或配置后：
+
+```powershell
+npm run lint
+npm run build
+npm run preview
+```
+
+打开：
+
+```text
+http://localhost:4173
+```
+
+如果预览服务已经在运行，只需要重新：
+
+```powershell
+npm run build
+```
+
+然后刷新浏览器。
+
+## 发布到线上
+
+当前项目已经连接 GitHub 仓库：
+
+```text
+https://github.com/lucas9801/SoloBlog.git
+```
+
+日常发布流程：
+
+```powershell
+git status
+git add .
+git commit -m "Update blog"
+git push
+```
+
+推送后 Cloudflare Pages 会自动构建和部署。
+
+## Cloudflare Pages 设置
+
+Cloudflare Pages 项目应使用：
+
+```text
+Framework preset: None
+Build command: npm run build
+Build output directory: dist
+Root directory: /
+Node version: 20
+```
+
+如果有环境变量，建议设置：
+
+```text
+NODE_VERSION=20
+```
+
+如果以后绑定正式域名，建议再设置：
+
+```text
+SITE_URL=https://你的域名
+```
+
+这样 RSS、sitemap、canonical URL 和 robots.txt 会使用正式域名。
+
+## 检查线上是否更新
+
+推送后去 Cloudflare Pages 的 Deployments 页面看状态。
+
+成功后访问：
+
+```text
+https://soloblog-4w3.pages.dev/
+```
+
+如果页面还是旧的，可以：
+
+1. 等 1 到 2 分钟。
+2. 强制刷新浏览器。
+3. 在 Cloudflare Pages 查看最新 deployment 是否成功。
+4. 确认文章 `status` 是 `published`。
+
+## 常见问题
+
+### 为什么新文章没显示？
+
+检查：
+
+```yaml
+status: published
+```
+
+再运行：
+
+```powershell
+npm run build
+git add .
+git commit -m "Publish post"
+git push
+```
+
+### 为什么分类或标签没出现？
+
+分类和标签只会根据已发布文章生成。草稿文章不会参与生成。
+
+### 可以删除示例文章吗？
+
+可以。删除 `content/posts/` 里的示例 Markdown 文件，然后运行：
+
+```powershell
+npm run lint
+npm run build
+```
+
+注意：当前 lint 要求至少有一篇文章。如果全部删除，需要先新增自己的文章。
+
+### 可以不用命令行写文章吗？
+
+当前版本是文件驱动，需要编辑 Markdown 文件。以后可以接入 CMS，比如 Decap CMS，让你在网页后台写文章。
+
+### 可以添加评论、点赞、浏览量吗？
+
+可以，但需要额外接动态能力，例如 Cloudflare Pages Functions + D1/KV，或者第三方评论系统。
+
+当前版本优先保证博客内容、分类、标签、归档、搜索、RSS 和部署流程稳定。
+
+## 推荐日常流程
+
+最常用的一套流程：
+
+```powershell
+cd D:\MyBlog
+npm run new:post -- "文章标题"
+```
+
+编辑生成的 Markdown：
+
+```yaml
+category: Unity
+tags: [Unity, 性能]
+summary: 这里写摘要。
+status: published
+```
+
+检查和构建：
+
+```powershell
+npm run lint
+npm run build
+```
+
+提交发布：
+
+```powershell
+git add .
+git commit -m "Add article"
+git push
+```
+
+Cloudflare Pages 自动发布完成后，访问线上地址查看。
