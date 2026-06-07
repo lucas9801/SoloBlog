@@ -2,8 +2,7 @@ name = "my-game-dev-blog"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-06-04"
 
-# After creating the D1 database, uncomment and fill this binding.
-# [[d1_databases]]
-# binding = "BLOG_DB"
-# database_name = "soloblog"
-# database_id = "replace-with-your-d1-database-id"
+[[d1_databases]]
+binding = "BLOG_DB"
+database_name = "soloblog"
+database_id = "83b76375-729c-4cea-85d7-06fda08c1bba"
