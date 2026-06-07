@@ -6,6 +6,25 @@
   "baseUrl": "http://localhost:4173",
   "language": "zh-CN",
   "postsPerPage": 9,
+  "archivePostsPerPage": 9,
+  "views": {
+    "enabled": true
+  },
+  "comments": {
+    "enabled": false,
+    "provider": "giscus",
+    "repo": "lucas9801/SoloBlog",
+    "repoId": "",
+    "category": "Announcements",
+    "categoryId": "",
+    "mapping": "pathname",
+    "strict": "0",
+    "reactionsEnabled": "1",
+    "emitMetadata": "0",
+    "inputPosition": "bottom",
+    "theme": "preferred_color_scheme",
+    "language": "zh-CN"
+  },
   "hero": {
     "eyebrow": "Game Development Notes",
     "title": "游戏开发技术博客",
@@ -16,7 +35,6 @@
   "navigation": [
     { "label": "首页", "href": "/" },
     { "label": "文章", "href": "/archive/" },
-    { "label": "分类", "href": "/categories/" },
     { "label": "标签", "href": "/tags/" },
     { "label": "关于", "href": "/about/" }
   ],

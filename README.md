@@ -44,3 +44,4 @@ Node version: 20
 
 - [博客操作手册](docs/blog-operations.md)
 - [Cloudflare Pages 部署说明](docs/cloudflare-pages.md)
+- [阅读量和评论配置](docs/dynamic-features.md)

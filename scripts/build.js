@@ -268,8 +268,49 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">Sitemap</a></p>
     </footer>
+    <script type="module" src="/src/site.js"></script>
+    ${site.views?.enabled === false ? "" : '<script type="module" src="/src/views.js"></script>'}
   </body>
 </html>`;
+}
+
+function viewCountMeta(post) {
+  if (site.views?.enabled === false) return "";
+  return `<span class="view-count" data-view-slug="${escapeAttr(post.slug)}" hidden>阅读 --</span>`;
+}
+
+function giscusComments() {
+  const comments = site.comments || {};
+  const ready =
+    comments.enabled === true &&
+    comments.provider === "giscus" &&
+    comments.repo &&
+    comments.repoId &&
+    comments.category &&
+    comments.categoryId;
+
+  if (!ready) return "";
+
+  return `<section class="comments-section" id="comments" aria-labelledby="comments-title">
+    <h2 id="comments-title">评论</h2>
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="${escapeAttr(comments.repo)}"
+      data-repo-id="${escapeAttr(comments.repoId)}"
+      data-category="${escapeAttr(comments.category)}"
+      data-category-id="${escapeAttr(comments.categoryId)}"
+      data-mapping="${escapeAttr(comments.mapping || "pathname")}"
+      data-strict="${escapeAttr(comments.strict || "0")}"
+      data-reactions-enabled="${escapeAttr(comments.reactionsEnabled || "1")}"
+      data-emit-metadata="${escapeAttr(comments.emitMetadata || "0")}"
+      data-input-position="${escapeAttr(comments.inputPosition || "bottom")}"
+      data-theme="${escapeAttr(comments.theme || "preferred_color_scheme")}"
+      data-lang="${escapeAttr(comments.language || site.language || "zh-CN")}"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </section>`;
 }
 
 function postCard(post, variant = "") {
@@ -282,12 +323,34 @@ function postCard(post, variant = "") {
       <div class="post-meta">
         <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
         <span>${escapeHtml(post.readingTime)}</span>
+        ${viewCountMeta(post)}
       </div>
       <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
       <p>${escapeHtml(post.summary)}</p>
       <div class="tag-row">${post.tags
         .slice(0, 4)
-        .map((tag) => `<a href="/tags/${slugify(tag)}/">#${escapeHtml(tag)}</a>`)
+        .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+        .join("")}</div>
+    </div>
+  </article>`;
+}
+
+function archivePostCard(post) {
+  return `<article class="archive-card">
+    <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-hidden="true">
+      <span>${escapeHtml(post.category)}</span>
+    </a>
+    <div class="archive-card-body">
+      <div class="post-meta">
+        <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
+        <span>${escapeHtml(post.readingTime)}</span>
+        ${viewCountMeta(post)}
+      </div>
+      <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
+      <p>${escapeHtml(post.summary)}</p>
+      <div class="tag-row">${post.tags
+        .slice(0, 4)
+        .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
         .join("")}</div>
     </div>
   </article>`;
@@ -313,7 +376,7 @@ function sidebar(posts, categories, tags) {
       <h2>热门标签</h2>
       <div class="tag-cloud">${tags
         .slice(0, 18)
-        .map(([tag]) => `<a href="/tags/${slugify(tag)}/">#${escapeHtml(tag)}</a>`)
+        .map(([tag]) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
         .join("")}</div>
     </section>
     <section class="sidebar-card subscribe-card">
@@ -335,6 +398,75 @@ function groupBy(posts, keyGetter) {
     }
   }
   return [...map.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "zh-CN"));
+}
+
+function archivePostsPerPage() {
+  const configured = Number.parseInt(site.archivePostsPerPage || site.postsPerPage || 9, 10);
+  return Number.isFinite(configured) && configured > 0 ? configured : 9;
+}
+
+function pageHref(basePath, page) {
+  const cleanBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+  return page === 1 ? cleanBase : `${cleanBase}page/${page}/`;
+}
+
+function pageRoute(baseRoute, page) {
+  return page === 1 ? baseRoute : path.join(baseRoute, "page", String(page));
+}
+
+function paginate(list, page, perPage) {
+  const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+  const start = (currentPage - 1) * perPage;
+  return {
+    currentPage,
+    totalPages,
+    items: list.slice(start, start + perPage)
+  };
+}
+
+function paginationUrls(basePath, list) {
+  const totalPages = Math.max(1, Math.ceil(list.length / archivePostsPerPage()));
+  return Array.from({ length: totalPages }, (_, index) => pageHref(basePath, index + 1));
+}
+
+function archiveFilters(categories, activeCategory, totalCount) {
+  const allActive = !activeCategory;
+  return `<div class="archive-filter-bar">
+    <nav class="archive-filters" aria-label="文章分类筛选">
+      <a class="${allActive ? "active" : ""}" href="/archive/">全部 <b>${totalCount}</b></a>
+      ${categories
+        .map(([category, list]) => {
+          const active = category === activeCategory ? " active" : "";
+          return `<a class="${active}" href="/categories/${slugify(category)}/">${escapeHtml(category)} <b>${list.length}</b></a>`;
+        })
+        .join("")}
+    </nav>
+  </div>`;
+}
+
+function paginationNav(basePath, currentPage, totalPages) {
+  if (totalPages <= 1) return "";
+  const previous =
+    currentPage > 1
+      ? `<a class="pagination-control" href="${pageHref(basePath, currentPage - 1)}">上一页</a>`
+      : `<span class="pagination-control disabled" aria-disabled="true">上一页</span>`;
+  const next =
+    currentPage < totalPages
+      ? `<a class="pagination-control" href="${pageHref(basePath, currentPage + 1)}">下一页</a>`
+      : `<span class="pagination-control disabled" aria-disabled="true">下一页</span>`;
+
+  const pages = Array.from(
+    { length: totalPages },
+    (_, index) => {
+      const page = index + 1;
+      return page === currentPage
+        ? `<span class="active" aria-current="page">${page}</span>`
+        : `<a href="${pageHref(basePath, page)}">${page}</a>`;
+    }
+  ).join("");
+
+  return `<nav class="pagination" aria-label="文章分页">${previous}${pages}${next}</nav>`;
 }
 
 async function loadPosts() {
@@ -362,6 +494,7 @@ async function loadPosts() {
       category,
       categorySlug: slugify(category),
       tags,
+      cover: data.cover || "/assets/hero-game-tech.png",
       summary,
       featured: Boolean(data.featured),
       readingTime: readingTime(body),
@@ -376,8 +509,8 @@ async function loadPosts() {
 }
 
 function homePage(posts, categories, tags) {
-  const featured = posts.find((post) => post.featured) || posts[0];
-  const latest = posts.slice(0, site.postsPerPage || 9);
+  const featuredPosts = posts.filter((post) => post.featured);
+  const latest = posts.filter((post) => !post.featured).slice(0, site.postsPerPage || 9);
   const hero = site.hero;
 
   const body = `<main>
@@ -396,16 +529,16 @@ function homePage(posts, categories, tags) {
     </section>
     <section class="content-shell">
       <div class="content-main">
-        ${featured ? `<section class="featured-post">
-          <div>
-            <span class="section-kicker">精选文章</span>
-            <h2><a href="${featured.url}">${escapeHtml(featured.title)}</a></h2>
-            <p>${escapeHtml(featured.summary)}</p>
-            <div class="post-meta"><time datetime="${featured.date}">${formatDate(featured.date)}</time><span>${featured.readingTime}</span><a href="/categories/${featured.categorySlug}/">${escapeHtml(featured.category)}</a></div>
+        ${featuredPosts.length ? `<section class="section-block featured-section">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">Featured</span>
+              <h2>精选文章</h2>
+            </div>
           </div>
-          <a class="button-link" href="${featured.url}">阅读全文</a>
+          <div class="post-grid">${featuredPosts.map((post) => archivePostCard(post)).join("")}</div>
         </section>` : ""}
-        <section id="latest-posts" class="section-block">
+        ${latest.length ? `<section id="latest-posts" class="section-block">
           <div class="section-head">
             <div>
               <span class="section-kicker">Latest Posts</span>
@@ -413,8 +546,8 @@ function homePage(posts, categories, tags) {
             </div>
             <a href="/archive/">全部文章 →</a>
           </div>
-          <div class="post-grid">${latest.map((post) => postCard(post)).join("")}</div>
-        </section>
+          <div class="post-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>
+        </section>` : ""}
       </div>
       ${sidebar(posts, categories, tags)}
     </section>
@@ -423,32 +556,39 @@ function homePage(posts, categories, tags) {
   return pageLayout({ title: site.title, description: site.description, current: "/", body, canonical: "/" });
 }
 
-function archivePage(posts) {
-  const byYear = groupBy(posts, (post) => new Date(post.date).getFullYear().toString());
-  const body = `<main class="page-shell narrow">
-    <header class="page-title">
-      <span class="section-kicker">Archive</span>
-      <h1>文章归档</h1>
-      <p>按时间浏览全部已发布文章。</p>
-    </header>
-    <div class="archive-list">${byYear
-      .map(
-        ([year, list]) => `<section>
-          <h2>${year}</h2>
-          ${list
-            .map(
-              (post) => `<article class="archive-item">
-                <time datetime="${post.date}">${formatDate(post.date)}</time>
-                <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
-                <span>${escapeHtml(post.category)}</span>
-              </article>`
-            )
-            .join("")}
-        </section>`
-      )
-      .join("")}</div>
+function archivePage({ posts, categories, activeCategory = "", basePath = "/archive/", page = 1, totalCount }) {
+  const perPage = archivePostsPerPage();
+  const { items, currentPage, totalPages } = paginate(posts, page, perPage);
+  const body = `<main class="page-shell article-index-page">
+    <h1 class="sr-only">${activeCategory ? `${activeCategory} 分类文章` : "全部文章"}</h1>
+    ${archiveFilters(categories, activeCategory, totalCount)}
+    <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
+    ${paginationNav(basePath, currentPage, totalPages)}
   </main>`;
-  return pageLayout({ title: "文章归档", description: "按时间浏览全部文章。", current: "/archive/", body, canonical: "/archive/" });
+  return pageLayout({
+    title: activeCategory ? `分类：${activeCategory}` : "全部文章",
+    description: activeCategory ? `${activeCategory} 分类下的全部文章。` : "按时间浏览全部文章。",
+    current: "/archive/",
+    body,
+    canonical: pageHref(basePath, currentPage)
+  });
+}
+
+async function writeArchivePages({ posts, categories, baseRoute, basePath, activeCategory = "", totalCount }) {
+  const totalPages = Math.max(1, Math.ceil(posts.length / archivePostsPerPage()));
+  for (let page = 1; page <= totalPages; page += 1) {
+    await writePage(
+      pageRoute(baseRoute, page),
+      archivePage({
+        posts,
+        categories,
+        activeCategory,
+        basePath,
+        page,
+        totalCount
+      })
+    );
+  }
 }
 
 function taxonomyIndexPage(title, description, entries, basePath, current) {
@@ -470,6 +610,44 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
   return pageLayout({ title, description, current, body, canonical: current });
 }
 
+function tagIndexPage(entries, posts) {
+  const body = `<main class="page-shell article-index-page">
+    <h1 class="sr-only">全部标签文章</h1>
+    ${tagFilters(entries)}
+    <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
+  </main>`;
+  return pageLayout({ title: "标签", description: "按标签浏览文章。", current: "/tags/", body, canonical: "/tags/" });
+}
+
+function tagFilters(entries, activeTag) {
+  return `<div class="archive-filter-bar tag-filter-bar">
+    <nav class="archive-filters" aria-label="标签筛选">
+      <a class="${activeTag ? "" : "active"}" href="/tags/">全部 <b>${entries.length}</b></a>
+      ${entries
+        .map(([tag, list]) => {
+          const active = tag === activeTag ? " active" : "";
+          return `<a class="${active}" href="/tags/${slugify(tag)}/">${escapeHtml(tag)} <b>${list.length}</b></a>`;
+        })
+        .join("")}
+    </nav>
+  </div>`;
+}
+
+function tagListPage({ tag, posts, tags }) {
+  const body = `<main class="page-shell article-index-page">
+    <h1 class="sr-only">标签：${escapeHtml(tag)}</h1>
+    ${tagFilters(tags, tag)}
+    <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
+  </main>`;
+  return pageLayout({
+    title: `标签：${tag}`,
+    description: `带有 ${tag} 标签的全部文章。`,
+    current: "/tags/",
+    body,
+    canonical: `/tags/${slugify(tag)}/`
+  });
+}
+
 function listPage({ title, description, posts, current, canonical }) {
   const body = `<main class="page-shell">
     <header class="page-title">
@@ -484,15 +662,26 @@ function listPage({ title, description, posts, current, canonical }) {
 
 function postPage(post, posts) {
   const related = posts
-    .filter((item) => item.slug !== post.slug && (item.category === post.category || item.tags.some((tag) => post.tags.includes(tag))))
-    .slice(0, 3);
+    .filter((item) => item.slug !== post.slug)
+    .map((item) => ({
+      item,
+      score: (item.category === post.category ? 3 : 0) + item.tags.filter((tag) => post.tags.includes(tag)).length
+    }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || new Date(b.item.date) - new Date(a.item.date))
+    .map(({ item }) => item)
+    .slice(0, 12);
+  const fallbackRelated = related.length ? related : posts.filter((item) => item.slug !== post.slug).slice(0, 8);
   const toc = post.headings
     .filter((heading) => heading.level === 2 || heading.level === 3)
     .map((heading) => `<a class="level-${heading.level}" href="#${heading.id}">${escapeHtml(heading.text)}</a>`)
     .join("");
 
   const body = `<main class="article-shell">
-    <article class="article-page">
+    <aside class="article-aside article-related-aside">
+      ${fallbackRelated.length ? `<section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>` : ""}
+    </aside>
+    <article class="article-page" data-post-slug="${escapeAttr(post.slug)}">
       <header class="article-hero">
         <a class="category-pill" href="/categories/${post.categorySlug}/">${escapeHtml(post.category)}</a>
         <h1>${escapeHtml(post.title)}</h1>
@@ -500,19 +689,22 @@ function postPage(post, posts) {
         <div class="post-meta">
           <time datetime="${post.date}">${formatDate(post.date)}</time>
           <span>${post.readingTime}</span>
+          ${viewCountMeta(post)}
           <span>${escapeHtml(site.author)}</span>
         </div>
       </header>
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
-        <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">#${escapeHtml(tag)}</a>`).join("")}</div>
+        <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
       </footer>
+      ${giscusComments()}
     </article>
-    <aside class="article-aside">
+    <aside class="article-aside article-toc-aside">
       ${toc ? `<section class="sidebar-card toc"><h2>目录</h2>${toc}</section>` : ""}
-      ${related.length ? `<section class="sidebar-card"><h2>相关文章</h2>${related.map((item) => `<a class="related-link" href="${item.url}">${escapeHtml(item.title)}</a>`).join("")}</section>` : ""}
     </aside>
-  </main>`;
+  </main>
+  <div class="reading-pill" data-post-slug="${escapeAttr(post.slug)}" data-reading-minutes="${Number.parseInt(post.readingTime, 10) || 1}" aria-label="阅读进度"><span id="readingPercent">0%</span><span id="readingRemaining">剩余 ≈ ${escapeHtml(post.readingTime)}</span></div>
+  <script type="module" src="/src/article.js"></script>`;
 
   return pageLayout({ title: post.title, description: post.summary, body, canonical: post.url });
 }
@@ -580,15 +772,18 @@ function rss(posts) {
 }
 
 function sitemap(posts, categories, tags) {
+  const archiveUrls = paginationUrls("/archive/", posts);
+  const categoryUrls = categories.flatMap(([category, list]) =>
+    paginationUrls(`/categories/${slugify(category)}/`, list)
+  );
   const urls = [
     "/",
-    "/archive/",
-    "/categories/",
+    ...archiveUrls,
     "/tags/",
     "/search/",
     "/about/",
     ...posts.map((post) => post.url),
-    ...categories.map(([category]) => `/categories/${slugify(category)}/`),
+    ...categoryUrls,
     ...tags.map(([tag]) => `/tags/${slugify(tag)}/`)
   ];
   return `<?xml version="1.0" encoding="UTF-8" ?>
@@ -610,9 +805,14 @@ await copyDirectory(path.join(root, "public"), dist).catch((error) => {
 });
 
 await writePage(".", homePage(posts, categories, tags));
-await writePage("archive", archivePage(posts));
-await writePage("categories", taxonomyIndexPage("分类", "按主题浏览文章。", categories, "/categories/", "/categories/"));
-await writePage("tags", taxonomyIndexPage("标签", "按标签浏览文章。", tags, "/tags/", "/tags/"));
+await writeArchivePages({
+  posts,
+  categories,
+  baseRoute: "archive",
+  basePath: "/archive/",
+  totalCount: posts.length
+});
+await writePage("tags", tagIndexPage(tags, posts));
 await writePage("search", searchPage());
 await writePage("about", await aboutPage());
 
@@ -621,27 +821,24 @@ for (const post of posts) {
 }
 
 for (const [category, list] of categories) {
-  await writePage(
-    path.join("categories", slugify(category)),
-    listPage({
-      title: `分类：${category}`,
-      description: `${category} 分类下的全部文章。`,
-      posts: list,
-      current: "/categories/",
-      canonical: `/categories/${slugify(category)}/`
-    })
-  );
+  const categorySlug = slugify(category);
+  await writeArchivePages({
+    posts: list,
+    categories,
+    activeCategory: category,
+    baseRoute: path.join("categories", categorySlug),
+    basePath: `/categories/${categorySlug}/`,
+    totalCount: posts.length
+  });
 }
 
 for (const [tag, list] of tags) {
   await writePage(
     path.join("tags", slugify(tag)),
-    listPage({
-      title: `标签：${tag}`,
-      description: `带有 #${tag} 标签的全部文章。`,
+    tagListPage({
+      tag,
       posts: list,
-      current: "/tags/",
-      canonical: `/tags/${slugify(tag)}/`
+      tags
     })
   );
 }

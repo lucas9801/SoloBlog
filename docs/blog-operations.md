@@ -145,6 +145,7 @@ updated: 2026-06-05
 category: 图形渲染
 tags: [渲染, Shader, 性能]
 summary: 一份用于定位渲染性能问题的实践清单。
+cover: /assets/hero-game-tech.png
 featured: true
 status: published
 ---
@@ -161,6 +162,7 @@ status: published
 | `category` | 推荐 | 分类，一个文章只能设置一个分类 |
 | `tags` | 推荐 | 标签，一个文章可以设置多个 |
 | `summary` | 推荐 | 摘要，会显示在首页、列表页、RSS 和搜索结果 |
+| `cover` | 推荐 | 文章列表页封面图路径，例如 `/assets/my-cover.png` |
 | `featured` | 否 | 是否作为首页精选文章 |
 | `status` | 是 | `draft` 草稿，`published` 发布 |
 
@@ -228,9 +230,9 @@ tags: [Shader, 渲染, 移动端]
 featured: true
 ```
 
-首页会优先展示最新的一篇精选文章。
+首页会展示所有设置为 `featured: true` 的文章，并按发布时间倒序排列。
 
-建议同一时间只保留一篇文章为精选。如果多篇都是 `featured: true`，系统会选择日期最新的那篇。
+如果不想让某篇文章出现在精选区，把它改成 `featured: false` 或删除这个字段。
 
 取消精选：
 
@@ -512,6 +514,7 @@ npm run new:post -- "文章标题"
 category: Unity
 tags: [Unity, 性能]
 summary: 这里写摘要。
+cover: /assets/hero-game-tech.png
 status: published
 ```
 
