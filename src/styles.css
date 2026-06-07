@@ -903,10 +903,13 @@ pre {
 }
 
 .article-shell {
-  width: min(1360px, calc(100% - 32px));
+  width: min(1680px, calc(100% - 48px));
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr) 270px;
-  gap: 24px;
+  grid-template-columns:
+    clamp(200px, 15vw, 270px)
+    minmax(0, 1fr)
+    clamp(210px, 15vw, 280px);
+  gap: clamp(18px, 1.5vw, 28px);
   align-items: start;
 }
 
@@ -1186,7 +1189,7 @@ pre {
   font-weight: 850;
 }
 
-@media (max-width: 1020px) {
+@media (max-width: 1180px) {
   .site-header {
     grid-template-columns: 1fr auto;
   }
