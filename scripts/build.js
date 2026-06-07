@@ -690,7 +690,7 @@ function postPage(post, posts) {
       ${fallbackRelated.length ? `<section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>` : ""}
     </aside>
     <article class="article-page" data-post-slug="${escapeAttr(post.slug)}">
-      <header class="article-hero">
+      <header class="article-hero" style="--article-cover: url('${escapeAttr(post.cover)}')">
         <a class="category-pill" href="/categories/${post.categorySlug}/">${escapeHtml(post.category)}</a>
         <h1>${escapeHtml(post.title)}</h1>
         <p>${escapeHtml(post.summary)}</p>

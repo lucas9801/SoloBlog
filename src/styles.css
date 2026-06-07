@@ -919,14 +919,17 @@ pre {
 }
 
 .article-hero {
+  min-height: clamp(320px, 24vw, 420px);
   padding: clamp(28px, 5vw, 52px);
+  display: grid;
+  align-content: center;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.72)),
-    url("/assets/hero-game-tech.png") right center / auto 120% no-repeat;
+    linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.86) 42%, rgba(255, 255, 255, 0.42) 72%, rgba(255, 255, 255, 0.18) 100%),
+    var(--article-cover, url("/assets/hero-game-tech.png")) center / cover no-repeat;
 }
 
 .article-hero h1 {
-  max-width: 760px;
+  max-width: 920px;
   margin: 14px 0;
   color: #10213d;
   font-size: clamp(36px, 5vw, 58px);
@@ -934,7 +937,7 @@ pre {
 }
 
 .article-hero p {
-  max-width: 720px;
+  max-width: 860px;
   margin: 0 0 18px;
   color: #4e5f78;
   font-size: 17px;
@@ -1365,8 +1368,8 @@ pre {
 
   .article-hero {
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86)),
-      url("/assets/hero-game-tech.png") center bottom / auto 92% no-repeat;
+      linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.86) 58%, rgba(255, 255, 255, 0.46) 100%),
+      var(--article-cover, url("/assets/hero-game-tech.png")) center / cover no-repeat;
   }
 
   .reading-pill {
