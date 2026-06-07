@@ -11,6 +11,14 @@ const site = {
   ...siteConfig,
   baseUrl: (process.env.SITE_URL || process.env.CF_PAGES_URL || siteConfig.baseUrl).replace(/\/+$/, "/")
 };
+const assetVersion = encodeURIComponent(
+  (process.env.CF_PAGES_COMMIT_SHA || siteConfig.assetVersion || "local").slice(0, 12)
+);
+
+function assetUrl(pathname) {
+  const separator = pathname.includes("?") ? "&" : "?";
+  return `${pathname}${separator}v=${assetVersion}`;
+}
 
 function escapeHtml(value = "") {
   return String(value)
@@ -246,7 +254,7 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
     <meta name="description" content="${escapeAttr(description || site.description)}" />
     <link rel="canonical" href="${escapeAttr(absoluteUrl(canonical))}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="/rss.xml" />
-    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="${assetUrl("/src/styles.css")}" />
     <title>${escapeHtml(fullTitle)}</title>
   </head>
   <body>
@@ -268,8 +276,8 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">Sitemap</a></p>
     </footer>
-    <script type="module" src="/src/site.js"></script>
-    ${site.views?.enabled === false ? "" : '<script type="module" src="/src/views.js"></script>'}
+    <script type="module" src="${assetUrl("/src/site.js")}"></script>
+    ${site.views?.enabled === false ? "" : `<script type="module" src="${assetUrl("/src/views.js")}"></script>`}
   </body>
 </html>`;
 }
@@ -704,7 +712,7 @@ function postPage(post, posts) {
     </aside>
   </main>
   <div class="reading-pill" data-post-slug="${escapeAttr(post.slug)}" data-reading-minutes="${Number.parseInt(post.readingTime, 10) || 1}" aria-label="阅读进度"><span id="readingPercent">0%</span><span id="readingRemaining">剩余 ≈ ${escapeHtml(post.readingTime)}</span></div>
-  <script type="module" src="/src/article.js"></script>`;
+  <script type="module" src="${assetUrl("/src/article.js")}"></script>`;
 
   return pageLayout({ title: post.title, description: post.summary, body, canonical: post.url });
 }
@@ -741,7 +749,7 @@ function searchPage() {
       <div id="searchResults" class="search-results"></div>
     </section>
   </main>
-  <script type="module" src="/src/search.js"></script>`;
+  <script type="module" src="${assetUrl("/src/search.js")}"></script>`;
   return pageLayout({ title: "搜索文章", description: "搜索博客文章。", current: "/search/", body, canonical: "/search/" });
 }
 

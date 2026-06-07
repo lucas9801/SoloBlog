@@ -903,14 +903,15 @@ pre {
 }
 
 .article-shell {
-  width: min(1680px, calc(100% - 48px));
+  width: min(1840px, calc(100% - 48px));
   display: grid;
   grid-template-columns:
-    clamp(200px, 15vw, 270px)
-    minmax(0, 1fr)
-    clamp(210px, 15vw, 280px);
+    clamp(190px, 13vw, 240px)
+    minmax(0, 1180px)
+    clamp(190px, 13vw, 250px);
   gap: clamp(18px, 1.5vw, 28px);
   align-items: start;
+  justify-content: center;
 }
 
 .article-page {
