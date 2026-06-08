@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Cocos cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eafffb"/>
+      <stop offset=".48" stop-color="#f5fbff"/>
+      <stop offset="1" stop-color="#fff2de"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#147a78" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g opacity=".2" fill="#46d7bf">
+    <circle cx="160" cy="140" r="22"/><circle cx="1010" cy="150" r="28"/><circle cx="920" cy="550" r="18"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="330" y="165" width="500" height="320" rx="36" fill="#ffffff"/>
+    <rect x="380" y="215" width="170" height="170" rx="22" fill="#46d7bf"/>
+    <rect x="590" y="215" width="190" height="120" rx="22" fill="#6577ff"/>
+    <rect x="590" y="365" width="190" height="70" rx="22" fill="#ffaf61"/>
+    <path d="M260 410c62-88 141-132 237-132 116 0 197 70 281 70 58 0 102-26 132-78v180H260z" fill="#17243a" opacity=".12"/>
+    <path d="M440 310h50M465 285v50" stroke="#fff" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="665" cy="276" r="18" fill="#fff"/><circle cx="715" cy="276" r="18" fill="#fff"/>
+  </g>
+</svg>

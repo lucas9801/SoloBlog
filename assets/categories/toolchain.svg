@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Toolchain cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3f7ff"/>
+      <stop offset=".45" stop-color="#e4fbf6"/>
+      <stop offset="1" stop-color="#fff5e5"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#344660" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <circle cx="455" cy="315" r="120" fill="#6577ff"/>
+    <circle cx="455" cy="315" r="54" fill="#f3f7ff"/>
+    <circle cx="735" cy="355" r="135" fill="#46d7bf"/>
+    <circle cx="735" cy="355" r="60" fill="#f3f7ff"/>
+    <path d="M540 315h80M628 285l82 70-82 70" fill="none" stroke="#17243a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M300 500l170-170M318 250l120 120M790 185l105 105M830 525l-95-95" stroke="#ffaf61" stroke-width="26" stroke-linecap="round"/>
+    <rect x="255" y="490" width="210" height="52" rx="26" fill="#17243a"/>
+  </g>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unreal engine cover">
+  <defs>
+    <radialGradient id="core" cx=".52" cy=".45" r=".42">
+      <stop offset="0" stop-color="#8af4ff"/>
+      <stop offset=".36" stop-color="#6577ff"/>
+      <stop offset="1" stop-color="#111c34"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="#101827"/>
+  <rect width="1200" height="675" fill="url(#core)" opacity=".95"/>
+  <g fill="none" stroke="#a8f7ff" stroke-opacity=".22">
+    <circle cx="600" cy="330" r="245"/>
+    <circle cx="600" cy="330" r="170"/>
+    <circle cx="600" cy="330" r="95"/>
+  </g>
+  <g filter="url(#glow)">
+    <path d="M600 105l220 127v196L600 555 380 428V232z" fill="none" stroke="#d9fbff" stroke-width="16"/>
+    <path d="M600 105v450M380 232l440 196M820 232L380 428" stroke="#46d7bf" stroke-width="10" opacity=".72"/>
+    <rect x="250" y="145" width="80" height="80" rx="18" fill="#6577ff" opacity=".55"/>
+    <rect x="870" y="450" width="96" height="96" rx="22" fill="#ffaf61" opacity=".58"/>
+  </g>
+</svg>

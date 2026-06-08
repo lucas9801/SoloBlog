@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unity cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#edf3ff"/>
+      <stop offset=".5" stop-color="#d8e2ff"/>
+      <stop offset="1" stop-color="#e9fff8"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#2f43aa" flood-opacity=".2"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g stroke="#6077ee" stroke-opacity=".16" stroke-width="2">
+    <path d="M160 145l230 132 230-132 230 132 230-132M160 365l230 132 230-132 230 132 230-132"/>
+  </g>
+  <g filter="url(#shadow)">
+    <path d="M590 106l198 114-198 114-198-114z" fill="#17243a"/>
+    <path d="M392 220l198 114v220L392 440z" fill="#4257dd"/>
+    <path d="M788 220L590 334v220l198-114z" fill="#46d7bf"/>
+    <path d="M590 226l82 47-82 47-82-47z" fill="#fff" opacity=".86"/>
+    <path d="M318 156l75 43-75 43-75-43z" fill="#8aa0ff"/>
+    <path d="M870 410l92 53-92 53-92-53z" fill="#ffaf61"/>
+    <circle cx="258" cy="458" r="50" fill="#fff" opacity=".58"/>
+  </g>
+</svg>

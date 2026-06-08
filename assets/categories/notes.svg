@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Notes cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8e8"/>
+      <stop offset=".56" stop-color="#eaf4ff"/>
+      <stop offset="1" stop-color="#d9fff7"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#29466f" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g opacity=".35" stroke="#5c76ee" stroke-width="1">
+    <path d="M0 120h1200M0 200h1200M0 280h1200M0 360h1200M0 440h1200M0 520h1200"/>
+    <path d="M180 0v675M300 0v675M420 0v675M540 0v675M660 0v675M780 0v675M900 0v675"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="340" y="120" width="430" height="455" rx="30" fill="#fff"/>
+    <rect x="385" y="175" width="330" height="24" rx="12" fill="#e9efff"/>
+    <rect x="385" y="245" width="285" height="18" rx="9" fill="#dce6ff"/>
+    <rect x="385" y="300" width="320" height="18" rx="9" fill="#dce6ff"/>
+    <rect x="385" y="355" width="250" height="18" rx="9" fill="#dce6ff"/>
+    <path d="M830 165l70 70-255 255-92 22 22-92z" fill="#ffaf61"/>
+    <path d="M575 420l70 70-92 22z" fill="#17243a"/>
+    <circle cx="250" cy="190" r="52" fill="#46d7bf" opacity=".42"/>
+    <circle cx="902" cy="480" r="72" fill="#6577ff" opacity=".20"/>
+  </g>
+</svg>

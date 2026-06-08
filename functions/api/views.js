@@ -31,6 +31,12 @@ function parseSlugs(request) {
   return Array.from(new Set(raw.map(sanitizeSlug).filter(Boolean))).slice(0, 80);
 }
 
+function parseTop(request) {
+  const url = new URL(request.url);
+  const top = Number.parseInt(url.searchParams.get("top") || "0", 10);
+  return Number.isFinite(top) ? Math.min(Math.max(top, 0), 20) : 0;
+}
+
 function getDatabase(context) {
   return context.env.BLOG_DB || null;
 }
@@ -42,6 +48,21 @@ async function ensureSchema(db) {
 export async function onRequestGet(context) {
   const db = getDatabase(context);
   if (!db) return json({ error: "BLOG_DB binding is not configured." }, 503);
+
+  const top = parseTop(context.request);
+  if (top > 0) {
+    await ensureSchema(db);
+    const result = await db
+      .prepare("SELECT slug, views FROM post_views ORDER BY views DESC, updated_at DESC LIMIT ?")
+      .bind(top)
+      .all();
+    return json({
+      ranking: (result.results || []).map((row) => ({
+        slug: row.slug,
+        views: Number(row.views) || 0
+      }))
+    });
+  }
 
   const slugs = parseSlugs(context.request);
   if (slugs.length === 0) return json({ views: {} });

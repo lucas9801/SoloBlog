@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Rendering cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5f8ff"/>
+      <stop offset=".48" stop-color="#e1e9ff"/>
+      <stop offset="1" stop-color="#e9fff7"/>
+    </linearGradient>
+    <radialGradient id="sphere" cx=".35" cy=".25" r=".75">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".35" stop-color="#8aa0ff"/>
+      <stop offset="1" stop-color="#253ed0"/>
+    </radialGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="24" stdDeviation="20" flood-color="#3650d8" flood-opacity=".23"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g stroke="#4257dd" stroke-opacity=".14" fill="none">
+    <path d="M120 500C320 240 500 600 710 305S1020 135 1110 280"/>
+    <path d="M120 550C320 290 500 650 710 355s310-170 400-25"/>
+  </g>
+  <g filter="url(#shadow)">
+    <circle cx="520" cy="330" r="155" fill="url(#sphere)"/>
+    <circle cx="730" cy="250" r="85" fill="#46d7bf"/>
+    <circle cx="830" cy="430" r="110" fill="#ffaf61"/>
+    <path d="M285 500h620" stroke="#fff" stroke-width="22" stroke-linecap="round" opacity=".74"/>
+    <path d="M350 200l160 92M700 160l80 170M430 510l330-220" stroke="#fff" stroke-width="4" opacity=".55"/>
+  </g>
+</svg>

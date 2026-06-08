@@ -1,12 +1,23 @@
 {
-  "title": "My Game Dev Blog",
-  "brand": "LUMIO.GAMES",
+  "title": "SOLUS Blog",
+  "brand": "SOLUS",
   "description": "记录游戏开发、图形渲染、Unity 工程实践、工具链和技术复盘的个人博客。",
-  "author": "站长",
   "baseUrl": "http://localhost:4173",
   "language": "zh-CN",
   "postsPerPage": 9,
   "archivePostsPerPage": 9,
+  "heroCover": "/assets/categories/game-development.svg",
+  "categoryCovers": {
+    "随笔": "/assets/categories/notes.svg",
+    "Unity": "/assets/categories/unity.svg",
+    "Unreal": "/assets/categories/unreal-engine.svg",
+    "Cocos": "/assets/categories/cocos.svg",
+    "图形渲染": "/assets/categories/rendering.svg",
+    "性能优化": "/assets/categories/performance.svg",
+    "工具链": "/assets/categories/toolchain.svg",
+    "架构设计": "/assets/categories/architecture.svg",
+    "游戏开发": "/assets/categories/game-development.svg"
+  },
   "views": {
     "enabled": true
   },

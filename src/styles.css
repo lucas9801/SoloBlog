@@ -138,36 +138,20 @@ pre {
   display: grid;
   place-items: center;
   border-radius: 9px;
-  background: linear-gradient(135deg, #5b6df6, #8aa0ff);
-  box-shadow: inset 0 -4px 0 rgba(32, 52, 164, 0.18);
-}
-
-.brand-mark::before,
-.brand-mark::after,
-.brand-mark span {
-  position: absolute;
-  content: "";
-  background: #fff;
+  background:
+    radial-gradient(circle at 68% 22%, rgba(255, 255, 255, 0.58), transparent 26%),
+    linear-gradient(135deg, #17243a 0%, #4257dd 56%, #46d7bf 100%);
+  box-shadow:
+    inset 0 -4px 0 rgba(11, 22, 55, 0.22),
+    0 10px 18px rgba(54, 80, 216, 0.24);
 }
 
 .brand-mark::before {
-  width: 16px;
-  height: 12px;
-  border-radius: 4px 4px 2px 2px;
-}
-
-.brand-mark::after {
-  top: 7px;
-  width: 6px;
-  height: 6px;
-  border-radius: 2px;
-}
-
-.brand-mark span {
-  bottom: 8px;
-  width: 23px;
-  height: 6px;
-  border-radius: 2px;
+  color: #fff;
+  content: "S";
+  font-size: 19px;
+  font-weight: 950;
+  line-height: 1;
 }
 
 .nav-links {
@@ -255,7 +239,7 @@ pre {
   border-radius: 22px;
   background:
     linear-gradient(90deg, rgba(246, 252, 255, 0.96) 0 43%, rgba(246, 252, 255, 0.55) 62%, rgba(246, 252, 255, 0.18)),
-    url("/assets/hero-game-tech.png") right center / auto 112% no-repeat;
+    var(--hero-cover, url("/assets/hero-game-tech.png")) right center / cover no-repeat;
   box-shadow: var(--shadow);
 }
 
@@ -634,24 +618,27 @@ pre {
   overflow: hidden;
   height: 128px;
   display: block;
-  background: linear-gradient(135deg, #6577ff, #82a6ff);
+  background:
+    linear-gradient(180deg, transparent 42%, rgba(10, 20, 38, 0.52)),
+    var(--cover-image, linear-gradient(135deg, #6577ff, #82a6ff)) center / cover no-repeat;
 }
 
 .post-card:nth-child(3n + 2) .thumb {
-  background: linear-gradient(135deg, #40cbb6, #70e0ce);
+  background:
+    linear-gradient(180deg, transparent 42%, rgba(10, 20, 38, 0.52)),
+    var(--cover-image, linear-gradient(135deg, #40cbb6, #70e0ce)) center / cover no-repeat;
 }
 
 .post-card:nth-child(3n) .thumb {
-  background: linear-gradient(135deg, #ffac5e, #ff8f73);
+  background:
+    linear-gradient(180deg, transparent 42%, rgba(10, 20, 38, 0.52)),
+    var(--cover-image, linear-gradient(135deg, #ffac5e, #ff8f73)) center / cover no-repeat;
 }
 
 .thumb::before {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(30deg, rgba(255, 255, 255, 0.24) 1px, transparent 1px),
-    linear-gradient(150deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(8, 16, 32, 0.16));
   content: "";
 }
 
@@ -673,31 +660,7 @@ pre {
 }
 
 .thumb i {
-  position: absolute;
-  right: 32px;
-  bottom: 22px;
-  width: 72px;
-  height: 72px;
-  border: 2px solid rgba(255, 255, 255, 0.72);
-  transform: rotate(45deg);
-}
-
-.thumb i::before,
-.thumb i::after {
-  position: absolute;
-  content: "";
-  background: rgba(255, 255, 255, 0.78);
-}
-
-.thumb i::before {
-  inset: 20px;
-}
-
-.thumb i::after {
-  width: 90px;
-  height: 2px;
-  left: -30px;
-  top: 35px;
+  display: none;
 }
 
 .post-card-body {
@@ -800,6 +763,71 @@ pre {
 }
 
 .category-list b {
+  color: var(--blue-dark);
+}
+
+.reading-ranking-list {
+  display: grid;
+  gap: 10px;
+}
+
+.ranking-link {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  color: #263650;
+}
+
+.ranking-link b {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #eef4ff;
+  color: var(--blue-dark);
+  font-size: 12px;
+}
+
+.ranking-link span {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-link small {
+  color: #8390a4;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ranking-link:hover span {
+  color: var(--blue-dark);
+}
+
+.subscribe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.secondary-button {
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid #d6e3f4;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #24354f;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.secondary-button:hover {
   color: var(--blue-dark);
 }
 
@@ -1271,7 +1299,7 @@ pre {
     align-items: flex-start;
     background:
       linear-gradient(180deg, rgba(246, 252, 255, 0.95) 0 40%, rgba(246, 252, 255, 0.28) 62%),
-      url("/assets/hero-game-tech.png") center bottom / auto 78% no-repeat;
+      var(--hero-cover, url("/assets/hero-game-tech.png")) center bottom / cover no-repeat;
   }
 
   .hero-copy h1 {

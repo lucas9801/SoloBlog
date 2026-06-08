@@ -30,3 +30,22 @@ window.addEventListener(
   },
   { passive: true }
 );
+
+document.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-copy-rss]");
+  if (!button) return;
+
+  const url = button.dataset.copyRss;
+  if (!url) return;
+
+  try {
+    await navigator.clipboard.writeText(url);
+    const previous = button.textContent;
+    button.textContent = "已复制";
+    window.setTimeout(() => {
+      button.textContent = previous;
+    }, 1600);
+  } catch {
+    window.location.href = url;
+  }
+});

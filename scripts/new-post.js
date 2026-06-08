@@ -31,7 +31,6 @@ date: ${date}
 category: 未分类
 tags: []
 summary: 这里写一句文章摘要。
-cover: /assets/hero-game-tech.png
 status: draft
 ---
 

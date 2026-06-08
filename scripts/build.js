@@ -237,6 +237,15 @@ function absoluteUrl(pathname) {
   return new URL(pathname, site.baseUrl).toString();
 }
 
+function categoryCover(category) {
+  return site.categoryCovers?.[category] || site.heroCover || "/assets/hero-game-tech.png";
+}
+
+function resolvePostCover(cover, category) {
+  if (!cover || cover === "/assets/hero-game-tech.png") return categoryCover(category);
+  return cover;
+}
+
 function pageLayout({ title, description, current = "", body, canonical = "/" }) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const nav = site.navigation
@@ -323,7 +332,7 @@ function giscusComments() {
 
 function postCard(post, variant = "") {
   return `<article class="post-card ${variant}">
-    <a class="thumb ${post.categorySlug}" href="${post.url}" aria-hidden="true">
+    <a class="thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-hidden="true">
       <span>${escapeHtml(post.category)}</span>
       <i></i>
     </a>
@@ -365,12 +374,18 @@ function archivePostCard(post) {
 }
 
 function sidebar(posts, categories, tags) {
+  const rankFallback = posts.slice(0, 5);
+  const postIndex = escapeAttr(
+    JSON.stringify(
+      posts.map((post) => ({
+        slug: post.slug,
+        title: post.title,
+        url: post.url
+      }))
+    )
+  );
+
   return `<aside class="blog-sidebar">
-    <section class="sidebar-card profile-card">
-      <h2>关于博客</h2>
-      <p>${escapeHtml(site.description)}</p>
-      <a class="text-link" href="/about/">了解更多 →</a>
-    </section>
     <section class="sidebar-card">
       <h2>分类</h2>
       <div class="category-list">${categories
@@ -387,10 +402,24 @@ function sidebar(posts, categories, tags) {
         .map(([tag]) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
         .join("")}</div>
     </section>
+    <section class="sidebar-card">
+      <h2>阅读排行</h2>
+      <div class="reading-ranking-list" data-ranking-posts="${postIndex}">
+        ${rankFallback
+          .map(
+            (post, index) =>
+              `<a class="ranking-link" href="${post.url}" data-ranking-slug="${escapeAttr(post.slug)}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${escapeHtml(post.readingTime)}</small></a>`
+          )
+          .join("")}
+      </div>
+    </section>
     <section class="sidebar-card subscribe-card">
       <h2>${escapeHtml(site.subscribe.title)}</h2>
       <p>${escapeHtml(site.subscribe.description)}</p>
-      <a class="button-link" href="${site.subscribe.rss}">订阅 RSS</a>
+      <div class="subscribe-actions">
+        <a class="button-link" href="${site.subscribe.rss}">打开 RSS</a>
+        <button class="secondary-button" type="button" data-copy-rss="${escapeAttr(absoluteUrl(site.subscribe.rss))}">复制链接</button>
+      </div>
     </section>
   </aside>`;
 }
@@ -502,7 +531,7 @@ async function loadPosts() {
       category,
       categorySlug: slugify(category),
       tags,
-      cover: data.cover || "/assets/hero-game-tech.png",
+      cover: resolvePostCover(data.cover, category),
       summary,
       featured: Boolean(data.featured),
       readingTime: readingTime(body),
@@ -523,7 +552,7 @@ function homePage(posts, categories, tags) {
 
   const body = `<main>
     <section class="hero-section">
-      <div class="hero-inner">
+      <div class="hero-inner" style="--hero-cover: url('${escapeAttr(site.heroCover || "/assets/hero-game-tech.png")}')">
         <div class="hero-copy">
           <p class="eyebrow">${escapeHtml(hero.eyebrow)}</p>
           <h1>${escapeHtml(hero.title)}</h1>
@@ -698,7 +727,6 @@ function postPage(post, posts) {
           <time datetime="${post.date}">${formatDate(post.date)}</time>
           <span>${post.readingTime}</span>
           ${viewCountMeta(post)}
-          <span>${escapeHtml(site.author)}</span>
         </div>
       </header>
       <div class="article-content">${post.html}</div>
@@ -853,6 +881,7 @@ for (const [tag, list] of tags) {
 
 await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((post) => ({
   title: post.title,
+  slug: post.slug,
   url: post.url,
   date: post.date,
   category: post.category,
