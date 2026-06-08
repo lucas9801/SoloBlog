@@ -11,12 +11,12 @@
     "enabled": true
   },
   "comments": {
-    "enabled": false,
+    "enabled": true,
     "provider": "giscus",
     "repo": "lucas9801/SoloBlog",
-    "repoId": "",
+    "repoId": "R_kgDOPJtNMQ",
     "category": "Announcements",
-    "categoryId": "",
+    "categoryId": "DIC_kwDOPJtNMc4C-wYk",
     "mapping": "pathname",
     "strict": "0",
     "reactionsEnabled": "1",
