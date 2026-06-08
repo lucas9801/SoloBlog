@@ -907,7 +907,7 @@ pre {
   display: grid;
   grid-template-columns:
     clamp(190px, 13vw, 240px)
-    minmax(0, 1180px)
+    minmax(0, 1280px)
     clamp(190px, 13vw, 250px);
   gap: clamp(18px, 1.5vw, 28px);
   align-items: start;
@@ -923,16 +923,17 @@ pre {
   padding: clamp(28px, 5vw, 52px);
   display: grid;
   align-content: center;
+  justify-items: start;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.86) 42%, rgba(255, 255, 255, 0.42) 72%, rgba(255, 255, 255, 0.18) 100%),
     var(--article-cover, url("/assets/hero-game-tech.png")) center / cover no-repeat;
 }
 
 .article-hero h1 {
-  max-width: 920px;
+  max-width: min(1160px, 100%);
   margin: 14px 0;
   color: #10213d;
-  font-size: clamp(36px, 5vw, 58px);
+  font-size: clamp(36px, 4vw, 52px);
   line-height: 1.08;
 }
 
