@@ -99,6 +99,150 @@ function stripMarkdown(markdown) {
     .trim();
 }
 
+function textLines(value, maxChars, maxLines) {
+  const chars = Array.from(String(value || "").trim());
+  const lines = [];
+  let line = "";
+
+  for (const char of chars) {
+    if (line.length >= maxChars && !/[，。；：、,.!?]/.test(char)) {
+      lines.push(line);
+      line = "";
+      if (lines.length >= maxLines) break;
+    }
+    line += char;
+  }
+
+  if (line && lines.length < maxLines) lines.push(line);
+  return lines;
+}
+
+function hashColor(seed, palette) {
+  const hash = crypto.createHash("sha1").update(String(seed)).digest();
+  return palette[hash[0] % palette.length];
+}
+
+function coverPalette(post) {
+  const palettes = {
+    Unity: ["#4257dd", "#46d7bf", "#eaf0ff", "#17243a"],
+    工具链: ["#17243a", "#46d7bf", "#ffaf61", "#eef6ff"],
+    图形渲染: ["#3650d8", "#8aa0ff", "#46d7bf", "#f4f8ff"],
+    随笔: ["#ffaf61", "#6577ff", "#46d7bf", "#fff8e8"]
+  };
+  return palettes[post.category] || [
+    hashColor(post.slug, ["#4257dd", "#0f766e", "#b45309", "#7c3aed"]),
+    hashColor(`${post.slug}-b`, ["#46d7bf", "#8aa0ff", "#ffaf61", "#38bdf8"]),
+    "#f4f8ff",
+    "#17243a"
+  ];
+}
+
+function coverMotif(post, colors) {
+  const text = normalizeForSearch([post.title, post.summary, post.category, post.tags.join(" "), post.text].join(" "));
+  if (/shader|渲染|draw call|overdraw|纹理|图形/.test(text)) {
+    return `<circle cx="742" cy="282" r="112" fill="url(#sphere)" opacity=".96"/>
+      <circle cx="896" cy="402" r="72" fill="${colors[1]}" opacity=".82"/>
+      <path d="M620 500h360" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity=".72"/>
+      <path d="M640 232l210 122M730 150l60 250" stroke="#fff" stroke-width="4" opacity=".54"/>`;
+  }
+  if (/工具链|自动化|工程效率|pipeline|构建|脚本/.test(text)) {
+    return `<circle cx="690" cy="300" r="92" fill="${colors[0]}" opacity=".92"/>
+      <circle cx="895" cy="372" r="112" fill="${colors[1]}" opacity=".86"/>
+      <path d="M760 300h105M840 260l82 72-82 72" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M570 462l128-128M940 190l92 92" stroke="${colors[2]}" stroke-width="24" stroke-linecap="round"/>`;
+  }
+  if (/性能|profiler|cpu|gpu|内存|io|优化/.test(text)) {
+    return `<path d="M612 438a210 210 0 1 1 420 0" fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round" opacity=".72"/>
+      <path d="M612 438a210 210 0 0 1 312-184" fill="none" stroke="${colors[1]}" stroke-width="44" stroke-linecap="round"/>
+      <path d="M820 430l154-138" stroke="${colors[3]}" stroke-width="18" stroke-linecap="round"/>
+      <circle cx="820" cy="430" r="34" fill="${colors[3]}"/>`;
+  }
+  return `<path d="M720 158l158 78-158 78-158-78z" fill="${colors[1]}" opacity=".88"/>
+    <path d="M562 236l158 78v158l-158-78z" fill="${colors[0]}" opacity=".9"/>
+    <path d="M878 236l-158 78v158l158-78z" fill="${colors[2]}" opacity=".9"/>
+    <rect x="880" y="394" width="128" height="92" rx="20" fill="#fff" opacity=".58"/>
+    <circle cx="610" cy="500" r="46" fill="${colors[2]}" opacity=".76"/>`;
+}
+
+function normalizeForSearch(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function generatedPostCover(post) {
+  const dir = path.join(root, "assets", "posts");
+  await mkdir(dir, { recursive: true });
+
+  const target = path.join(dir, `${post.slug}.svg`);
+  const url = `/assets/posts/${post.slug}.svg`;
+  const colors = coverPalette(post);
+  const keywords = [post.category, ...post.tags].filter(Boolean).slice(0, 4);
+  const titleLines = textLines(post.title, 14, 2);
+  const summaryLines = textLines(post.summary, 24, 2);
+  const seed = crypto
+    .createHash("sha1")
+    .update([post.title, post.summary, post.category, post.tags.join(","), post.text].join("\n"))
+    .digest("hex")
+    .slice(0, 12);
+  const motif = coverMotif(post, colors);
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(post.title)}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${colors[2]}"/>
+      <stop offset=".52" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="${colors[1]}" stop-opacity=".62"/>
+    </linearGradient>
+    <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".38" stop-color="${colors[1]}"/>
+      <stop offset="1" stop-color="${colors[0]}"/>
+    </radialGradient>
+    <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
+      <path d="M54 0H0v54" fill="none" stroke="${colors[0]}" stroke-opacity=".12"/>
+    </pattern>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="${colors[0]}" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <circle cx="214" cy="496" r="168" fill="#fff" opacity=".44"/>
+  <g filter="url(#shadow)">${motif}</g>
+  <g>
+    <rect x="78" y="82" width="${Math.max(92, keywords[0]?.length * 18 || 92)}" height="36" rx="18" fill="${colors[0]}" opacity=".12"/>
+    <text x="100" y="106" fill="${colors[0]}" font-size="18" font-weight="800" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(keywords[0] || "文章")}</text>
+    ${titleLines
+      .map(
+        (line, index) =>
+          `<text x="78" y="${190 + index * 70}" fill="${colors[3]}" font-size="58" font-weight="900" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(line)}</text>`
+      )
+      .join("")}
+    ${summaryLines
+      .map(
+        (line, index) =>
+          `<text x="82" y="${365 + index * 34}" fill="#52647e" font-size="24" font-weight="650" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(line)}</text>`
+      )
+      .join("")}
+    ${keywords
+      .slice(1)
+      .map((tag, index) => {
+        const x = 82 + index * 116;
+        return `<rect x="${x}" y="500" width="94" height="34" rx="17" fill="#fff" opacity=".72"/>
+    <text x="${x + 17}" y="523" fill="${colors[0]}" font-size="16" font-weight="800" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(tag)}</text>`;
+      })
+      .join("")}
+  </g>
+  <text x="1080" y="612" text-anchor="end" fill="${colors[0]}" font-size="13" font-weight="800" opacity=".34" font-family="Arial">SOLUS ${seed}</text>
+</svg>`;
+
+  await writeFile(target, svg, "utf8");
+  return url;
+}
+
 function inlineMarkdown(text) {
   let html = escapeHtml(text);
   const codeTokens = [];
@@ -263,6 +407,17 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
     <meta name="description" content="${escapeAttr(description || site.description)}" />
     <link rel="canonical" href="${escapeAttr(absoluteUrl(canonical))}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="/rss.xml" />
+    <script>
+      (() => {
+        try {
+          const stored = localStorage.getItem("solus-theme");
+          const theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.dataset.theme = theme;
+        } catch {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="${assetUrl("/src/styles.css")}" />
     <title>${escapeHtml(fullTitle)}</title>
   </head>
@@ -280,6 +435,9 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
         </label>
         <button type="submit" aria-label="搜索">⌕</button>
       </form>
+      <button class="theme-toggle" type="button" aria-label="切换深色模式" aria-pressed="false" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
     </header>
     ${body}
     <footer class="site-footer">
@@ -521,8 +679,9 @@ async function loadPosts() {
     const category = data.category || "未分类";
     const tags = Array.isArray(data.tags) ? data.tags : [];
     const rendered = markdownToHtml(body);
+    const text = stripMarkdown(body);
 
-    posts.push({
+    const post = {
       title,
       slug,
       url: `/posts/${slug}/`,
@@ -531,15 +690,21 @@ async function loadPosts() {
       category,
       categorySlug: slugify(category),
       tags,
-      cover: resolvePostCover(data.cover, category),
       summary,
       featured: Boolean(data.featured),
       readingTime: readingTime(body),
       html: rendered.html,
       headings: rendered.headings,
       source: file,
-      text: stripMarkdown(body)
-    });
+      text
+    };
+
+    post.cover =
+      data.cover && data.cover !== "/assets/hero-game-tech.png"
+        ? resolvePostCover(data.cover, category)
+        : await generatedPostCover(post);
+
+    posts.push(post);
   }
 
   return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -649,31 +814,48 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell article-index-page">
-    <h1 class="sr-only">全部标签文章</h1>
-    ${tagFilters(entries)}
+    <section class="tag-cloud-page">
+      <header class="tag-cloud-head">
+        <span class="section-kicker">Tags</span>
+        <h1>标签云</h1>
+        <p>选择一个标签查看对应文章。标签越大，说明相关文章越多。</p>
+      </header>
+      ${tagCloud(entries)}
+    </section>
     <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
   </main>`;
   return pageLayout({ title: "标签", description: "按标签浏览文章。", current: "/tags/", body, canonical: "/tags/" });
 }
 
-function tagFilters(entries, activeTag) {
-  return `<div class="archive-filter-bar tag-filter-bar">
-    <nav class="archive-filters" aria-label="标签筛选">
-      <a class="${activeTag ? "" : "active"}" href="/tags/">全部 <b>${entries.length}</b></a>
-      ${entries
-        .map(([tag, list]) => {
-          const active = tag === activeTag ? " active" : "";
-          return `<a class="${active}" href="/tags/${slugify(tag)}/">${escapeHtml(tag)} <b>${list.length}</b></a>`;
-        })
-        .join("")}
-    </nav>
-  </div>`;
+function tagWeightClass(count, maxCount) {
+  if (maxCount <= 1) return "size-2";
+  const weight = Math.ceil((count / maxCount) * 5);
+  return `size-${Math.min(Math.max(weight, 1), 5)}`;
+}
+
+function tagCloud(entries, activeTag = "") {
+  const maxCount = Math.max(...entries.map(([, list]) => list.length), 1);
+  return `<nav class="tag-cloud-board" aria-label="标签云">
+    <a class="tag-cloud-item all-tags ${activeTag ? "" : "active"}" href="/tags/">全部文章 <b>${entries.length}</b></a>
+    ${entries
+      .map(([tag, list]) => {
+        const active = tag === activeTag ? " active" : "";
+        return `<a class="tag-cloud-item ${tagWeightClass(list.length, maxCount)}${active}" href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`;
+      })
+      .join("")}
+  </nav>`;
 }
 
 function tagListPage({ tag, posts, tags }) {
   const body = `<main class="page-shell article-index-page">
-    <h1 class="sr-only">标签：${escapeHtml(tag)}</h1>
-    ${tagFilters(tags, tag)}
+    <section class="tag-cloud-page">
+      <header class="tag-cloud-head">
+        <span class="section-kicker">Tag</span>
+        <h1>${escapeHtml(tag)}</h1>
+        <p>共 ${posts.length} 篇文章使用这个标签。</p>
+      </header>
+      ${tagCloud(tags, tag)}
+    </section>
     <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
   </main>`;
   return pageLayout({
@@ -886,6 +1068,8 @@ await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((
   date: post.date,
   category: post.category,
   tags: post.tags,
+  cover: post.cover,
+  readingTime: post.readingTime,
   summary: post.summary,
   text: post.text
 })), null, 2), "utf8");

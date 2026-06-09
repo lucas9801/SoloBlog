@@ -4,11 +4,16 @@
   --soft: #eef6ff;
   --line: #dbe7f6;
   --card: rgba(255, 255, 255, 0.9);
+  --card-strong: #fff;
   --blue: #6577ff;
   --blue-dark: #4257dd;
   --mint: #46d7bf;
   --orange: #ffaf61;
   --shadow: 0 22px 60px rgba(65, 91, 133, 0.16);
+  --page-bg:
+    radial-gradient(circle at 18% 16%, rgba(70, 215, 191, 0.22), transparent 28%),
+    radial-gradient(circle at 82% 4%, rgba(101, 119, 255, 0.17), transparent 26%),
+    linear-gradient(135deg, #fbfdff 0%, #eef8ff 48%, #f8f5ff 100%);
   color: var(--ink);
   font-family:
     Inter,
@@ -19,6 +24,25 @@
     sans-serif;
   background: #f7fbff;
   letter-spacing: 0;
+}
+
+:root[data-theme="dark"] {
+  --ink: #eaf2ff;
+  --muted: #a9b8cf;
+  --soft: #111c30;
+  --line: #263756;
+  --card: rgba(17, 27, 47, 0.9);
+  --card-strong: #111b2f;
+  --blue: #8ea4ff;
+  --blue-dark: #a9b8ff;
+  --mint: #5be4d1;
+  --orange: #ffc17d;
+  --shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+  --page-bg:
+    radial-gradient(circle at 18% 16%, rgba(70, 215, 191, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 4%, rgba(101, 119, 255, 0.2), transparent 28%),
+    linear-gradient(135deg, #08111f 0%, #101a2d 52%, #15122a 100%);
+  color-scheme: dark;
 }
 
 * {
@@ -34,10 +58,7 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 18% 16%, rgba(70, 215, 191, 0.22), transparent 28%),
-    radial-gradient(circle at 82% 4%, rgba(101, 119, 255, 0.17), transparent 26%),
-    linear-gradient(135deg, #fbfdff 0%, #eef8ff 48%, #f8f5ff 100%);
+  background: var(--page-bg);
 }
 
 a {
@@ -80,7 +101,7 @@ pre {
   margin: 16px auto 0;
   padding: 10px 14px;
   display: grid;
-  grid-template-columns: auto minmax(260px, 1fr) minmax(220px, 320px);
+  grid-template-columns: auto minmax(260px, 1fr) minmax(220px, 320px) auto;
   gap: 18px;
   align-items: center;
   border: 1px solid rgba(205, 219, 239, 0.86);
@@ -219,6 +240,45 @@ pre {
   background: transparent;
   color: var(--blue-dark);
   cursor: pointer;
+}
+
+.theme-toggle {
+  position: relative;
+  width: 40px;
+  height: 38px;
+  border: 1px solid #dbe5f3;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+}
+
+.theme-toggle span,
+.theme-toggle span::before {
+  position: absolute;
+  content: "";
+  border-radius: 999px;
+}
+
+.theme-toggle span {
+  inset: 10px;
+  background: #ffaf61;
+  box-shadow: 0 0 0 4px rgba(255, 175, 97, 0.18);
+}
+
+.theme-toggle span::before {
+  inset: -2px -8px -2px 8px;
+  background: rgba(255, 255, 255, 0.92);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+:root[data-theme="dark"] .theme-toggle span {
+  background: #d9e4ff;
+  box-shadow: 0 0 0 4px rgba(142, 164, 255, 0.18);
+}
+
+:root[data-theme="dark"] .theme-toggle span::before {
+  opacity: 1;
 }
 
 .hero-section {
@@ -864,6 +924,90 @@ pre {
   line-height: 1.8;
 }
 
+.tag-cloud-page {
+  margin-bottom: 28px;
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid rgba(214, 227, 246, 0.9);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: 0 14px 34px rgba(72, 96, 130, 0.1);
+}
+
+.tag-cloud-head {
+  margin-bottom: 20px;
+}
+
+.tag-cloud-head h1 {
+  margin: 0;
+  color: #10213d;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.1;
+}
+
+.tag-cloud-head p {
+  max-width: 680px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.tag-cloud-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.tag-cloud-item {
+  min-height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(214, 227, 246, 0.9);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #263650;
+  font-weight: 900;
+}
+
+.tag-cloud-item b {
+  color: var(--blue-dark);
+  font-size: 0.82em;
+}
+
+.tag-cloud-item.size-1 {
+  font-size: 13px;
+}
+
+.tag-cloud-item.size-2 {
+  font-size: 15px;
+}
+
+.tag-cloud-item.size-3 {
+  font-size: 17px;
+}
+
+.tag-cloud-item.size-4 {
+  font-size: 20px;
+}
+
+.tag-cloud-item.size-5 {
+  font-size: 23px;
+}
+
+.tag-cloud-item.active,
+.tag-cloud-item:hover {
+  border-color: transparent;
+  background: var(--blue);
+  color: #fff;
+}
+
+.tag-cloud-item.active b,
+.tag-cloud-item:hover b {
+  color: #fff;
+}
+
 .taxonomy-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1177,19 +1321,51 @@ pre {
   gap: 12px;
 }
 
-.search-result {
-  padding: 16px;
-  border: 1px solid #e0e9f6;
-  border-radius: 12px;
-  background: #fff;
+.search-count {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 850;
 }
 
-.search-result h2 {
+.search-result-card {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  border: 1px solid #e0e9f6;
+  border-radius: 12px;
+  background: var(--card-strong);
+}
+
+.search-result-thumb {
+  position: relative;
+  min-height: 150px;
+  background:
+    linear-gradient(180deg, transparent 42%, rgba(10, 20, 38, 0.52)),
+    var(--cover-image) center / cover no-repeat;
+}
+
+.search-result-thumb span {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(12, 24, 44, 0.62);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.search-result-body {
+  padding: 16px;
+}
+
+.search-result-card h2 {
   margin: 0 0 8px;
   font-size: 20px;
 }
 
-.search-result p {
+.search-result-card p {
   margin: 0 0 10px;
   color: var(--muted);
   line-height: 1.65;
@@ -1222,9 +1398,110 @@ pre {
   font-weight: 850;
 }
 
+:root[data-theme="dark"] .site-header,
+:root[data-theme="dark"] .featured-post,
+:root[data-theme="dark"] .section-block,
+:root[data-theme="dark"] .sidebar-card,
+:root[data-theme="dark"] .search-page-card,
+:root[data-theme="dark"] .article-page,
+:root[data-theme="dark"] .page-title,
+:root[data-theme="dark"] .tag-cloud-page,
+:root[data-theme="dark"] .search-result-card {
+  border-color: rgba(93, 118, 160, 0.42);
+  background: var(--card);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+}
+
+:root[data-theme="dark"] .brand strong,
+:root[data-theme="dark"] .nav-links a,
+:root[data-theme="dark"] .section-head h2,
+:root[data-theme="dark"] .sidebar-card h2,
+:root[data-theme="dark"] .archive-card h2,
+:root[data-theme="dark"] .post-card h3,
+:root[data-theme="dark"] .page-title h1,
+:root[data-theme="dark"] .tag-cloud-head h1,
+:root[data-theme="dark"] .article-hero h1,
+:root[data-theme="dark"] .article-content h2,
+:root[data-theme="dark"] .article-content h3,
+:root[data-theme="dark"] .article-content h4,
+:root[data-theme="dark"] .related-link span,
+:root[data-theme="dark"] .toc h2,
+:root[data-theme="dark"] .related-card h2,
+:root[data-theme="dark"] .search-result-card h2 {
+  color: #eef5ff;
+}
+
+:root[data-theme="dark"] .brand small,
+:root[data-theme="dark"] .post-meta,
+:root[data-theme="dark"] .article-hero p,
+:root[data-theme="dark"] .article-content,
+:root[data-theme="dark"] .archive-card p,
+:root[data-theme="dark"] .post-card p,
+:root[data-theme="dark"] .search-result-card p,
+:root[data-theme="dark"] .sidebar-card p {
+  color: var(--muted);
+}
+
+:root[data-theme="dark"] .site-search,
+:root[data-theme="dark"] .theme-toggle,
+:root[data-theme="dark"] .secondary-button,
+:root[data-theme="dark"] .category-list a,
+:root[data-theme="dark"] .tag-cloud-item,
+:root[data-theme="dark"] .search-page-card input,
+:root[data-theme="dark"] .archive-card,
+:root[data-theme="dark"] .post-card,
+:root[data-theme="dark"] .taxonomy-card {
+  border-color: rgba(93, 118, 160, 0.42);
+  background: rgba(12, 21, 38, 0.72);
+  color: #eaf2ff;
+}
+
+:root[data-theme="dark"] .hero-inner,
+:root[data-theme="dark"] .article-hero {
+  border-color: rgba(93, 118, 160, 0.42);
+}
+
+:root[data-theme="dark"] .hero-inner {
+  background:
+    linear-gradient(90deg, rgba(8, 17, 31, 0.94) 0 38%, rgba(8, 17, 31, 0.64) 64%, rgba(8, 17, 31, 0.24)),
+    var(--hero-cover, url("/assets/hero-game-tech.png")) right center / cover no-repeat;
+}
+
+:root[data-theme="dark"] .article-hero {
+  background:
+    linear-gradient(90deg, rgba(8, 17, 31, 0.96) 0%, rgba(8, 17, 31, 0.84) 42%, rgba(8, 17, 31, 0.48) 72%, rgba(8, 17, 31, 0.2) 100%),
+    var(--article-cover, url("/assets/hero-game-tech.png")) center / cover no-repeat;
+}
+
+:root[data-theme="dark"] .article-content pre {
+  background: #070d18;
+}
+
+:root[data-theme="dark"] .article-content :not(pre) > code {
+  background: #16233c;
+  color: #b8c5ff;
+}
+
+:root[data-theme="dark"] .article-content blockquote {
+  background: #111d32;
+  color: #c2cee2;
+}
+
+:root[data-theme="dark"] .tag-row a,
+:root[data-theme="dark"] .tag-cloud a,
+:root[data-theme="dark"] .ranking-link b {
+  background: #182745;
+  color: #b8c5ff;
+}
+
+:root[data-theme="dark"] .reading-pill {
+  border-color: rgba(93, 118, 160, 0.42);
+  background: rgba(12, 21, 38, 0.78);
+}
+
 @media (max-width: 1180px) {
   .site-header {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr minmax(220px, 320px) auto;
   }
 
   .nav-links {
@@ -1289,6 +1566,10 @@ pre {
     width: 100%;
   }
 
+  .theme-toggle {
+    width: 100%;
+  }
+
   .hero-section {
     padding: 18px 12px 10px;
   }
@@ -1299,6 +1580,12 @@ pre {
     align-items: flex-start;
     background:
       linear-gradient(180deg, rgba(246, 252, 255, 0.95) 0 40%, rgba(246, 252, 255, 0.28) 62%),
+      var(--hero-cover, url("/assets/hero-game-tech.png")) center bottom / cover no-repeat;
+  }
+
+  :root[data-theme="dark"] .hero-inner {
+    background:
+      linear-gradient(180deg, rgba(8, 17, 31, 0.96) 0 44%, rgba(8, 17, 31, 0.56) 76%),
       var(--hero-cover, url("/assets/hero-game-tech.png")) center bottom / cover no-repeat;
   }
 
@@ -1399,6 +1686,16 @@ pre {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.86) 58%, rgba(255, 255, 255, 0.46) 100%),
       var(--article-cover, url("/assets/hero-game-tech.png")) center / cover no-repeat;
+  }
+
+  :root[data-theme="dark"] .article-hero {
+    background:
+      linear-gradient(180deg, rgba(8, 17, 31, 0.97) 0%, rgba(8, 17, 31, 0.8) 58%, rgba(8, 17, 31, 0.42) 100%),
+      var(--article-cover, url("/assets/hero-game-tech.png")) center / cover no-repeat;
+  }
+
+  .search-result-card {
+    grid-template-columns: 1fr;
   }
 
   .reading-pill {
