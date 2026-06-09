@@ -6,7 +6,7 @@
   "language": "zh-CN",
   "postsPerPage": 9,
   "archivePostsPerPage": 9,
-  "heroCover": "/assets/categories/game-development.svg",
+  "heroCover": "/assets/posts/start-here.png",
   "categoryCovers": {
     "随笔": "/assets/categories/notes.svg",
     "Unity": "/assets/categories/unity.svg",

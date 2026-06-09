@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { access, copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 
@@ -99,24 +99,6 @@ function stripMarkdown(markdown) {
     .trim();
 }
 
-function textLines(value, maxChars, maxLines) {
-  const chars = Array.from(String(value || "").trim());
-  const lines = [];
-  let line = "";
-
-  for (const char of chars) {
-    if (line.length >= maxChars && !/[，。；：、,.!?]/.test(char)) {
-      lines.push(line);
-      line = "";
-      if (lines.length >= maxLines) break;
-    }
-    line += char;
-  }
-
-  if (line && lines.length < maxLines) lines.push(line);
-  return lines;
-}
-
 function hashColor(seed, palette) {
   const hash = crypto.createHash("sha1").update(String(seed)).digest();
   return palette[hash[0] % palette.length];
@@ -124,44 +106,65 @@ function hashColor(seed, palette) {
 
 function coverPalette(post) {
   const palettes = {
-    Unity: ["#4257dd", "#46d7bf", "#eaf0ff", "#17243a"],
-    工具链: ["#17243a", "#46d7bf", "#ffaf61", "#eef6ff"],
-    图形渲染: ["#3650d8", "#8aa0ff", "#46d7bf", "#f4f8ff"],
-    随笔: ["#ffaf61", "#6577ff", "#46d7bf", "#fff8e8"]
+    Unity: ["#0b1020", "#38bdf8", "#8b5cf6", "#111827", "#e2e8f0"],
+    工具链: ["#0d141d", "#5eead4", "#60a5fa", "#17202b", "#e8f4ff"],
+    图形渲染: ["#08111f", "#22d3ee", "#38bdf8", "#142033", "#f8fafc"],
+    随笔: ["#10151d", "#5eead4", "#93c5fd", "#1b2431", "#f8fafc"]
   };
   return palettes[post.category] || [
-    hashColor(post.slug, ["#4257dd", "#0f766e", "#b45309", "#7c3aed"]),
-    hashColor(`${post.slug}-b`, ["#46d7bf", "#8aa0ff", "#ffaf61", "#38bdf8"]),
-    "#f4f8ff",
-    "#17243a"
+    hashColor(post.slug, ["#0b1020", "#0f172a", "#111827", "#10151d"]),
+    hashColor(`${post.slug}-a`, ["#38bdf8", "#5eead4", "#60a5fa", "#22d3ee"]),
+    hashColor(`${post.slug}-b`, ["#8b5cf6", "#93c5fd", "#14b8a6", "#64748b"]),
+    "#151f2d",
+    "#edf2f8"
   ];
 }
 
 function coverMotif(post, colors) {
   const text = normalizeForSearch([post.title, post.summary, post.category, post.tags.join(" "), post.text].join(" "));
   if (/shader|渲染|draw call|overdraw|纹理|图形/.test(text)) {
-    return `<circle cx="742" cy="282" r="112" fill="url(#sphere)" opacity=".96"/>
-      <circle cx="896" cy="402" r="72" fill="${colors[1]}" opacity=".82"/>
-      <path d="M620 500h360" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity=".72"/>
-      <path d="M640 232l210 122M730 150l60 250" stroke="#fff" stroke-width="4" opacity=".54"/>`;
+    return `<rect x="168" y="116" width="590" height="392" rx="26" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".48"/>
+      <path d="M214 422L340 284l128 86 136-164 104 116" fill="none" stroke="${colors[1]}" stroke-width="4" opacity=".82"/>
+      <path d="M214 454h492M214 386h492M214 318h492M214 250h492M292 166v314M414 166v314M536 166v314M658 166v314" stroke="#8fb8d7" stroke-opacity=".16"/>
+      <rect x="802" y="150" width="232" height="72" rx="18" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".36"/>
+      <rect x="802" y="252" width="232" height="72" rx="18" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".36"/>
+      <rect x="802" y="354" width="232" height="72" rx="18" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".36"/>
+      <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
+      <circle cx="974" cy="522" r="42" fill="${colors[2]}" opacity=".72"/>`;
   }
   if (/工具链|自动化|工程效率|pipeline|构建|脚本/.test(text)) {
-    return `<circle cx="690" cy="300" r="92" fill="${colors[0]}" opacity=".92"/>
-      <circle cx="895" cy="372" r="112" fill="${colors[1]}" opacity=".86"/>
-      <path d="M760 300h105M840 260l82 72-82 72" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M570 462l128-128M940 190l92 92" stroke="${colors[2]}" stroke-width="24" stroke-linecap="round"/>`;
+    return `<path d="M198 338h766" stroke="${colors[1]}" stroke-width="10" stroke-linecap="round" opacity=".5"/>
+      <path d="M320 338c86 84 176 84 270 0s186-84 278 0" fill="none" stroke="${colors[2]}" stroke-width="4" opacity=".64"/>
+      ${[214, 382, 550, 718, 886]
+        .map(
+          (x, index) => `<g>
+            <rect x="${x}" y="${index % 2 ? 208 : 248}" width="126" height="126" rx="24" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".52"/>
+            <rect x="${x + 34}" y="${index % 2 ? 248 : 288}" width="58" height="46" rx="10" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".78"/>
+            <path d="M${x + 34} ${index % 2 ? 318 : 358}h58" stroke="#fff" stroke-opacity=".34" stroke-width="6" stroke-linecap="round"/>
+          </g>`
+        )
+        .join("")}
+      <rect x="344" y="470" width="512" height="64" rx="20" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".28"/>
+      <path d="M398 502h88M534 502h132M710 502h92" stroke="${colors[1]}" stroke-width="8" stroke-linecap="round" opacity=".5"/>`;
   }
   if (/性能|profiler|cpu|gpu|内存|io|优化/.test(text)) {
-    return `<path d="M612 438a210 210 0 1 1 420 0" fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round" opacity=".72"/>
-      <path d="M612 438a210 210 0 0 1 312-184" fill="none" stroke="${colors[1]}" stroke-width="44" stroke-linecap="round"/>
-      <path d="M820 430l154-138" stroke="${colors[3]}" stroke-width="18" stroke-linecap="round"/>
-      <circle cx="820" cy="430" r="34" fill="${colors[3]}"/>`;
+    return `<rect x="132" y="130" width="392" height="286" rx="26" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
+      <path d="M174 340c42-110 84 42 130-12 38-46 54-146 102-40 30 66 66 44 84 20" fill="none" stroke="${colors[1]}" stroke-width="6" stroke-linecap="round"/>
+      <path d="M174 376h300M174 298h300M174 220h300" stroke="#8fb8d7" stroke-opacity=".14"/>
+      <rect x="584" y="130" width="442" height="286" rx="26" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".38"/>
+      ${[634, 704, 774, 844, 914].map((x, index) => `<rect x="${x}" y="${346 - index * 34}" width="34" height="${68 + index * 34}" rx="10" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".78"/>`).join("")}
+      <rect x="260" y="472" width="110" height="72" rx="18" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
+      <rect x="430" y="472" width="110" height="72" rx="18" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".32"/>
+      <rect x="600" y="472" width="110" height="72" rx="18" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
+      <rect x="770" y="472" width="110" height="72" rx="18" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".32"/>`;
   }
-  return `<path d="M720 158l158 78-158 78-158-78z" fill="${colors[1]}" opacity=".88"/>
-    <path d="M562 236l158 78v158l-158-78z" fill="${colors[0]}" opacity=".9"/>
-    <path d="M878 236l-158 78v158l158-78z" fill="${colors[2]}" opacity=".9"/>
-    <rect x="880" y="394" width="128" height="92" rx="20" fill="#fff" opacity=".58"/>
-    <circle cx="610" cy="500" r="46" fill="${colors[2]}" opacity=".76"/>`;
+  return `<path d="M384 186h332c44 0 80 36 80 80v248H464c-44 0-80-36-80-80z" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
+    <path d="M464 226h332v288H464c-44 0-80-36-80-80V306c0-44 36-80 80-80z" fill="#fff" opacity=".05"/>
+    <path d="M484 276h210M484 330h258M484 384h176" stroke="${colors[1]}" stroke-width="10" stroke-linecap="round" opacity=".34"/>
+    <rect x="810" y="194" width="154" height="112" rx="24" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".38"/>
+    <rect x="820" y="344" width="186" height="132" rx="26" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
+    <path d="M216 470l88-88 88 88-88 88z" fill="${colors[1]}" opacity=".54"/>
+    <circle cx="274" cy="214" r="54" fill="${colors[2]}" opacity=".42"/>`;
 }
 
 function normalizeForSearch(value) {
@@ -179,68 +182,58 @@ async function generatedPostCover(post) {
   const target = path.join(dir, `${post.slug}.svg`);
   const url = `/assets/posts/${post.slug}.svg`;
   const colors = coverPalette(post);
-  const keywords = [post.category, ...post.tags].filter(Boolean).slice(0, 4);
-  const titleLines = textLines(post.title, 14, 2);
-  const summaryLines = textLines(post.summary, 24, 2);
   const seed = crypto
     .createHash("sha1")
     .update([post.title, post.summary, post.category, post.tags.join(","), post.text].join("\n"))
     .digest("hex")
     .slice(0, 12);
+  const glowX = 180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5;
+  const glowY = 90 + Number.parseInt(seed.slice(2, 4), 16) * 1.2;
   const motif = coverMotif(post, colors);
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(post.title)}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="${colors[2]}"/>
-      <stop offset=".52" stop-color="#f8fbff"/>
-      <stop offset="1" stop-color="${colors[1]}" stop-opacity=".62"/>
+      <stop offset="0" stop-color="${colors[0]}"/>
+      <stop offset=".56" stop-color="#111827"/>
+      <stop offset="1" stop-color="#05070d"/>
     </linearGradient>
     <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
-      <stop offset="0" stop-color="#fff"/>
+      <stop offset="0" stop-color="${colors[4]}"/>
       <stop offset=".38" stop-color="${colors[1]}"/>
-      <stop offset="1" stop-color="${colors[0]}"/>
+      <stop offset="1" stop-color="${colors[2]}"/>
     </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="${colors[0]}" stroke-opacity=".12"/>
+      <path d="M54 0H0v54" fill="none" stroke="${colors[4]}" stroke-opacity=".06"/>
     </pattern>
     <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="${colors[0]}" flood-opacity=".18"/>
+      <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#000" flood-opacity=".42"/>
     </filter>
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="214" cy="496" r="168" fill="#fff" opacity=".44"/>
+  <circle cx="${glowX}" cy="${glowY}" r="260" fill="${colors[1]}" opacity=".12"/>
+  <circle cx="982" cy="188" r="210" fill="${colors[2]}" opacity=".12"/>
+  <circle cx="990" cy="548" r="168" fill="${colors[1]}" opacity=".08"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".16" stroke-width="3"/>
   <g filter="url(#shadow)">${motif}</g>
-  <g>
-    <rect x="78" y="82" width="${Math.max(92, keywords[0]?.length * 18 || 92)}" height="36" rx="18" fill="${colors[0]}" opacity=".12"/>
-    <text x="100" y="106" fill="${colors[0]}" font-size="18" font-weight="800" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(keywords[0] || "文章")}</text>
-    ${titleLines
-      .map(
-        (line, index) =>
-          `<text x="78" y="${190 + index * 70}" fill="${colors[3]}" font-size="58" font-weight="900" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(line)}</text>`
-      )
-      .join("")}
-    ${summaryLines
-      .map(
-        (line, index) =>
-          `<text x="82" y="${365 + index * 34}" fill="#52647e" font-size="24" font-weight="650" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(line)}</text>`
-      )
-      .join("")}
-    ${keywords
-      .slice(1)
-      .map((tag, index) => {
-        const x = 82 + index * 116;
-        return `<rect x="${x}" y="500" width="94" height="34" rx="17" fill="#fff" opacity=".72"/>
-    <text x="${x + 17}" y="523" fill="${colors[0]}" font-size="16" font-weight="800" font-family="Microsoft YaHei, PingFang SC, Arial">${escapeHtml(tag)}</text>`;
-      })
-      .join("")}
-  </g>
-  <text x="1080" y="612" text-anchor="end" fill="${colors[0]}" font-size="13" font-weight="800" opacity=".34" font-family="Arial">SOLUS ${seed}</text>
 </svg>`;
 
   await writeFile(target, svg, "utf8");
   return url;
+}
+
+async function existingGeneratedCover(slug) {
+  for (const extension of ["webp", "png", "jpg", "jpeg", "svg"]) {
+    const target = path.join(root, "assets", "posts", `${slug}.${extension}`);
+    try {
+      await access(target);
+      return `/assets/posts/${slug}.${extension}`;
+    } catch {
+      // Try the next supported image format.
+    }
+  }
+  return "";
 }
 
 function inlineMarkdown(text) {
@@ -699,10 +692,11 @@ async function loadPosts() {
       text
     };
 
+    const generatedCover = await existingGeneratedCover(slug);
     post.cover =
       data.cover && data.cover !== "/assets/hero-game-tech.png"
         ? resolvePostCover(data.cover, category)
-        : await generatedPostCover(post);
+        : generatedCover || (await generatedPostCover(post));
 
     posts.push(post);
   }
@@ -813,16 +807,15 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 }
 
 function tagIndexPage(entries, posts) {
-  const body = `<main class="page-shell article-index-page">
+  const body = `<main class="page-shell tags-page">
     <section class="tag-cloud-page">
       <header class="tag-cloud-head">
         <span class="section-kicker">Tags</span>
         <h1>标签云</h1>
-        <p>选择一个标签查看对应文章。标签越大，说明相关文章越多。</p>
+        <p>共 ${posts.length} 篇文章，选择具体标签后查看相关文章。标签越大，说明相关文章越多。</p>
       </header>
       ${tagCloud(entries, "", posts.length)}
     </section>
-    <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
   </main>`;
   return pageLayout({ title: "标签", description: "按标签浏览文章。", current: "/tags/", body, canonical: "/tags/" });
 }
@@ -836,7 +829,7 @@ function tagWeightClass(count, maxCount) {
 function tagCloud(entries, activeTag = "", totalCount = 0) {
   const maxCount = Math.max(...entries.map(([, list]) => list.length), 1);
   return `<nav class="tag-cloud-board" aria-label="标签云">
-    <a class="tag-cloud-item all-tags ${activeTag ? "" : "active"}" href="/tags/">全部文章 <b>${totalCount}</b></a>
+    <a class="tag-cloud-item all-tags ${activeTag ? "" : "active"}" href="/tags/"><span>全部</span><b>${totalCount}</b></a>
     ${entries
       .map(([tag, list]) => {
         const active = tag === activeTag ? " active" : "";
@@ -847,7 +840,7 @@ function tagCloud(entries, activeTag = "", totalCount = 0) {
 }
 
 function tagListPage({ tag, posts, tags, totalCount }) {
-  const body = `<main class="page-shell article-index-page">
+  const body = `<main class="page-shell tags-page">
     <section class="tag-cloud-page">
       <header class="tag-cloud-head">
         <span class="section-kicker">Tag</span>
@@ -856,7 +849,13 @@ function tagListPage({ tag, posts, tags, totalCount }) {
       </header>
       ${tagCloud(tags, tag, totalCount)}
     </section>
-    <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
+    <section class="tag-results">
+      <header class="tag-results-head">
+        <span class="section-kicker">Articles</span>
+        <h2>${escapeHtml(tag)} 相关文章</h2>
+      </header>
+      <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
+    </section>
   </main>`;
   return pageLayout({
     title: `标签：${tag}`,

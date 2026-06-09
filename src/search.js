@@ -28,6 +28,10 @@ function tokens(query) {
   return normalize(query).split(" ").filter(Boolean);
 }
 
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
 function slugify(value = "") {
   const slug = String(value)
     .trim()
@@ -45,47 +49,48 @@ function searchable(post) {
     title: normalize(post.title),
     summary: normalize(post.summary),
     category: normalize(post.category),
-    tags: normalize((post.tags || []).join(" ")),
-    text: normalize(post.text),
-    compactTitle: compact(post.title),
-    compactAll: compact([post.title, post.summary, post.category, (post.tags || []).join(" "), post.text].join(" "))
+    tags: (post.tags || []).map((tag) => normalize(tag)),
+    text: normalize(post.text)
   };
 }
 
-function scorePost(post, query) {
-  const fields = searchable(post);
+function scoreFields(fields, query, baseScore) {
   const normalizedQuery = normalize(query);
   const compactQuery = compact(query);
   const queryTokens = tokens(query);
+  const normalizedFields = unique(fields.map((field) => normalize(field)));
+  const combined = normalize(normalizedFields.join(" "));
+  const compactCombined = compact(combined);
   let score = 0;
 
   if (!normalizedQuery) return 0;
 
-  if (fields.title === normalizedQuery) score += 200;
-  if (fields.title.includes(normalizedQuery)) score += 120;
-  if (fields.compactTitle.includes(compactQuery)) score += 100;
-  if (fields.category.includes(normalizedQuery)) score += 80;
-  if (fields.tags.includes(normalizedQuery)) score += 70;
-  if (fields.summary.includes(normalizedQuery)) score += 48;
-  if (fields.text.includes(normalizedQuery)) score += 24;
-  if (fields.compactAll.includes(compactQuery)) score += 32;
-
-  const allTokensMatched = queryTokens.every((token) =>
-    [fields.title, fields.category, fields.tags, fields.summary, fields.text].some((field) =>
-      field.includes(token)
-    )
-  );
-  if (!allTokensMatched && score === 0) return 0;
-
-  for (const token of queryTokens) {
-    if (fields.title.includes(token)) score += 42;
-    if (fields.category.includes(token)) score += 24;
-    if (fields.tags.includes(token)) score += 22;
-    if (fields.summary.includes(token)) score += 12;
-    if (fields.text.includes(token)) score += 4;
+  for (const field of normalizedFields) {
+    if (field === normalizedQuery) score += baseScore * 4;
+    if (field.includes(normalizedQuery)) score += baseScore * 2;
+    if (compact(field).includes(compactQuery)) score += baseScore;
   }
 
+  if (queryTokens.length > 1 && queryTokens.every((token) => combined.includes(token))) {
+    score += baseScore;
+  }
+
+  if (!score && compactCombined.includes(compactQuery)) score += Math.round(baseScore * 0.8);
   return score;
+}
+
+function scorePost(post, query) {
+  const fields = searchable(post);
+  const primaryScore = scoreFields([fields.title, fields.category, ...fields.tags], query, 40);
+  if (primaryScore > 0) return { tier: 1, score: primaryScore };
+
+  const summaryScore = scoreFields([fields.summary], query, 24);
+  if (summaryScore > 0) return { tier: 2, score: summaryScore };
+
+  const bodyScore = scoreFields([fields.text], query, 8);
+  if (bodyScore > 0) return { tier: 3, score: bodyScore };
+
+  return { tier: 0, score: 0 };
 }
 
 function render(posts, query) {
@@ -94,18 +99,22 @@ function render(posts, query) {
     return;
   }
 
-  const matched = posts
-    .map((post) => ({ post, score: scorePost(post, query) }))
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date))
-    .map((item) => item.post);
+  const ranked = posts
+    .map((post) => ({ post, ...scorePost(post, query) }))
+    .filter((item) => item.score > 0);
 
-  if (matched.length === 0) {
+  if (ranked.length === 0) {
     results.innerHTML = '<p class="muted">没有找到匹配文章。</p>';
     return;
   }
 
-  results.innerHTML = `<p class="search-count">找到 ${matched.length} 篇文章</p>${matched
+  const bestTier = Math.min(...ranked.map((item) => item.tier));
+  const matched = ranked
+    .filter((item) => item.tier === bestTier)
+    .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date))
+    .map((item) => item.post);
+
+  results.innerHTML = `<p class="search-count">精准匹配到 ${matched.length} 篇文章</p>${matched
     .map(
       (post) => `<article class="search-result-card">
         <a class="search-result-thumb" href="${escapeHtml(post.url)}" style="--cover-image: url('${escapeHtml(post.cover || "/assets/hero-game-tech.png")}')" aria-hidden="true">
