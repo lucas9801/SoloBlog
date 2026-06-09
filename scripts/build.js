@@ -820,7 +820,7 @@ function tagIndexPage(entries, posts) {
         <h1>标签云</h1>
         <p>选择一个标签查看对应文章。标签越大，说明相关文章越多。</p>
       </header>
-      ${tagCloud(entries)}
+      ${tagCloud(entries, "", posts.length)}
     </section>
     <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
   </main>`;
@@ -833,10 +833,10 @@ function tagWeightClass(count, maxCount) {
   return `size-${Math.min(Math.max(weight, 1), 5)}`;
 }
 
-function tagCloud(entries, activeTag = "") {
+function tagCloud(entries, activeTag = "", totalCount = 0) {
   const maxCount = Math.max(...entries.map(([, list]) => list.length), 1);
   return `<nav class="tag-cloud-board" aria-label="标签云">
-    <a class="tag-cloud-item all-tags ${activeTag ? "" : "active"}" href="/tags/">全部文章 <b>${entries.length}</b></a>
+    <a class="tag-cloud-item all-tags ${activeTag ? "" : "active"}" href="/tags/">全部文章 <b>${totalCount}</b></a>
     ${entries
       .map(([tag, list]) => {
         const active = tag === activeTag ? " active" : "";
@@ -846,7 +846,7 @@ function tagCloud(entries, activeTag = "") {
   </nav>`;
 }
 
-function tagListPage({ tag, posts, tags }) {
+function tagListPage({ tag, posts, tags, totalCount }) {
   const body = `<main class="page-shell article-index-page">
     <section class="tag-cloud-page">
       <header class="tag-cloud-head">
@@ -854,7 +854,7 @@ function tagListPage({ tag, posts, tags }) {
         <h1>${escapeHtml(tag)}</h1>
         <p>共 ${posts.length} 篇文章使用这个标签。</p>
       </header>
-      ${tagCloud(tags, tag)}
+      ${tagCloud(tags, tag, totalCount)}
     </section>
     <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
   </main>`;
@@ -1056,7 +1056,8 @@ for (const [tag, list] of tags) {
     tagListPage({
       tag,
       posts: list,
-      tags
+      tags,
+      totalCount: posts.length
     })
   );
 }
