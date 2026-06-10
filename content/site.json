@@ -40,8 +40,8 @@
     "eyebrow": "Game Development Notes",
     "title": "游戏开发技术博客",
     "subtitle": "把渲染、性能、架构、工具链和项目复盘沉淀成可检索的长期笔记。",
-    "primaryAction": "阅读文章",
-    "secondaryAction": "查看归档"
+    "primaryAction": "最新文章",
+    "secondaryAction": "全部文章"
   },
   "navigation": [
     { "label": "首页", "href": "/" },
