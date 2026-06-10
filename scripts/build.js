@@ -809,12 +809,7 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
     <section class="tag-cloud-page">
-      <header class="tag-cloud-head">
-        <span class="section-kicker">Tags</span>
-        <h1>标签云</h1>
-        <p>共 ${posts.length} 篇文章，选择具体标签后查看相关文章。标签越大，说明相关文章越多。</p>
-      </header>
-      ${tagCloud(entries, "", posts.length)}
+      ${tagCloud(entries)}
     </section>
   </main>`;
   return pageLayout({ title: "标签", description: "按标签浏览文章。", current: "/tags/", body, canonical: "/tags/" });
@@ -826,10 +821,9 @@ function tagWeightClass(count, maxCount) {
   return `size-${Math.min(Math.max(weight, 1), 5)}`;
 }
 
-function tagCloud(entries, activeTag = "", totalCount = 0) {
+function tagCloud(entries, activeTag = "") {
   const maxCount = Math.max(...entries.map(([, list]) => list.length), 1);
   return `<nav class="tag-cloud-board" aria-label="标签云">
-    <a class="tag-cloud-item all-tags ${activeTag ? "" : "active"}" href="/tags/"><span>全部</span><b>${totalCount}</b></a>
     ${entries
       .map(([tag, list]) => {
         const active = tag === activeTag ? " active" : "";
@@ -839,15 +833,10 @@ function tagCloud(entries, activeTag = "", totalCount = 0) {
   </nav>`;
 }
 
-function tagListPage({ tag, posts, tags, totalCount }) {
+function tagListPage({ tag, posts, tags }) {
   const body = `<main class="page-shell tags-page">
     <section class="tag-cloud-page">
-      <header class="tag-cloud-head">
-        <span class="section-kicker">Tag</span>
-        <h1>${escapeHtml(tag)}</h1>
-        <p>共 ${posts.length} 篇文章使用这个标签。</p>
-      </header>
-      ${tagCloud(tags, tag, totalCount)}
+      ${tagCloud(tags, tag)}
     </section>
     <section class="tag-results">
       <header class="tag-results-head">
@@ -1055,8 +1044,7 @@ for (const [tag, list] of tags) {
     tagListPage({
       tag,
       posts: list,
-      tags,
-      totalCount: posts.length
+      tags
     })
   );
 }

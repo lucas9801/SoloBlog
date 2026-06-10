@@ -968,32 +968,11 @@ pre {
   content: "";
 }
 
-.tag-cloud-head {
-  position: relative;
-  z-index: 1;
-  max-width: 720px;
-  margin: 0 auto 32px;
-  text-align: center;
-}
-
-.tag-cloud-head h1 {
-  margin: 0;
-  color: #10213d;
-  font-size: clamp(38px, 5vw, 64px);
-  line-height: 1.1;
-}
-
-.tag-cloud-head p {
-  margin: 12px 0 0;
-  color: var(--muted);
-  line-height: 1.8;
-}
-
 .tag-cloud-board {
   position: relative;
   z-index: 1;
   max-width: 920px;
-  min-height: 300px;
+  min-height: 260px;
   margin: 0 auto;
   padding: clamp(16px, 4vw, 42px);
   display: flex;
@@ -1076,11 +1055,6 @@ pre {
 
 .tag-cloud-item:nth-child(4n) {
   color: #6577ff;
-}
-
-.tag-cloud-item.all-tags {
-  font-size: clamp(16px, 2vw, 22px);
-  color: #5c6b81;
 }
 
 .tag-cloud-item.active,
@@ -1531,7 +1505,6 @@ pre {
 :root[data-theme="dark"] .archive-card h2,
 :root[data-theme="dark"] .post-card h3,
 :root[data-theme="dark"] .page-title h1,
-:root[data-theme="dark"] .tag-cloud-head h1,
 :root[data-theme="dark"] .tag-results-head h2,
 :root[data-theme="dark"] .article-hero h1,
 :root[data-theme="dark"] .article-content h2,
@@ -1581,10 +1554,6 @@ pre {
 :root[data-theme="dark"] .tag-cloud-item,
 :root[data-theme="dark"] .tag-cloud-item:nth-child(n) {
   color: #d9e5f2;
-}
-
-:root[data-theme="dark"] .tag-cloud-item.all-tags {
-  color: #9aa8b8;
 }
 
 :root[data-theme="dark"] .tag-cloud-item b {
@@ -1778,11 +1747,6 @@ pre {
 
   .tag-cloud-page::before {
     inset: 10px;
-  }
-
-  .tag-cloud-head {
-    margin-bottom: 18px;
-    text-align: left;
   }
 
   .tag-cloud-board {
