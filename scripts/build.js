@@ -695,14 +695,6 @@ function homePage(posts, categories, tags) {
   const latest = posts.filter((post) => !post.featured).slice(0, site.postsPerPage || 9);
   const hero = site.hero;
   const recommended = featuredPosts.slice(0, 3);
-  const primaryRecommended = recommended[0];
-  const secondaryRecommended = recommended.slice(1);
-  const channels = [
-    ["Rendering", "图形渲染", "帧调试、Shader、渲染管线与性能诊断"],
-    ["Unity", "Unity", "Profiler、组件结构、资源和运行时优化"],
-    ["Tools", "工具链", "构建流程、自动化脚本、工程效率"],
-    ["Postmortem", "随笔", "项目复盘、问题记录和长期维护"]
-  ];
 
   const body = `<main>
     <section class="hero-section">
@@ -717,30 +709,12 @@ function homePage(posts, categories, tags) {
           </div>
         </div>
         <div class="hero-panel" aria-hidden="true">
-          <span>Archive</span>
           <b>Rendering / Unity / Tools</b>
         </div>
       </div>
     </section>
     <section class="content-shell">
       <div class="content-main">
-        <section class="section-block channel-section">
-          <div class="section-head">
-            <div>
-              <span class="section-kicker">Channels</span>
-              <h2>技术频道</h2>
-            </div>
-          </div>
-          <div class="channel-grid">${channels
-            .map(
-              ([label, category, desc]) => `<a class="channel-card" href="/categories/${slugify(category)}/">
-                <span>${escapeHtml(label)}</span>
-                <h3>${escapeHtml(category)}</h3>
-                <p>${escapeHtml(desc)}</p>
-              </a>`
-            )
-            .join("")}</div>
-        </section>
         ${recommended.length ? `<section class="section-block recommended-section">
           <div class="section-head">
             <div>
@@ -749,8 +723,7 @@ function homePage(posts, categories, tags) {
             </div>
           </div>
           <div class="recommended-grid">
-            ${primaryRecommended ? archivePostCard(primaryRecommended) : ""}
-            ${secondaryRecommended.length ? `<div class="recommended-stack">${secondaryRecommended.map((post) => archivePostCard(post)).join("")}</div>` : ""}
+            ${recommended.map((post) => archivePostCard(post)).join("")}
           </div>
         </section>` : ""}
         ${latest.length ? `<section id="latest-posts" class="section-block">
@@ -775,11 +748,7 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
   const body = `<main class="page-shell article-index-page">
-    <header class="page-title archive-title">
-      <span class="section-kicker">Archive</span>
-      <h1>${activeCategory ? `${escapeHtml(activeCategory)} 分类文章` : "全部文章"}</h1>
-      <p>${activeCategory ? `${escapeHtml(activeCategory)} 分类下的技术笔记。` : "按时间、分类和主题浏览所有技术笔记。"}</p>
-    </header>
+    <h1 class="sr-only">${activeCategory ? `${escapeHtml(activeCategory)} 分类文章` : "全部文章"}</h1>
     ${archiveFilters(categories, activeCategory, totalCount)}
     <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
     ${paginationNav(basePath, currentPage, totalPages)}
@@ -831,11 +800,7 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
-    <header class="page-title tags-title">
-      <span class="section-kicker">Tags</span>
-      <h1>标签索引</h1>
-      <p>按主题定位技术笔记。每个标签显示当前相关文章数量。</p>
-    </header>
+    <h1 class="sr-only">标签索引</h1>
     <section class="tag-matrix-page">
       ${tagCloud(entries)}
     </section>
@@ -863,11 +828,7 @@ function tagCloud(entries, activeTag = "") {
 
 function tagListPage({ tag, posts, tags }) {
   const body = `<main class="page-shell tags-page">
-    <header class="page-title tags-title">
-      <span class="section-kicker">Tag</span>
-      <h1>${escapeHtml(tag)}</h1>
-      <p>共 ${posts.length} 篇文章使用这个标签。</p>
-    </header>
+    <h1 class="sr-only">${escapeHtml(tag)} 标签文章</h1>
     <section class="tag-matrix-page">
       ${tagCloud(tags, tag)}
     </section>

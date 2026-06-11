@@ -388,23 +388,15 @@ pre {
 
 .hero-panel {
   justify-self: end;
-  width: min(320px, 100%);
-  padding: 18px;
+  width: min(300px, 100%);
+  padding: 16px 18px;
   border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
   border-radius: 6px;
   background: color-mix(in srgb, var(--surface) 82%, transparent);
 }
 
-.hero-panel span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-}
-
 .hero-panel b {
   display: block;
-  margin-top: 8px;
   color: var(--text);
   font-size: 15px;
   line-height: 1.45;
@@ -472,44 +464,6 @@ pre {
   white-space: nowrap;
 }
 
-.channel-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.channel-card {
-  min-height: 132px;
-  padding: 16px;
-  display: block;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface-soft);
-}
-
-.channel-card:hover {
-  border-color: var(--brand);
-}
-
-.channel-card span {
-  color: var(--brand);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.channel-card h3 {
-  margin: 18px 0 8px;
-  font-size: 19px;
-  line-height: 1.25;
-}
-
-.channel-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.65;
-}
-
 .post-grid,
 .article-index-grid {
   display: grid;
@@ -519,33 +473,13 @@ pre {
 
 .recommended-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 16px;
-}
-
-.recommended-stack {
-  display: grid;
-  gap: 16px;
-}
-
-.recommended-stack .archive-card {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
-}
-
-.recommended-stack .archive-card-thumb {
-  height: 100%;
-  aspect-ratio: auto;
 }
 
 .article-index-page,
 .tags-page {
   max-width: 1180px;
-}
-
-.archive-title,
-.tags-title {
-  margin-bottom: 16px;
 }
 
 .archive-filter-bar {
@@ -1372,10 +1306,6 @@ pre {
   .tag-matrix {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .channel-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 720px) {
@@ -1442,13 +1372,8 @@ pre {
   .article-index-grid,
   .blog-sidebar,
   .tag-matrix,
-  .channel-grid,
   .recommended-grid {
     grid-template-columns: 1fr;
-  }
-
-  .recommended-stack .archive-card {
-    display: flex;
   }
 
   .archive-filter-bar {
