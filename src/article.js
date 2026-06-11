@@ -21,6 +21,7 @@ function updateReadingProgress() {
   const value = clamp(Math.round((current / maxScroll) * 100), 0, 100);
   const remainingMinutes = Math.max(0, Math.ceil(totalMinutes * (1 - value / 100)));
 
+  pill?.style.setProperty("--reading-progress", `${value}%`);
   percent.textContent = `${value}%`;
   remaining.textContent = remainingMinutes > 0 ? `剩余 ≈ ${remainingMinutes} 分钟` : "已读完";
 }

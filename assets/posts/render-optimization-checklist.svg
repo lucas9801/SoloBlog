@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="渲染优化排查清单">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#08111f"/>
+      <stop offset="0" stop-color="#07111f"/>
       <stop offset=".56" stop-color="#111827"/>
       <stop offset="1" stop-color="#05070d"/>
     </linearGradient>
     <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
       <stop offset="0" stop-color="#f8fafc"/>
       <stop offset=".38" stop-color="#22d3ee"/>
-      <stop offset="1" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#60a5fa"/>
     </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
       <path d="M54 0H0v54" fill="none" stroke="#f8fafc" stroke-opacity=".06"/>
@@ -20,17 +20,18 @@
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
   <circle cx="182.5" cy="294" r="260" fill="#22d3ee" opacity=".12"/>
-  <circle cx="982" cy="188" r="210" fill="#38bdf8" opacity=".12"/>
+  <circle cx="982" cy="188" r="210" fill="#60a5fa" opacity=".12"/>
   <circle cx="990" cy="548" r="168" fill="#22d3ee" opacity=".08"/>
   <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#22d3ee" stroke-opacity=".16" stroke-width="3"/>
-  <g filter="url(#shadow)"><rect x="168" y="116" width="590" height="392" rx="26" fill="#142033" stroke="#22d3ee" stroke-opacity=".48"/>
-      <path d="M214 422L340 284l128 86 136-164 104 116" fill="none" stroke="#22d3ee" stroke-width="4" opacity=".82"/>
-      <path d="M214 454h492M214 386h492M214 318h492M214 250h492M292 166v314M414 166v314M536 166v314M658 166v314" stroke="#8fb8d7" stroke-opacity=".16"/>
-      <rect x="802" y="150" width="232" height="72" rx="18" fill="#142033" stroke="#38bdf8" stroke-opacity=".36"/>
-      <rect x="802" y="252" width="232" height="72" rx="18" fill="#142033" stroke="#22d3ee" stroke-opacity=".36"/>
-      <rect x="802" y="354" width="232" height="72" rx="18" fill="#142033" stroke="#38bdf8" stroke-opacity=".36"/>
+  <g filter="url(#shadow)"><rect x="146" y="120" width="568" height="394" rx="16" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".52"/>
+      <path d="M188 426L306 292l126 82 142-168 98 126" fill="none" stroke="#22d3ee" stroke-width="5" opacity=".86"/>
+      <path d="M188 456h484M188 386h484M188 316h484M188 246h484M266 164v320M392 164v320M518 164v320M644 164v320" stroke="#8fb8d7" stroke-opacity=".16"/>
+      <rect x="778" y="144" width="256" height="62" rx="10" fill="#111d2d" stroke="#60a5fa" stroke-opacity=".4"/>
+      <rect x="778" y="242" width="256" height="62" rx="10" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".4"/>
+      <rect x="778" y="340" width="256" height="62" rx="10" fill="#111d2d" stroke="#60a5fa" stroke-opacity=".4"/>
+      <path d="M906 206v36M906 304v36M778 371h-64M778 273h-64M778 175h-64" stroke="#22d3ee" stroke-opacity=".38" stroke-width="4"/>
       <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
-      <circle cx="974" cy="522" r="42" fill="#38bdf8" opacity=".72"/></g>
+      <circle cx="974" cy="522" r="42" fill="#60a5fa" opacity=".72"/></g>
   <g>
     <rect x="64" y="54" width="124" height="38" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#f8fafc" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">图形渲染</text>

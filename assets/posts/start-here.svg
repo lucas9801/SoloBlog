@@ -7,8 +7,8 @@
     </linearGradient>
     <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
       <stop offset="0" stop-color="#f8fafc"/>
-      <stop offset=".38" stop-color="#5eead4"/>
-      <stop offset="1" stop-color="#93c5fd"/>
+      <stop offset=".38" stop-color="#94a3b8"/>
+      <stop offset="1" stop-color="#14b8a6"/>
     </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
       <path d="M54 0H0v54" fill="none" stroke="#f8fafc" stroke-opacity=".06"/>
@@ -19,20 +19,21 @@
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="415" cy="319.2" r="260" fill="#5eead4" opacity=".12"/>
-  <circle cx="982" cy="188" r="210" fill="#93c5fd" opacity=".12"/>
-  <circle cx="990" cy="548" r="168" fill="#5eead4" opacity=".08"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#5eead4" stroke-opacity=".16" stroke-width="3"/>
-  <g filter="url(#shadow)"><rect x="168" y="116" width="590" height="392" rx="26" fill="#1b2431" stroke="#5eead4" stroke-opacity=".48"/>
-      <path d="M214 422L340 284l128 86 136-164 104 116" fill="none" stroke="#5eead4" stroke-width="4" opacity=".82"/>
-      <path d="M214 454h492M214 386h492M214 318h492M214 250h492M292 166v314M414 166v314M536 166v314M658 166v314" stroke="#8fb8d7" stroke-opacity=".16"/>
-      <rect x="802" y="150" width="232" height="72" rx="18" fill="#1b2431" stroke="#93c5fd" stroke-opacity=".36"/>
-      <rect x="802" y="252" width="232" height="72" rx="18" fill="#1b2431" stroke="#5eead4" stroke-opacity=".36"/>
-      <rect x="802" y="354" width="232" height="72" rx="18" fill="#1b2431" stroke="#93c5fd" stroke-opacity=".36"/>
-      <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
-      <circle cx="974" cy="522" r="42" fill="#93c5fd" opacity=".72"/></g>
+  <circle cx="415" cy="319.2" r="260" fill="#94a3b8" opacity=".12"/>
+  <circle cx="982" cy="188" r="210" fill="#14b8a6" opacity=".12"/>
+  <circle cx="990" cy="548" r="168" fill="#94a3b8" opacity=".08"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#94a3b8" stroke-opacity=".16" stroke-width="3"/>
+  <g filter="url(#shadow)"><path d="M286 130h390c42 0 76 34 76 76v350H362c-42 0-76-34-76-76z" fill="#1a2430" stroke="#94a3b8" stroke-opacity=".32"/>
+      <path d="M362 178h390v378H362c-42 0-76-34-76-76V254c0-42 34-76 76-76z" fill="#fff" opacity=".05"/>
+      <path d="M386 250h246M386 306h290M386 362h214M386 418h262" stroke="#94a3b8" stroke-width="9" stroke-linecap="round" opacity=".28"/>
+      <path d="M824 170v372" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" opacity=".36"/>
+      <circle cx="824" cy="228" r="28" fill="#14b8a6" opacity=".66"/>
+      <circle cx="824" cy="348" r="28" fill="#94a3b8" opacity=".62"/>
+      <circle cx="824" cy="468" r="28" fill="#14b8a6" opacity=".46"/>
+      <path d="M864 228h150M864 348h112M864 468h134" stroke="#f8fafc" stroke-opacity=".2" stroke-width="8" stroke-linecap="round"/>
+      <path d="M196 470l82-82 82 82-82 82z" fill="#94a3b8" opacity=".42"/></g>
   <g>
-    <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#5eead4" stroke-opacity=".52"/>
+    <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#f8fafc" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">随笔</text>
     <text x="64" y="618" fill="#f8fafc" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
     <text x="1136" y="618" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>

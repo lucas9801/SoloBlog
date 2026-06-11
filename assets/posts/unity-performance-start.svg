@@ -6,12 +6,12 @@
       <stop offset="1" stop-color="#05070d"/>
     </linearGradient>
     <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
-      <stop offset="0" stop-color="#e2e8f0"/>
-      <stop offset=".38" stop-color="#38bdf8"/>
+      <stop offset="0" stop-color="#eef4ff"/>
+      <stop offset=".38" stop-color="#60a5fa"/>
       <stop offset="1" stop-color="#8b5cf6"/>
     </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="#e2e8f0" stroke-opacity=".06"/>
+      <path d="M54 0H0v54" fill="none" stroke="#eef4ff" stroke-opacity=".06"/>
     </pattern>
     <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
       <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#000" flood-opacity=".42"/>
@@ -19,22 +19,25 @@
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="317.5" cy="362.4" r="260" fill="#38bdf8" opacity=".12"/>
+  <circle cx="317.5" cy="362.4" r="260" fill="#60a5fa" opacity=".12"/>
   <circle cx="982" cy="188" r="210" fill="#8b5cf6" opacity=".12"/>
-  <circle cx="990" cy="548" r="168" fill="#38bdf8" opacity=".08"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#38bdf8" stroke-opacity=".16" stroke-width="3"/>
-  <g filter="url(#shadow)"><rect x="168" y="116" width="590" height="392" rx="26" fill="#111827" stroke="#38bdf8" stroke-opacity=".48"/>
-      <path d="M214 422L340 284l128 86 136-164 104 116" fill="none" stroke="#38bdf8" stroke-width="4" opacity=".82"/>
-      <path d="M214 454h492M214 386h492M214 318h492M214 250h492M292 166v314M414 166v314M536 166v314M658 166v314" stroke="#8fb8d7" stroke-opacity=".16"/>
-      <rect x="802" y="150" width="232" height="72" rx="18" fill="#111827" stroke="#8b5cf6" stroke-opacity=".36"/>
-      <rect x="802" y="252" width="232" height="72" rx="18" fill="#111827" stroke="#38bdf8" stroke-opacity=".36"/>
-      <rect x="802" y="354" width="232" height="72" rx="18" fill="#111827" stroke="#8b5cf6" stroke-opacity=".36"/>
-      <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
-      <circle cx="974" cy="522" r="42" fill="#8b5cf6" opacity=".72"/></g>
+  <circle cx="990" cy="548" r="168" fill="#60a5fa" opacity=".08"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#60a5fa" stroke-opacity=".16" stroke-width="3"/>
+  <g filter="url(#shadow)"><rect x="146" y="116" width="410" height="438" rx="14" fill="#151827" stroke="#60a5fa" stroke-opacity=".38"/>
+      <rect x="146" y="116" width="410" height="48" rx="14" fill="#020617" opacity=".38"/>
+      <circle cx="184" cy="140" r="8" fill="#60a5fa" opacity=".8"/>
+      <circle cx="212" cy="140" r="8" fill="#8b5cf6" opacity=".72"/>
+      <path d="M190 210h286M190 260h232M190 310h286M190 360h174M190 410h262" stroke="#9fb7d1" stroke-opacity=".18" stroke-width="10" stroke-linecap="round"/>
+      <rect x="610" y="132" width="402" height="206" rx="14" fill="#151827" stroke="#8b5cf6" stroke-opacity=".38"/>
+      <path d="M652 292c44-82 96 18 142-36 38-46 70-110 112-36 24 42 48 46 72 22" fill="none" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+      <path d="M652 258h318M652 214h318M652 170h318" stroke="#9fb7d1" stroke-opacity=".12"/>
+      <rect x="610" y="380" width="178" height="118" rx="14" fill="#151827" stroke="#60a5fa" stroke-opacity=".32"/>
+      <rect x="830" y="380" width="182" height="118" rx="14" fill="#151827" stroke="#8b5cf6" stroke-opacity=".32"/>
+      <path d="M654 440h90M874 440h94" stroke="#eef4ff" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/></g>
   <g>
-    <rect x="64" y="54" width="142" height="38" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-opacity=".52"/>
-    <text x="84" y="79" fill="#e2e8f0" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">Unity</text>
-    <text x="64" y="618" fill="#e2e8f0" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
-    <text x="1136" y="618" text-anchor="end" fill="#e2e8f0" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
+    <rect x="64" y="54" width="142" height="38" rx="6" fill="#0f172a" stroke="#60a5fa" stroke-opacity=".52"/>
+    <text x="84" y="79" fill="#eef4ff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">Unity</text>
+    <text x="64" y="618" fill="#eef4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
+    <text x="1136" y="618" text-anchor="end" fill="#eef4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
   </g>
 </svg>
