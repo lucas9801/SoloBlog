@@ -187,7 +187,7 @@ category: 图形渲染
 /categories/图形渲染/
 ```
 
-建议分类数量不要太多。个人技术博客可以先用这些：
+建议分类数量不要太多。SOLUS 这类技术档案站可以先用这些：
 
 ```text
 Unity
@@ -339,11 +339,11 @@ content/site.json
 
 ```json
 {
-  "title": "My Game Dev Blog",
-  "brand": "LUMIO.GAMES",
-  "description": "记录游戏开发、图形渲染、Unity 工程实践、工具链和技术复盘的个人博客。",
-  "author": "站长",
-  "baseUrl": "http://localhost:4173"
+  "title": "SOLUS Dev Notes",
+  "brand": "SOLUS",
+  "tagline": "Game Development Archive",
+  "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
+  "baseUrl": "https://blog.solus.games/"
 }
 ```
 
@@ -353,9 +353,9 @@ content/site.json
 | --- | --- |
 | `title` | 网站标题 |
 | `brand` | 左上角品牌名 |
+| `tagline` | 品牌副标题 |
 | `description` | 网站描述 |
-| `author` | 作者名 |
-| `baseUrl` | 本地默认地址，Cloudflare 部署时会自动使用 `CF_PAGES_URL` 或 `SITE_URL` |
+| `baseUrl` | 正式站点地址，用于 canonical URL、RSS、sitemap 和 robots.txt |
 | `navigation` | 顶部导航 |
 | `hero` | 首页 Hero 文案 |
 
@@ -430,13 +430,13 @@ Node version: 20
 NODE_VERSION=20
 ```
 
-如果以后绑定正式域名，建议再设置：
+当前正式域名已经写入 `content/site.json`：
 
 ```text
-SITE_URL=https://你的域名
+https://blog.solus.games/
 ```
 
-这样 RSS、sitemap、canonical URL 和 robots.txt 会使用正式域名。
+如果以后更换域名，更新 `content/site.json` 的 `baseUrl`，或者在 Cloudflare Pages 里设置 `SITE_URL` 覆盖。
 
 ## 检查线上是否更新
 
@@ -445,7 +445,7 @@ SITE_URL=https://你的域名
 成功后访问：
 
 ```text
-https://soloblog-4w3.pages.dev/
+https://blog.solus.games/
 ```
 
 如果页面还是旧的，可以：

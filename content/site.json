@@ -1,12 +1,13 @@
 {
-  "title": "SOLUS Blog",
+  "title": "SOLUS Dev Notes",
   "brand": "SOLUS",
-  "description": "记录游戏开发、图形渲染、Unity 工程实践、工具链和技术复盘的个人博客。",
-  "baseUrl": "http://localhost:4173",
+  "tagline": "Game Development Archive",
+  "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
+  "baseUrl": "https://blog.solus.games/",
   "language": "zh-CN",
   "postsPerPage": 9,
   "archivePostsPerPage": 9,
-  "heroCover": "/assets/posts/start-here.png",
+  "heroCover": "/assets/posts/start-here.svg",
   "categoryCovers": {
     "随笔": "/assets/categories/notes.svg",
     "Unity": "/assets/categories/unity.svg",
@@ -37,9 +38,9 @@
     "language": "zh-CN"
   },
   "hero": {
-    "eyebrow": "Game Development Notes",
-    "title": "游戏开发技术博客",
-    "subtitle": "把渲染、性能、架构、工具链和项目复盘沉淀成可检索的长期笔记。",
+    "eyebrow": "Technical Archive",
+    "title": "Game Engine, Rendering, Tools",
+    "subtitle": "SOLUS 是面向游戏开发、图形渲染与工程实践的技术档案站，记录可复查、可沉淀、可长期维护的工程笔记。",
     "primaryAction": "最新文章",
     "secondaryAction": "全部文章"
   },

@@ -60,7 +60,8 @@ if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include 
 if (!buildScript.includes("search-index.json")) failures.push("Build must generate search index.");
 if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
 if (!buildScript.includes("sitemap.xml")) failures.push("Build must generate sitemap.");
-if (!buildScript.includes("CF_PAGES_URL")) failures.push("Build must support Cloudflare Pages URL.");
+if (site.baseUrl !== "https://blog.solus.games/") failures.push("site baseUrl must use the production domain.");
+if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (heroStats.size < 100000) failures.push("Hero asset appears too small or missing.");
 

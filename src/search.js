@@ -117,7 +117,7 @@ function render(posts, query) {
   results.innerHTML = `<p class="search-count">精准匹配到 ${matched.length} 篇文章</p>${matched
     .map(
       (post) => `<article class="search-result-card">
-        <a class="search-result-thumb" href="${escapeHtml(post.url)}" style="--cover-image: url('${escapeHtml(post.cover || "/assets/hero-game-tech.png")}')" aria-hidden="true">
+        <a class="search-result-thumb" href="${escapeHtml(post.url)}" style="--cover-image: url('${escapeHtml(post.cover || "/assets/hero-game-tech.png")}')" aria-label="${escapeHtml(post.title)}">
           <span>${escapeHtml(post.category)}</span>
         </a>
         <div class="search-result-body">

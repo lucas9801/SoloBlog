@@ -9,7 +9,7 @@ const postsDir = path.join(contentDir, "posts");
 const siteConfig = JSON.parse(await readFile(path.join(contentDir, "site.json"), "utf8"));
 const site = {
   ...siteConfig,
-  baseUrl: (process.env.SITE_URL || process.env.CF_PAGES_URL || siteConfig.baseUrl).replace(/\/+$/, "/")
+  baseUrl: (process.env.SITE_URL || siteConfig.baseUrl).replace(/\/+$/, "/")
 };
 const assetVersion = encodeURIComponent(
   (process.env.CF_PAGES_COMMIT_SHA || siteConfig.assetVersion || "local").slice(0, 12)
@@ -190,6 +190,7 @@ async function generatedPostCover(post) {
   const glowX = 180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5;
   const glowY = 90 + Number.parseInt(seed.slice(2, 4), 16) * 1.2;
   const motif = coverMotif(post, colors);
+  const dateLabel = post.date.replaceAll("-", ".");
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(post.title)}">
   <defs>
@@ -217,14 +218,20 @@ async function generatedPostCover(post) {
   <circle cx="990" cy="548" r="168" fill="${colors[1]}" opacity=".08"/>
   <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".16" stroke-width="3"/>
   <g filter="url(#shadow)">${motif}</g>
+  <g>
+    <rect x="64" y="54" width="${Math.max(118, Array.from(post.category).length * 18 + 52)}" height="38" rx="6" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
+    <text x="84" y="79" fill="${colors[4]}" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)}</text>
+    <text x="64" y="618" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
+    <text x="1136" y="618" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">${escapeHtml(dateLabel)}</text>
+  </g>
 </svg>`;
 
   await writeFile(target, svg, "utf8");
   return url;
 }
 
-async function existingGeneratedCover(slug) {
-  for (const extension of ["webp", "png", "jpg", "jpeg", "svg"]) {
+async function existingGeneratedCover(slug, preferredExtensions = ["webp", "png", "jpg", "jpeg", "svg"]) {
+  for (const extension of preferredExtensions) {
     const target = path.join(root, "assets", "posts", `${slug}.${extension}`);
     try {
       await access(target);
@@ -279,14 +286,15 @@ function markdownToHtml(markdown) {
 
     if (trimmed.startsWith("```")) {
       if (codeBlock) {
+        const languageAttr = codeBlock.language ? ` data-language="${escapeAttr(codeBlock.language)}"` : "";
         html.push(
-          `<pre><code>${escapeHtml(codeBlock.lines.join("\n"))}</code></pre>`
+          `<pre${languageAttr}><code>${escapeHtml(codeBlock.lines.join("\n"))}</code></pre>`
         );
         codeBlock = null;
       } else {
         flushParagraph();
         closeList();
-        codeBlock = { lines: [] };
+        codeBlock = { language: trimmed.slice(3).trim().split(/\s+/)[0] || "", lines: [] };
       }
       continue;
     }
@@ -418,7 +426,7 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
     <header class="site-header">
       <a class="brand" href="/" aria-label="${escapeAttr(site.title)}">
         <span class="brand-mark" aria-hidden="true"><span></span></span>
-        <span><strong>${escapeHtml(site.brand)}</strong><small>${escapeHtml(site.title)}</small></span>
+        <span><strong>${escapeHtml(site.brand)}</strong><small>${escapeHtml(site.tagline || site.title)}</small></span>
       </a>
       <nav class="nav-links" aria-label="主导航">${nav}</nav>
       <form class="site-search" action="/search/" method="get">
@@ -483,7 +491,7 @@ function giscusComments() {
 
 function postCard(post, variant = "") {
   return `<article class="post-card ${variant}">
-    <a class="thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-hidden="true">
+    <a class="thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-label="${escapeAttr(post.title)}">
       <span>${escapeHtml(post.category)}</span>
       <i></i>
     </a>
@@ -505,7 +513,7 @@ function postCard(post, variant = "") {
 
 function archivePostCard(post) {
   return `<article class="archive-card">
-    <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-hidden="true">
+    <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-label="${escapeAttr(post.title)}">
       <span>${escapeHtml(post.category)}</span>
     </a>
     <div class="archive-card-body">
@@ -525,17 +533,6 @@ function archivePostCard(post) {
 }
 
 function sidebar(posts, categories, tags) {
-  const rankFallback = posts.slice(0, 5);
-  const postIndex = escapeAttr(
-    JSON.stringify(
-      posts.map((post) => ({
-        slug: post.slug,
-        title: post.title,
-        url: post.url
-      }))
-    )
-  );
-
   return `<aside class="blog-sidebar">
     <section class="sidebar-card">
       <h2>分类</h2>
@@ -547,22 +544,11 @@ function sidebar(posts, categories, tags) {
         .join("")}</div>
     </section>
     <section class="sidebar-card">
-      <h2>热门标签</h2>
+      <h2>标签索引</h2>
       <div class="tag-cloud">${tags
         .slice(0, 18)
-        .map(([tag]) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+        .map(([tag, list]) => `<a href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`)
         .join("")}</div>
-    </section>
-    <section class="sidebar-card">
-      <h2>阅读排行</h2>
-      <div class="reading-ranking-list" data-ranking-posts="${postIndex}">
-        ${rankFallback
-          .map(
-            (post, index) =>
-              `<a class="ranking-link" href="${post.url}" data-ranking-slug="${escapeAttr(post.slug)}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${escapeHtml(post.readingTime)}</small></a>`
-          )
-          .join("")}
-      </div>
     </section>
     <section class="sidebar-card subscribe-card">
       <h2>${escapeHtml(site.subscribe.title)}</h2>
@@ -692,7 +678,7 @@ async function loadPosts() {
       text
     };
 
-    const generatedCover = await existingGeneratedCover(slug);
+    const generatedCover = await existingGeneratedCover(slug, ["svg"]);
     post.cover =
       data.cover && data.cover !== "/assets/hero-game-tech.png"
         ? resolvePostCover(data.cover, category)
@@ -708,6 +694,15 @@ function homePage(posts, categories, tags) {
   const featuredPosts = posts.filter((post) => post.featured);
   const latest = posts.filter((post) => !post.featured).slice(0, site.postsPerPage || 9);
   const hero = site.hero;
+  const recommended = featuredPosts.slice(0, 3);
+  const primaryRecommended = recommended[0];
+  const secondaryRecommended = recommended.slice(1);
+  const channels = [
+    ["Rendering", "图形渲染", "帧调试、Shader、渲染管线与性能诊断"],
+    ["Unity", "Unity", "Profiler、组件结构、资源和运行时优化"],
+    ["Tools", "工具链", "构建流程、自动化脚本、工程效率"],
+    ["Postmortem", "随笔", "项目复盘、问题记录和长期维护"]
+  ];
 
   const body = `<main>
     <section class="hero-section">
@@ -721,18 +716,42 @@ function homePage(posts, categories, tags) {
             <a class="ghost-link" href="/archive/">${escapeHtml(hero.secondaryAction)}</a>
           </div>
         </div>
+        <div class="hero-panel" aria-hidden="true">
+          <span>Archive</span>
+          <b>Rendering / Unity / Tools</b>
+        </div>
       </div>
     </section>
     <section class="content-shell">
       <div class="content-main">
-        ${featuredPosts.length ? `<section class="section-block featured-section">
+        <section class="section-block channel-section">
           <div class="section-head">
             <div>
-              <span class="section-kicker">Featured</span>
-              <h2>精选文章</h2>
+              <span class="section-kicker">Channels</span>
+              <h2>技术频道</h2>
             </div>
           </div>
-          <div class="post-grid">${featuredPosts.map((post) => archivePostCard(post)).join("")}</div>
+          <div class="channel-grid">${channels
+            .map(
+              ([label, category, desc]) => `<a class="channel-card" href="/categories/${slugify(category)}/">
+                <span>${escapeHtml(label)}</span>
+                <h3>${escapeHtml(category)}</h3>
+                <p>${escapeHtml(desc)}</p>
+              </a>`
+            )
+            .join("")}</div>
+        </section>
+        ${recommended.length ? `<section class="section-block recommended-section">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">Recommended</span>
+              <h2>推荐阅读</h2>
+            </div>
+          </div>
+          <div class="recommended-grid">
+            ${primaryRecommended ? archivePostCard(primaryRecommended) : ""}
+            ${secondaryRecommended.length ? `<div class="recommended-stack">${secondaryRecommended.map((post) => archivePostCard(post)).join("")}</div>` : ""}
+          </div>
         </section>` : ""}
         ${latest.length ? `<section id="latest-posts" class="section-block">
           <div class="section-head">
@@ -756,7 +775,11 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
   const body = `<main class="page-shell article-index-page">
-    <h1 class="sr-only">${activeCategory ? `${activeCategory} 分类文章` : "全部文章"}</h1>
+    <header class="page-title archive-title">
+      <span class="section-kicker">Archive</span>
+      <h1>${activeCategory ? `${escapeHtml(activeCategory)} 分类文章` : "全部文章"}</h1>
+      <p>${activeCategory ? `${escapeHtml(activeCategory)} 分类下的技术笔记。` : "按时间、分类和主题浏览所有技术笔记。"}</p>
+    </header>
     ${archiveFilters(categories, activeCategory, totalCount)}
     <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
     ${paginationNav(basePath, currentPage, totalPages)}
@@ -808,7 +831,12 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
-    <section class="tag-cloud-page">
+    <header class="page-title tags-title">
+      <span class="section-kicker">Tags</span>
+      <h1>标签索引</h1>
+      <p>按主题定位技术笔记。每个标签显示当前相关文章数量。</p>
+    </header>
+    <section class="tag-matrix-page">
       ${tagCloud(entries)}
     </section>
   </main>`;
@@ -817,17 +845,17 @@ function tagIndexPage(entries, posts) {
 
 function tagWeightClass(count, maxCount) {
   if (maxCount <= 1) return "size-2";
-  const weight = Math.ceil((count / maxCount) * 5);
-  return `size-${Math.min(Math.max(weight, 1), 5)}`;
+  const weight = Math.ceil((count / maxCount) * 3);
+  return `size-${Math.min(Math.max(weight, 1), 3)}`;
 }
 
 function tagCloud(entries, activeTag = "") {
   const maxCount = Math.max(...entries.map(([, list]) => list.length), 1);
-  return `<nav class="tag-cloud-board" aria-label="标签云">
+  return `<nav class="tag-matrix" aria-label="标签索引">
     ${entries
       .map(([tag, list]) => {
         const active = tag === activeTag ? " active" : "";
-        return `<a class="tag-cloud-item ${tagWeightClass(list.length, maxCount)}${active}" href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`;
+        return `<a class="tag-index-item ${tagWeightClass(list.length, maxCount)}${active}" href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`;
       })
       .join("")}
   </nav>`;
@@ -835,7 +863,12 @@ function tagCloud(entries, activeTag = "") {
 
 function tagListPage({ tag, posts, tags }) {
   const body = `<main class="page-shell tags-page">
-    <section class="tag-cloud-page">
+    <header class="page-title tags-title">
+      <span class="section-kicker">Tag</span>
+      <h1>${escapeHtml(tag)}</h1>
+      <p>共 ${posts.length} 篇文章使用这个标签。</p>
+    </header>
+    <section class="tag-matrix-page">
       ${tagCloud(tags, tag)}
     </section>
     <section class="tag-results">

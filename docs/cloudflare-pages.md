@@ -22,10 +22,12 @@ Node version: 20
 
 8. Deploy.
 
-Cloudflare will give you a public URL like:
+Cloudflare will also create a default preview URL in the project dashboard.
+
+The current production domain is:
 
 ```text
-https://your-project.pages.dev
+https://blog.solus.games/
 ```
 
 ## Site URL
@@ -34,16 +36,15 @@ The build script uses URL values in this priority:
 
 ```text
 SITE_URL
-CF_PAGES_URL
 content/site.json baseUrl
 ```
 
-For the free `pages.dev` domain, you can leave `SITE_URL` empty. Cloudflare provides `CF_PAGES_URL`.
+`content/site.json` is already set to `https://blog.solus.games/`, so production builds use the custom domain by default.
 
-When you bind a custom domain, add this environment variable in Cloudflare Pages:
+If the domain changes later, update `content/site.json` or add this environment variable in Cloudflare Pages:
 
 ```text
-SITE_URL=https://your-domain.com
+SITE_URL=https://your-domain.com/
 ```
 
 Then redeploy. This keeps canonical links, RSS, sitemap, and robots.txt correct.

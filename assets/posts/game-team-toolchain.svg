@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="小团队游戏项目的工具链原则">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d141d"/>
+      <stop offset=".56" stop-color="#111827"/>
+      <stop offset="1" stop-color="#05070d"/>
+    </linearGradient>
+    <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
+      <stop offset="0" stop-color="#e8f4ff"/>
+      <stop offset=".38" stop-color="#5eead4"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </radialGradient>
+    <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
+      <path d="M54 0H0v54" fill="none" stroke="#e8f4ff" stroke-opacity=".06"/>
+    </pattern>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#000" flood-opacity=".42"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <circle cx="332.5" cy="304.79999999999995" r="260" fill="#5eead4" opacity=".12"/>
+  <circle cx="982" cy="188" r="210" fill="#60a5fa" opacity=".12"/>
+  <circle cx="990" cy="548" r="168" fill="#5eead4" opacity=".08"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#5eead4" stroke-opacity=".16" stroke-width="3"/>
+  <g filter="url(#shadow)"><path d="M198 338h766" stroke="#5eead4" stroke-width="10" stroke-linecap="round" opacity=".5"/>
+      <path d="M320 338c86 84 176 84 270 0s186-84 278 0" fill="none" stroke="#60a5fa" stroke-width="4" opacity=".64"/>
+      <g>
+            <rect x="214" y="248" width="126" height="126" rx="24" fill="#17202b" stroke="#5eead4" stroke-opacity=".52"/>
+            <rect x="248" y="288" width="58" height="46" rx="10" fill="#5eead4" opacity=".78"/>
+            <path d="M248 358h58" stroke="#fff" stroke-opacity=".34" stroke-width="6" stroke-linecap="round"/>
+          </g><g>
+            <rect x="382" y="208" width="126" height="126" rx="24" fill="#17202b" stroke="#60a5fa" stroke-opacity=".52"/>
+            <rect x="416" y="248" width="58" height="46" rx="10" fill="#60a5fa" opacity=".78"/>
+            <path d="M416 318h58" stroke="#fff" stroke-opacity=".34" stroke-width="6" stroke-linecap="round"/>
+          </g><g>
+            <rect x="550" y="248" width="126" height="126" rx="24" fill="#17202b" stroke="#5eead4" stroke-opacity=".52"/>
+            <rect x="584" y="288" width="58" height="46" rx="10" fill="#5eead4" opacity=".78"/>
+            <path d="M584 358h58" stroke="#fff" stroke-opacity=".34" stroke-width="6" stroke-linecap="round"/>
+          </g><g>
+            <rect x="718" y="208" width="126" height="126" rx="24" fill="#17202b" stroke="#60a5fa" stroke-opacity=".52"/>
+            <rect x="752" y="248" width="58" height="46" rx="10" fill="#60a5fa" opacity=".78"/>
+            <path d="M752 318h58" stroke="#fff" stroke-opacity=".34" stroke-width="6" stroke-linecap="round"/>
+          </g><g>
+            <rect x="886" y="248" width="126" height="126" rx="24" fill="#17202b" stroke="#5eead4" stroke-opacity=".52"/>
+            <rect x="920" y="288" width="58" height="46" rx="10" fill="#5eead4" opacity=".78"/>
+            <path d="M920 358h58" stroke="#fff" stroke-opacity=".34" stroke-width="6" stroke-linecap="round"/>
+          </g>
+      <rect x="344" y="470" width="512" height="64" rx="20" fill="#17202b" stroke="#5eead4" stroke-opacity=".28"/>
+      <path d="M398 502h88M534 502h132M710 502h92" stroke="#5eead4" stroke-width="8" stroke-linecap="round" opacity=".5"/></g>
+  <g>
+    <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#5eead4" stroke-opacity=".52"/>
+    <text x="84" y="79" fill="#e8f4ff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">工具链</text>
+    <text x="64" y="618" fill="#e8f4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
+    <text x="1136" y="618" text-anchor="end" fill="#e8f4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
+  </g>
+</svg>

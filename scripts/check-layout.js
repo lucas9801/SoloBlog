@@ -28,7 +28,28 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitForJson(endpoint, timeoutMs = 10000) {
+async function removeWithRetry(target, attempts = 8) {
+  for (let index = 0; index < attempts; index += 1) {
+    try {
+      await rm(target, { recursive: true, force: true, maxRetries: 3, retryDelay: 120 });
+      return;
+    } catch (error) {
+      if (!["EBUSY", "ENOTEMPTY", "EPERM"].includes(error.code) || index === attempts - 1) {
+        throw error;
+      }
+      await wait(150 * (index + 1));
+    }
+  }
+}
+
+async function stopProcess(child) {
+  if (child.exitCode !== null) return;
+  const exited = new Promise((resolve) => child.once("exit", resolve));
+  child.kill();
+  await Promise.race([exited, wait(1500)]);
+}
+
+async function waitForJson(endpoint, timeoutMs = 20000) {
   const started = Date.now();
 
   while (Date.now() - started < timeoutMs) {
@@ -94,7 +115,7 @@ function connect(wsUrl) {
 
 async function launchBrowser(port, viewport) {
   const userDataDir = path.join(root, `.edge-layout-${viewport.name}`);
-  await rm(userDataDir, { recursive: true, force: true });
+  await removeWithRetry(userDataDir);
   await mkdir(userDataDir, { recursive: true });
 
   const child = spawn(edgePath, [
@@ -197,14 +218,12 @@ async function checkViewport(viewport) {
     );
 
     await client.close();
-    browser.child.kill();
-    await wait(250);
-    await rm(browser.userDataDir, { recursive: true, force: true });
+    await stopProcess(browser.child);
+    await removeWithRetry(browser.userDataDir);
     return result.result.value;
   } catch (error) {
-    browser.child.kill();
-    await wait(250);
-    await rm(browser.userDataDir, { recursive: true, force: true });
+    await stopProcess(browser.child);
+    await removeWithRetry(browser.userDataDir);
     throw error;
   }
 }

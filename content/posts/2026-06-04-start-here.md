@@ -1,15 +1,15 @@
 ---
-title: 从这里开始：我的游戏开发技术博客
+title: SOLUS 技术档案的起点
 slug: start-here
 date: 2026-06-04
 category: 随笔
 tags: [博客, 游戏开发, 知识库]
-summary: 这个博客用于沉淀游戏开发过程中的技术文章、项目复盘、工具链经验和长期学习笔记。
+summary: SOLUS 用于沉淀游戏开发、图形渲染、工程实践和项目复盘中的长期技术笔记。
 featured: true
 status: published
 ---
 
-这篇文章是博客的起点。后续所有内容都可以按主题放进不同分类，并通过标签串联起来。
+这篇文章是 SOLUS 技术档案的起点。后续内容会按主题进入不同分类，并通过标签形成可检索的知识链路。
 
 ## 写什么
 
@@ -23,7 +23,7 @@ status: published
 
 ## 怎么维护
 
-每篇文章都是一个 Markdown 文件。构建脚本会读取 `content/posts`，自动生成文章页、归档页、分类页、标签页和搜索索引。
+每篇文章都是一个 Markdown 文件。构建脚本会读取 `content/posts`，自动生成文章页、归档页、分类页、标签页、搜索索引、RSS 和 sitemap。
 
 以后写新文章时，可以运行：
 
@@ -37,4 +37,4 @@ npm run new:post -- "文章标题"
 npm run build
 ```
 
-这样博客就会更新。
+这样技术档案就会更新。
