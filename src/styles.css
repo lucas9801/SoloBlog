@@ -304,8 +304,7 @@ pre {
   opacity: 0.55;
 }
 
-.hero-copy,
-.hero-panel {
+.hero-copy {
   position: relative;
   z-index: 1;
 }
@@ -384,22 +383,6 @@ pre {
 
 .button-link:hover {
   color: #fff;
-}
-
-.hero-panel {
-  justify-self: end;
-  width: min(300px, 100%);
-  padding: 16px 18px;
-  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-}
-
-.hero-panel b {
-  display: block;
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.45;
 }
 
 .content-shell,
@@ -1337,10 +1320,6 @@ pre {
     background:
       linear-gradient(180deg, var(--surface) 0 42%, color-mix(in srgb, var(--surface) 78%, transparent) 72%, color-mix(in srgb, var(--surface) 38%, transparent)),
       var(--hero-cover, url("/assets/hero-game-tech.png")) center bottom / cover no-repeat;
-  }
-
-  .hero-panel {
-    display: none;
   }
 
   .hero-copy h1 {

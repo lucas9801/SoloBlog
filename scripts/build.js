@@ -708,9 +708,6 @@ function homePage(posts, categories, tags) {
             <a class="ghost-link" href="/archive/">${escapeHtml(hero.secondaryAction)}</a>
           </div>
         </div>
-        <div class="hero-panel" aria-hidden="true">
-          <b>Rendering / Unity / Tools</b>
-        </div>
       </div>
     </section>
     <section class="content-shell">
@@ -734,7 +731,7 @@ function homePage(posts, categories, tags) {
             </div>
             <a href="/archive/">全部文章 →</a>
           </div>
-          <div class="post-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>
+          <div class="recommended-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>
         </section>` : ""}
       </div>
       ${sidebar(posts, categories, tags)}
