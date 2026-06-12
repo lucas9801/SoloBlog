@@ -460,9 +460,86 @@ pre {
   gap: 16px;
 }
 
+.update-list {
+  display: grid;
+  gap: 8px;
+}
+
+.update-link {
+  min-height: 52px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.update-link:hover {
+  border-color: var(--brand);
+}
+
+.update-link span,
+.update-link time {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.update-link strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .article-index-page,
 .tags-page {
   max-width: 1180px;
+}
+
+.page-context {
+  min-height: 38px;
+  margin: 0 0 12px;
+  padding: 0 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.page-context span {
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-context strong {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.page-context b {
+  min-height: 22px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .archive-filter-bar {
@@ -913,6 +990,18 @@ pre {
   justify-content: center;
 }
 
+.article-shell.no-toc {
+  grid-template-columns: minmax(170px, 220px) minmax(0, 900px);
+}
+
+.article-shell.no-related {
+  grid-template-columns: minmax(0, 900px) minmax(170px, 220px);
+}
+
+.article-shell.no-related.no-toc {
+  grid-template-columns: minmax(0, 900px);
+}
+
 .article-page {
   overflow: hidden;
 }
@@ -1259,6 +1348,12 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .article-shell.no-toc,
+  .article-shell.no-related,
+  .article-shell.no-related.no-toc {
+    grid-template-columns: 1fr;
+  }
+
   .blog-sidebar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1387,6 +1482,22 @@ pre {
   .tag-matrix,
   .recommended-grid {
     grid-template-columns: 1fr;
+  }
+
+  .update-link {
+    grid-template-columns: 1fr auto;
+  }
+
+  .update-link span {
+    grid-column: 1 / -1;
+  }
+
+  .update-link strong {
+    white-space: normal;
+  }
+
+  .page-context {
+    margin-bottom: 10px;
   }
 
   .archive-filter-bar {

@@ -647,6 +647,14 @@ function archiveFilters(categories, activeCategory, totalCount) {
   </div>`;
 }
 
+function pageContext({ eyebrow, title, meta }) {
+  return `<div class="page-context">
+    <span>${escapeHtml(eyebrow)}</span>
+    <strong>${escapeHtml(title)}</strong>
+    <b>${escapeHtml(meta)}</b>
+  </div>`;
+}
+
 function paginationNav(basePath, currentPage, totalPages) {
   if (totalPages <= 1) return "";
   const previous =
@@ -723,6 +731,7 @@ function homePage(posts, categories, tags) {
   const latest = posts.filter((post) => !post.featured).slice(0, site.postsPerPage || 9);
   const hero = site.hero;
   const recommended = featuredPosts.slice(0, 3);
+  const latestIsCompact = latest.length > 0 && latest.length < 3;
 
   const body = `<main>
     <section class="hero-section">
@@ -759,7 +768,19 @@ function homePage(posts, categories, tags) {
             </div>
             <a href="/archive/">全部文章 →</a>
           </div>
-          <div class="recommended-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>
+          ${
+            latestIsCompact
+              ? `<div class="update-list">${latest
+                  .map(
+                    (post) => `<a class="update-link" href="${post.url}">
+                      <span>${escapeHtml(post.category)}</span>
+                      <strong>${escapeHtml(post.title)}</strong>
+                      <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
+                    </a>`
+                  )
+                  .join("")}</div>`
+              : `<div class="recommended-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>`
+          }
         </section>` : ""}
       </div>
       ${sidebar(posts, categories, tags)}
@@ -774,6 +795,11 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
   const body = `<main class="page-shell article-index-page">
     <h1 class="sr-only">${activeCategory ? `${escapeHtml(activeCategory)} 分类文章` : "全部文章"}</h1>
+    ${pageContext({
+      eyebrow: "Archive",
+      title: activeCategory || "全部文章",
+      meta: `${posts.length} 篇`
+    })}
     ${archiveFilters(categories, activeCategory, totalCount)}
     <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
     ${paginationNav(basePath, currentPage, totalPages)}
@@ -826,6 +852,11 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
     <h1 class="sr-only">标签索引</h1>
+    ${pageContext({
+      eyebrow: "Tags",
+      title: "标签索引",
+      meta: `${entries.length} 个`
+    })}
     <section class="tag-matrix-page">
       ${tagCloud(entries)}
     </section>
@@ -854,6 +885,11 @@ function tagCloud(entries, activeTag = "") {
 function tagListPage({ tag, posts, tags }) {
   const body = `<main class="page-shell tags-page">
     <h1 class="sr-only">${escapeHtml(tag)} 标签文章</h1>
+    ${pageContext({
+      eyebrow: "Tag",
+      title: tag,
+      meta: `${posts.length} 篇`
+    })}
     <section class="tag-matrix-page">
       ${tagCloud(tags, tag)}
     </section>
@@ -898,15 +934,25 @@ function postPage(post, posts) {
     .map(({ item }) => item)
     .slice(0, 12);
   const fallbackRelated = related.length ? related : posts.filter((item) => item.slug !== post.slug).slice(0, 8);
-  const toc = post.headings
+  const tocHeadings = post.headings.filter((heading) => heading.level === 2 || heading.level === 3);
+  const toc = tocHeadings
     .filter((heading) => heading.level === 2 || heading.level === 3)
     .map((heading) => `<a class="level-${heading.level}" href="#${heading.id}">${escapeHtml(heading.text)}</a>`)
     .join("");
+  const showRelated = fallbackRelated.length >= 3;
+  const showToc = tocHeadings.length >= 3;
+  const articleShellClass = [
+    "article-shell",
+    showRelated ? "" : "no-related",
+    showToc ? "" : "no-toc"
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  const body = `<main class="article-shell">
-    <aside class="article-aside article-related-aside">
-      ${fallbackRelated.length ? `<section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>` : ""}
-    </aside>
+  const body = `<main class="${articleShellClass}">
+    ${showRelated ? `<aside class="article-aside article-related-aside">
+      <section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>
+    </aside>` : ""}
     <article class="article-page" data-post-slug="${escapeAttr(post.slug)}">
       <header class="article-hero" style="--article-cover: url('${escapeAttr(post.cover)}')">
         <a class="category-pill" href="/categories/${post.categorySlug}/">${escapeHtml(post.category)}</a>
@@ -924,9 +970,9 @@ function postPage(post, posts) {
       </footer>
       ${giscusComments()}
     </article>
-    <aside class="article-aside article-toc-aside">
-      ${toc ? `<section class="sidebar-card toc"><h2>目录</h2>${toc}</section>` : ""}
-    </aside>
+    ${showToc ? `<aside class="article-aside article-toc-aside">
+      <section class="sidebar-card toc"><h2>目录</h2>${toc}</section>
+    </aside>` : ""}
   </main>
   <div class="reading-pill" data-post-slug="${escapeAttr(post.slug)}" data-reading-minutes="${Number.parseInt(post.readingTime, 10) || 1}" aria-label="阅读进度"><span id="readingPercent">0%</span><span id="readingRemaining">剩余 ≈ ${escapeHtml(post.readingTime)}</span></div>
   <script type="module" src="${assetUrl("/src/article.js")}"></script>`;
