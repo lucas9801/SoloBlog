@@ -309,15 +309,17 @@ function markdownToHtml(markdown) {
     listType = null;
   }
 
+  function renderCodeBlock(block) {
+    const languageAttr = block.language ? ` data-language="${escapeAttr(block.language)}"` : "";
+    return `<pre${languageAttr}><button class="code-copy-button" type="button" data-copy-code>复制</button><code>${escapeHtml(block.lines.join("\n"))}</code></pre>`;
+  }
+
   for (const line of lines) {
     const trimmed = line.trim();
 
     if (trimmed.startsWith("```")) {
       if (codeBlock) {
-        const languageAttr = codeBlock.language ? ` data-language="${escapeAttr(codeBlock.language)}"` : "";
-        html.push(
-          `<pre${languageAttr}><code>${escapeHtml(codeBlock.lines.join("\n"))}</code></pre>`
-        );
+        html.push(renderCodeBlock(codeBlock));
         codeBlock = null;
       } else {
         flushParagraph();
@@ -383,6 +385,9 @@ function markdownToHtml(markdown) {
 
   flushParagraph();
   closeList();
+  if (codeBlock) {
+    html.push(renderCodeBlock(codeBlock));
+  }
   return { html: html.join("\n"), headings };
 }
 

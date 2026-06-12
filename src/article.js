@@ -83,5 +83,29 @@ updateReadingProgress();
 updateViewCount().catch(() => {
   for (const node of viewNodes) node.hidden = true;
 });
+
+article?.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-copy-code]");
+  if (!button) return;
+
+  const code = button.closest("pre")?.querySelector("code")?.textContent || "";
+  if (!code) return;
+
+  try {
+    await navigator.clipboard.writeText(code);
+    button.classList.add("is-copied");
+    button.textContent = "已复制";
+    window.setTimeout(() => {
+      button.classList.remove("is-copied");
+      button.textContent = "复制";
+    }, 1400);
+  } catch {
+    button.textContent = "复制失败";
+    window.setTimeout(() => {
+      button.textContent = "复制";
+    }, 1400);
+  }
+});
+
 window.addEventListener("scroll", updateReadingProgress, { passive: true });
 window.addEventListener("resize", updateReadingProgress);

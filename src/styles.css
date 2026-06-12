@@ -1101,6 +1101,11 @@ pre {
   line-height: 1.65;
 }
 
+.article-content pre code {
+  display: block;
+  min-width: max-content;
+}
+
 .article-content pre::before {
   position: absolute;
   top: 0;
@@ -1117,6 +1122,28 @@ pre {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.code-copy-button {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 1;
+  min-height: 20px;
+  padding: 0 8px;
+  border: 1px solid #26384d;
+  border-radius: 4px;
+  background: #152235;
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.code-copy-button:hover,
+.code-copy-button.is-copied {
+  border-color: #3b82f6;
+  color: #eaf2ff;
 }
 
 .article-content pre:not([data-language])::before,
