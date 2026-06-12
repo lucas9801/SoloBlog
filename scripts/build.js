@@ -493,6 +493,9 @@ function pageLayout({
   const pageDescription = description || site.description;
   const canonicalUrl = absoluteUrl(canonical);
   const socialImage = absoluteUrl(image || site.heroCover || "/assets/hero-game-tech.png");
+  const bodyWithContentTarget = body.includes('id="content"')
+    ? body
+    : body.replace("<main", '<main id="content" tabindex="-1"');
   const nav = site.navigation
     .map((item) => {
       const active = current === item.href;
@@ -537,6 +540,7 @@ function pageLayout({
     <title>${escapeHtml(fullTitle)}</title>
   </head>
   <body>
+    <a class="skip-link" href="#content">跳到正文</a>
     <header class="site-header">
       <a class="brand" href="/" aria-label="${escapeAttr(site.title)}">
         <span class="brand-mark" aria-hidden="true"><span></span></span>
@@ -554,7 +558,7 @@ function pageLayout({
         <span aria-hidden="true"></span>
       </button>
     </header>
-    ${body}
+    ${bodyWithContentTarget}
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">Sitemap</a></p>
     </footer>
