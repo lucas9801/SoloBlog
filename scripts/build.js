@@ -424,12 +424,25 @@ function resolvePostCover(cover, category) {
   return cover;
 }
 
-function pageLayout({ title, description, current = "", body, canonical = "/" }) {
+function pageLayout({
+  title,
+  description,
+  current = "",
+  body,
+  canonical = "/",
+  image = site.heroCover || "/assets/hero-game-tech.png",
+  type = "website"
+}) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
+  const pageDescription = description || site.description;
+  const canonicalUrl = absoluteUrl(canonical);
+  const socialImage = absoluteUrl(image || site.heroCover || "/assets/hero-game-tech.png");
   const nav = site.navigation
     .map((item) => {
-      const active = current === item.href ? " active" : "";
-      return `<a class="${active}" href="${item.href}">${escapeHtml(item.label)}</a>`;
+      const active = current === item.href;
+      const activeClass = active ? "active" : "";
+      const ariaCurrent = active ? ` aria-current="page"` : "";
+      return `<a class="${activeClass}" href="${item.href}"${ariaCurrent}>${escapeHtml(item.label)}</a>`;
     })
     .join("");
 
@@ -438,9 +451,20 @@ function pageLayout({ title, description, current = "", body, canonical = "/" })
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="${escapeAttr(description || site.description)}" />
-    <link rel="canonical" href="${escapeAttr(absoluteUrl(canonical))}" />
-    <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="/rss.xml" />
+    <meta name="description" content="${escapeAttr(pageDescription)}" />
+    <meta property="og:type" content="${escapeAttr(type)}" />
+    <meta property="og:title" content="${escapeAttr(fullTitle)}" />
+    <meta property="og:description" content="${escapeAttr(pageDescription)}" />
+    <meta property="og:url" content="${escapeAttr(canonicalUrl)}" />
+    <meta property="og:site_name" content="${escapeAttr(site.title)}" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="${escapeAttr(socialImage)}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeAttr(fullTitle)}" />
+    <meta name="twitter:description" content="${escapeAttr(pageDescription)}" />
+    <meta name="twitter:image" content="${escapeAttr(socialImage)}" />
+    <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
+    <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
     <script>
       (() => {
         try {
@@ -565,7 +589,20 @@ function archivePostCard(post) {
   </article>`;
 }
 
+function rankingPayload(posts) {
+  return escapeAttr(
+    JSON.stringify(
+      posts.map((post) => ({
+        slug: post.slug,
+        title: post.title,
+        url: post.url
+      }))
+    )
+  );
+}
+
 function sidebar(posts, categories, tags) {
+  const fallbackRanking = posts.slice(0, 5);
   return `<aside class="blog-sidebar">
     <section class="sidebar-card">
       <h2>分类</h2>
@@ -581,6 +618,15 @@ function sidebar(posts, categories, tags) {
       <div class="tag-cloud">${tags
         .slice(0, 18)
         .map(([tag, list]) => `<a href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`)
+        .join("")}</div>
+    </section>
+    <section class="sidebar-card ranking-card">
+      <h2>阅读排行</h2>
+      <div class="ranking-list" data-ranking-posts="${rankingPayload(posts)}">${fallbackRanking
+        .map(
+          (post, index) =>
+            `<a class="ranking-link" href="${post.url}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small></a>`
+        )
         .join("")}</div>
     </section>
     <section class="sidebar-card subscribe-card">
@@ -641,23 +687,28 @@ function archiveFilters(categories, activeCategory, totalCount) {
   const allActive = !activeCategory;
   return `<div class="archive-filter-bar">
     <nav class="archive-filters" aria-label="文章分类筛选">
-      <a class="${allActive ? "active" : ""}" href="/archive/">全部 <b>${totalCount}</b></a>
+      <a class="${allActive ? "active" : ""}" href="/archive/"${allActive ? ` aria-current="page"` : ""}>全部 <b>${totalCount}</b></a>
       ${categories
         .map(([category, list]) => {
-          const active = category === activeCategory ? " active" : "";
-          return `<a class="${active}" href="/categories/${slugify(category)}/">${escapeHtml(category)} <b>${list.length}</b></a>`;
+          const active = category === activeCategory;
+          const activeClass = active ? "active" : "";
+          const ariaCurrent = active ? ` aria-current="page"` : "";
+          return `<a class="${activeClass}" href="/categories/${slugify(category)}/"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
         })
         .join("")}
     </nav>
   </div>`;
 }
 
-function pageContext({ eyebrow, title, meta }) {
-  return `<div class="page-context">
-    <span>${escapeHtml(eyebrow)}</span>
-    <strong>${escapeHtml(title)}</strong>
-    <b>${escapeHtml(meta)}</b>
-  </div>`;
+function pageContext({ eyebrow = "", title, meta = "", description = "" }) {
+  return `<header class="page-context">
+    ${eyebrow ? `<span class="page-context-kicker">${escapeHtml(eyebrow)}</span>` : ""}
+    <div class="page-context-copy">
+      <h1>${escapeHtml(title)}</h1>
+      ${description ? `<p>${escapeHtml(description)}</p>` : ""}
+    </div>
+    ${meta ? `<b>${escapeHtml(meta)}</b>` : ""}
+  </header>`;
 }
 
 function paginationNav(basePath, currentPage, totalPages) {
@@ -736,7 +787,6 @@ function homePage(posts, categories, tags) {
   const latest = posts.filter((post) => !post.featured).slice(0, site.postsPerPage || 9);
   const hero = site.hero;
   const recommended = featuredPosts.slice(0, 3);
-  const latestIsCompact = latest.length > 0 && latest.length < 3;
 
   const body = `<main>
     <section class="hero-section">
@@ -761,7 +811,7 @@ function homePage(posts, categories, tags) {
               <h2>推荐阅读</h2>
             </div>
           </div>
-          <div class="recommended-grid">
+          <div class="home-post-grid">
             ${recommended.map((post) => archivePostCard(post)).join("")}
           </div>
         </section>` : ""}
@@ -773,19 +823,7 @@ function homePage(posts, categories, tags) {
             </div>
             <a href="/archive/">全部文章 →</a>
           </div>
-          ${
-            latestIsCompact
-              ? `<div class="update-list">${latest
-                  .map(
-                    (post) => `<a class="update-link" href="${post.url}">
-                      <span>${escapeHtml(post.category)}</span>
-                      <strong>${escapeHtml(post.title)}</strong>
-                      <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
-                    </a>`
-                  )
-                  .join("")}</div>`
-              : `<div class="recommended-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>`
-          }
+          <div class="home-post-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>
         </section>` : ""}
       </div>
       ${sidebar(posts, categories, tags)}
@@ -799,10 +837,11 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
   const body = `<main class="page-shell article-index-page">
-    <h1 class="sr-only">${activeCategory ? `${escapeHtml(activeCategory)} 分类文章` : "全部文章"}</h1>
     ${pageContext({
-      eyebrow: "Archive",
-      title: activeCategory || "全部文章",
+      title: activeCategory ? `${activeCategory} 分类` : "全部文章",
+      description: activeCategory
+        ? `筛选 ${activeCategory} 分类下的技术笔记。`
+        : "按时间、分类和主题浏览所有技术笔记。",
       meta: `${posts.length} 篇`
     })}
     ${archiveFilters(categories, activeCategory, totalCount)}
@@ -811,7 +850,9 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
   </main>`;
   return pageLayout({
     title: activeCategory ? `分类：${activeCategory}` : "全部文章",
-    description: activeCategory ? `${activeCategory} 分类下的全部文章。` : "按时间浏览全部文章。",
+    description: activeCategory
+      ? `筛选 ${activeCategory} 分类下的技术笔记。`
+      : "按时间、分类和主题浏览所有技术笔记。",
     current: "/archive/",
     body,
     canonical: pageHref(basePath, currentPage)
@@ -856,10 +897,9 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
-    <h1 class="sr-only">标签索引</h1>
     ${pageContext({
-      eyebrow: "Tags",
       title: "标签索引",
+      description: "按技术主题、工具和问题类型浏览文章。",
       meta: `${entries.length} 个`
     })}
     <section class="tag-matrix-page">
@@ -880,8 +920,10 @@ function tagCloud(entries, activeTag = "") {
   return `<nav class="tag-matrix" aria-label="标签索引">
     ${entries
       .map(([tag, list]) => {
-        const active = tag === activeTag ? " active" : "";
-        return `<a class="tag-index-item ${tagWeightClass(list.length, maxCount)}${active}" href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`;
+        const active = tag === activeTag;
+        const activeClass = active ? " active" : "";
+        const ariaCurrent = active ? ` aria-current="page"` : "";
+        return `<a class="tag-index-item ${tagWeightClass(list.length, maxCount)}${activeClass}" href="/tags/${slugify(tag)}/"${ariaCurrent}><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`;
       })
       .join("")}
   </nav>`;
@@ -889,10 +931,9 @@ function tagCloud(entries, activeTag = "") {
 
 function tagListPage({ tag, posts, tags }) {
   const body = `<main class="page-shell tags-page">
-    <h1 class="sr-only">${escapeHtml(tag)} 标签文章</h1>
     ${pageContext({
-      eyebrow: "Tag",
-      title: tag,
+      title: `${tag} 标签`,
+      description: `当前标签下的全部技术笔记。`,
       meta: `${posts.length} 篇`
     })}
     <section class="tag-matrix-page">
@@ -982,7 +1023,14 @@ function postPage(post, posts) {
   <div class="reading-pill" data-post-slug="${escapeAttr(post.slug)}" data-reading-minutes="${Number.parseInt(post.readingTime, 10) || 1}" aria-label="阅读进度"><span id="readingPercent">0%</span><span id="readingRemaining">剩余 ≈ ${escapeHtml(post.readingTime)}</span></div>
   <script type="module" src="${assetUrl("/src/article.js")}"></script>`;
 
-  return pageLayout({ title: post.title, description: post.summary, body, canonical: post.url });
+  return pageLayout({
+    title: post.title,
+    description: post.summary,
+    body,
+    canonical: post.url,
+    image: post.cover,
+    type: "article"
+  });
 }
 
 async function aboutPage() {
