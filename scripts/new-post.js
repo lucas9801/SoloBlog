@@ -76,6 +76,8 @@ slug: ${slug}
 date: ${date}
 category: 未分类
 tags: []
+# series: 专题名称
+# seriesOrder: 1
 summary: 这里写一句文章摘要。
 status: draft
 ---

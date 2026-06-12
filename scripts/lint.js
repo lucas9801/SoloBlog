@@ -139,6 +139,7 @@ for (const [category, cover] of Object.entries(site.categoryCovers || {})) {
 }
 
 const slugs = new Map();
+const seriesOrders = new Map();
 for (const post of posts) {
   const { file, data, body, hasFrontMatter } = post;
   const slug = data.slug || slugify(data.title || path.basename(file, ".md"));
@@ -162,6 +163,23 @@ for (const post of posts) {
     await existsLocalPath(data.cover).catch(() => {
       failures.push(`${file} cover does not exist: ${data.cover}`);
     });
+  }
+
+  if (data.seriesOrder && (!/^\d+$/.test(String(data.seriesOrder)) || Number.parseInt(data.seriesOrder, 10) <= 0)) {
+    failures.push(`${file} seriesOrder must be a positive integer when set.`);
+  }
+  if (data.seriesOrder && !data.series) {
+    failures.push(`${file} seriesOrder requires series.`);
+  }
+  if (data.series && !data.seriesOrder) {
+    warnings.push(`${file} has series but no seriesOrder; ordering will fall back to date.`);
+  }
+  if (data.series && data.seriesOrder) {
+    const seriesOrderKey = `${data.series}:${data.seriesOrder}`;
+    if (seriesOrders.has(seriesOrderKey)) {
+      failures.push(`${file} duplicates seriesOrder ${data.seriesOrder} in series "${data.series}" from ${seriesOrders.get(seriesOrderKey)}.`);
+    }
+    seriesOrders.set(seriesOrderKey, file);
   }
 
   for (const asset of markdownAssetPaths(body)) {

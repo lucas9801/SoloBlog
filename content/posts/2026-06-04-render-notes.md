@@ -4,6 +4,8 @@ slug: render-optimization-checklist
 date: 2026-06-04
 category: 图形渲染
 tags: [渲染, Shader, 性能]
+series: 性能与渲染排查
+seriesOrder: 1
 summary: 一份用于定位渲染性能问题的实践清单，覆盖帧调试、Draw Call、Overdraw、纹理和 Shader 分支。
 featured: true
 status: published

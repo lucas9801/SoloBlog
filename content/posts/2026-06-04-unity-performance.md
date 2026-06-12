@@ -4,6 +4,8 @@ slug: unity-performance-start
 date: 2026-06-04
 category: Unity
 tags: [Unity, 性能, Profiler]
+series: 性能与渲染排查
+seriesOrder: 2
 summary: 面对卡顿问题时，先建立性能预算，再用 Profiler 区分 CPU、GPU、内存和 IO 的瓶颈。
 status: published
 ---

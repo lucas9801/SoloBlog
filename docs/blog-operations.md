@@ -156,6 +156,8 @@ date: 2026-06-04
 updated: 2026-06-05
 category: 图形渲染
 tags: [渲染, Shader, 性能]
+series: 性能与渲染排查
+seriesOrder: 1
 summary: 一份用于定位渲染性能问题的实践清单。
 cover: /assets/hero-game-tech.png
 featured: true
@@ -173,6 +175,8 @@ status: published
 | `updated` | 否 | 更新日期，格式 `YYYY-MM-DD` |
 | `category` | 推荐 | 分类，一个文章只能设置一个分类 |
 | `tags` | 推荐 | 标签，一个文章可以设置多个 |
+| `series` | 否 | 专题/系列名称，用来把多篇文章组织成连续阅读链路 |
+| `seriesOrder` | 否 | 专题内排序，正整数，数字越小越靠前 |
 | `summary` | 推荐 | 摘要，会显示在首页、列表页、RSS 和搜索结果 |
 | `cover` | 推荐 | 文章列表页封面图路径，例如 `/assets/my-cover.png` |
 | `featured` | 否 | 是否作为首页精选文章 |
@@ -233,6 +237,23 @@ tags: [Shader, 渲染, 移动端]
 ```
 
 标签可以比分类更细。建议用来描述技术点、工具、问题类型。
+
+## 设置专题
+
+专题适合组织一组需要连续阅读的文章，例如：
+
+```yaml
+series: 性能与渲染排查
+seriesOrder: 1
+```
+
+同一个 `series` 会自动生成专题页：
+
+```text
+/series/性能与渲染排查/
+```
+
+文章页底部也会自动显示当前专题的阅读列表。`seriesOrder` 必须是正整数，建议从 1 开始递增；同一专题内不要重复。
 
 ## 设置精选文章
 

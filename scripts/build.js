@@ -444,7 +444,7 @@ function siteSchema() {
 }
 
 function articleSchema(post) {
-  return {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: post.title,
@@ -468,6 +468,17 @@ function articleSchema(post) {
       url: absoluteUrl("/")
     }
   };
+
+  if (post.series) {
+    schema.isPartOf = {
+      "@type": "CreativeWorkSeries",
+      name: post.series,
+      url: absoluteUrl(`/series/${slugify(post.series)}/`)
+    };
+    if (post.seriesOrder > 0) schema.position = post.seriesOrder;
+  }
+
+  return schema;
 }
 
 function categoryCover(category) {
@@ -810,6 +821,8 @@ async function loadPosts() {
     const summary = data.summary || stripMarkdown(body).slice(0, 120);
     const category = data.category || "未分类";
     const tags = Array.isArray(data.tags) ? data.tags : [];
+    const series = data.series || "";
+    const seriesOrder = Number.parseInt(data.seriesOrder || "0", 10) || 0;
     const rendered = markdownToHtml(body);
     const text = stripMarkdown(body);
 
@@ -822,6 +835,9 @@ async function loadPosts() {
       category,
       categorySlug: slugify(category),
       tags,
+      series,
+      seriesSlug: series ? slugify(series) : "",
+      seriesOrder,
       summary,
       featured: Boolean(data.featured),
       readingTime: readingTime(body),
@@ -1036,6 +1052,120 @@ function listPage({ title, description, posts, current, canonical }) {
   return pageLayout({ title, description, current, body, canonical });
 }
 
+function sortSeriesPosts(posts) {
+  return [...posts].sort(
+    (a, b) =>
+      (a.seriesOrder || 9999) - (b.seriesOrder || 9999) ||
+      new Date(a.date) - new Date(b.date) ||
+      a.title.localeCompare(b.title, "zh-CN")
+  );
+}
+
+function seriesIndexPage(entries) {
+  const body = `<main class="page-shell series-page">
+    ${pageContext({
+      title: "专题索引",
+      description: "按长期主题浏览成组沉淀的技术笔记。",
+      meta: `${entries.length} 个`
+    })}
+    <section class="series-grid">
+      ${entries
+        .map(([name, list]) => {
+          const sorted = sortSeriesPosts(list);
+          const latest = sorted[sorted.length - 1];
+          return `<a class="series-card" href="/series/${slugify(name)}/">
+            <span>专题</span>
+            <h2>${escapeHtml(name)}</h2>
+            <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
+            <small>${list.length} 篇 · 最近 ${formatDate(latest?.date || latestPostDate(list))}</small>
+          </a>`;
+        })
+        .join("")}
+    </section>
+  </main>`;
+  return pageLayout({ title: "专题", description: "按专题浏览技术笔记。", current: "/series/", body, canonical: "/series/" });
+}
+
+function seriesPage({ name, posts, seriesEntries }) {
+  const sorted = sortSeriesPosts(posts);
+  const body = `<main class="page-shell series-page">
+    ${pageContext({
+      title: name,
+      description: "围绕同一长期主题连续阅读相关技术笔记。",
+      meta: `${sorted.length} 篇`
+    })}
+    <section class="series-timeline" aria-label="${escapeAttr(name)} 专题文章">
+      ${sorted
+        .map(
+          (post, index) => `<article class="series-timeline-item">
+            <span>${String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <div class="post-meta">
+                <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
+                <span>${escapeHtml(post.category)}</span>
+                <span>${escapeHtml(post.readingTime)}</span>
+                ${viewCountMeta(post)}
+              </div>
+              <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
+              <p>${escapeHtml(post.summary)}</p>
+              <div class="tag-row">${post.tags
+                .slice(0, 4)
+                .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+                .join("")}</div>
+            </div>
+          </article>`
+        )
+        .join("")}
+    </section>
+    ${
+      seriesEntries.length > 1
+        ? `<section class="series-related">
+          <h2>其他专题</h2>
+          <div class="tag-cloud">${seriesEntries
+            .filter(([seriesName]) => seriesName !== name)
+            .slice(0, 8)
+            .map(([seriesName, list]) => `<a href="/series/${slugify(seriesName)}/"><span>${escapeHtml(seriesName)}</span><b>${list.length}</b></a>`)
+            .join("")}</div>
+        </section>`
+        : ""
+    }
+  </main>`;
+  return pageLayout({
+    title: `专题：${name}`,
+    description: `${name} 专题下的全部技术笔记。`,
+    current: "/series/",
+    body,
+    canonical: `/series/${slugify(name)}/`
+  });
+}
+
+function seriesPanel(post, posts) {
+  if (!post.series) return "";
+  const items = sortSeriesPosts(posts.filter((item) => item.series === post.series));
+  if (items.length < 2) return "";
+
+  return `<section class="series-panel" aria-labelledby="series-panel-title">
+    <div class="series-panel-head">
+      <span>专题</span>
+      <h2 id="series-panel-title">${escapeHtml(post.series)}</h2>
+      <a href="/series/${post.seriesSlug}/">查看专题</a>
+    </div>
+    <ol>
+      ${items
+        .map((item, index) => {
+          const current = item.slug === post.slug;
+          return `<li${current ? ` class="active"` : ""}>
+            <a href="${item.url}"${current ? ` aria-current="page"` : ""}>
+              <span>${String(index + 1).padStart(2, "0")}</span>
+              <strong>${escapeHtml(item.title)}</strong>
+            </a>
+          </li>`;
+        })
+        .join("")}
+    </ol>
+  </section>`;
+}
+
 function postNavigation(post, posts) {
   const index = posts.findIndex((item) => item.slug === post.slug);
   if (index === -1) return "";
@@ -1100,6 +1230,7 @@ function postPage(post, posts) {
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
         <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
+        ${seriesPanel(post, posts)}
         ${postNavigation(post, posts)}
       </footer>
       ${giscusComments()}
@@ -1167,7 +1298,7 @@ function rss(posts) {
     .slice(0, 20)
     .map(
       (post) => {
-        const categories = Array.from(new Set([post.category, ...post.tags].filter(Boolean)));
+        const categories = Array.from(new Set([post.category, post.series, ...post.tags].filter(Boolean)));
         return `<item>
   <title>${escapeHtml(post.title)}</title>
   <link>${absoluteUrl(post.url)}</link>
@@ -1215,21 +1346,26 @@ function paginatedSitemapEntries(basePath, list, priority) {
   return Array.from({ length: totalPages }, (_, index) => sitemapEntry(pageHref(basePath, index + 1), lastmod, priority));
 }
 
-function sitemap(posts, categories, tags) {
+function sitemap(posts, categories, tags, seriesEntries) {
   const latest = latestPostDate(posts);
   const archiveUrls = paginatedSitemapEntries("/archive/", posts, "0.8");
   const categoryUrls = categories.flatMap(([category, list]) =>
     paginatedSitemapEntries(`/categories/${slugify(category)}/`, list, "0.7")
   );
   const tagUrls = tags.map(([tag, list]) => sitemapEntry(`/tags/${slugify(tag)}/`, latestPostDate(list), "0.6"));
+  const seriesUrls = seriesEntries.map(([seriesName, list]) =>
+    sitemapEntry(`/series/${slugify(seriesName)}/`, latestPostDate(list), "0.7")
+  );
   const urls = [
     sitemapEntry("/", latest, "1.0"),
     ...archiveUrls,
+    sitemapEntry("/series/", latest, "0.7"),
     sitemapEntry("/tags/", latest, "0.7"),
     sitemapEntry("/search/", latest, "0.5"),
     sitemapEntry("/about/", latest, "0.5"),
     ...posts.map((post) => sitemapEntry(post.url, post.updated || post.date, "0.9")),
     ...categoryUrls,
+    ...seriesUrls,
     ...tagUrls
   ];
   return `<?xml version="1.0" encoding="UTF-8" ?>
@@ -1241,6 +1377,10 @@ ${urls.join("\n")}
 const posts = await loadPosts();
 const categories = groupBy(posts, (post) => post.category);
 const tags = groupBy(posts, (post) => post.tags);
+const seriesEntries = groupBy(
+  posts.filter((post) => post.series),
+  (post) => post.series
+);
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
@@ -1259,6 +1399,7 @@ await writeArchivePages({
   totalCount: posts.length
 });
 await writePage("tags", tagIndexPage(tags, posts));
+await writePage("series", seriesIndexPage(seriesEntries));
 await writePage("search", searchPage());
 await writePage("about", await aboutPage());
 
@@ -1289,12 +1430,24 @@ for (const [tag, list] of tags) {
   );
 }
 
+for (const [seriesName, list] of seriesEntries) {
+  await writePage(
+    path.join("series", slugify(seriesName)),
+    seriesPage({
+      name: seriesName,
+      posts: list,
+      seriesEntries
+    })
+  );
+}
+
 await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((post) => ({
   title: post.title,
   slug: post.slug,
   url: post.url,
   date: post.date,
   category: post.category,
+  series: post.series,
   tags: post.tags,
   cover: post.cover,
   readingTime: post.readingTime,
@@ -1302,7 +1455,7 @@ await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((
   text: post.text
 })), null, 2), "utf8");
 await writeFile(path.join(dist, "rss.xml"), rss(posts), "utf8");
-await writeFile(path.join(dist, "sitemap.xml"), sitemap(posts, categories, tags), "utf8");
+await writeFile(path.join(dist, "sitemap.xml"), sitemap(posts, categories, tags, seriesEntries), "utf8");
 await writeFile(
   path.join(dist, "robots.txt"),
   `User-agent: *\nAllow: /\n\nSitemap: ${absoluteUrl("/sitemap.xml")}\n`,
