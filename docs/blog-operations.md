@@ -49,6 +49,8 @@ npm run new:post -- "文章标题"
 npm run lint
 ```
 
+这一步会检查站点配置、生产域名、评论/阅读量配置、文章 front matter、重复 slug、发布文章的分类/标签/摘要、封面和正文图片路径、RSS/sitemap 构建能力等。发布前建议一定先跑。
+
 生成静态网站：
 
 ```powershell
@@ -81,6 +83,8 @@ npm run new:post -- "Unity 性能优化记录"
 content/posts/2026-06-04-unity-性能优化记录.md
 ```
 
+如果同名文章或同名 slug 已经存在，脚本会自动追加编号，避免覆盖已有文章。
+
 打开这个文件，会看到类似内容：
 
 ```yaml
@@ -112,6 +116,14 @@ status: draft
 ```yaml
 status: published
 ```
+
+发布文章至少要满足这些条件：
+
+- `category` 不能还是 `未分类`
+- `tags` 至少有一个
+- `summary` 不能还是默认占位文本
+- `slug` 不能和其他文章重复
+- `cover` 和正文图片如果使用本地路径，文件必须存在
 
 然后运行：
 

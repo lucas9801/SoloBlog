@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const title = process.argv.slice(2).join(" ").trim();
@@ -18,11 +18,57 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "") || "new-post";
 }
 
+function parseFrontMatterValue(value) {
+  return value.replace(/^["']|["']$/g, "");
+}
+
+function parseSlug(source) {
+  const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return "";
+  for (const line of match[1].split(/\r?\n/)) {
+    const separator = line.indexOf(":");
+    if (separator === -1) continue;
+    const key = line.slice(0, separator).trim();
+    if (key !== "slug") continue;
+    return parseFrontMatterValue(line.slice(separator + 1).trim());
+  }
+  return "";
+}
+
+async function existingSlugs(postsDir) {
+  const files = await readdir(postsDir).catch(() => []);
+  const slugs = new Set();
+  for (const file of files.filter((item) => item.endsWith(".md"))) {
+    const raw = await readFile(path.join(postsDir, file), "utf8");
+    const slug = parseSlug(raw);
+    if (slug) slugs.add(slug);
+  }
+  return slugs;
+}
+
+async function fileExists(file) {
+  try {
+    await access(file);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const now = new Date();
 const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 const date = localDate.toISOString().slice(0, 10);
-const slug = slugify(title);
-const file = path.join(process.cwd(), "content", "posts", `${date}-${slug}.md`);
+const postsDir = path.join(process.cwd(), "content", "posts");
+const usedSlugs = await existingSlugs(postsDir);
+const baseSlug = slugify(title);
+let slug = baseSlug;
+let suffix = 2;
+let file = path.join(postsDir, `${date}-${slug}.md`);
+while (usedSlugs.has(slug) || (await fileExists(file))) {
+  slug = `${baseSlug}-${suffix}`;
+  file = path.join(postsDir, `${date}-${slug}.md`);
+  suffix += 1;
+}
 
 const template = `---
 title: ${title}
@@ -42,7 +88,7 @@ status: draft
 `;
 
 await mkdir(path.dirname(file), { recursive: true });
-await writeFile(file, template, "utf8");
+await writeFile(file, template, { encoding: "utf8", flag: "wx" });
 
 console.log(`Created ${file}`);
 console.log("Edit it, change status to published, then run: npm run build");

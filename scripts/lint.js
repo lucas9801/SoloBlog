@@ -34,26 +34,81 @@ const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file
   file.endsWith(".md")
 );
 
-if (postFiles.length === 0) {
-  throw new Error("content/posts must contain at least one markdown post.");
+const failures = [];
+const warnings = [];
+
+function parseFrontMatterValue(value) {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (value.startsWith("[") && value.endsWith("]")) {
+    return value
+      .slice(1, -1)
+      .split(",")
+      .map((item) => item.trim().replace(/^["']|["']$/g, ""))
+      .filter(Boolean);
+  }
+  return value.replace(/^["']|["']$/g, "");
 }
 
-const postChecks = await Promise.all(
+function parseFrontMatter(source) {
+  const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!match) return { data: {}, body: source, hasFrontMatter: false };
+
+  const data = {};
+  for (const line of match[1].split(/\r?\n/)) {
+    const separator = line.indexOf(":");
+    if (separator === -1) continue;
+    const key = line.slice(0, separator).trim();
+    const raw = line.slice(separator + 1).trim();
+    data[key] = parseFrontMatterValue(raw);
+  }
+
+  return { data, body: match[2], hasFrontMatter: true };
+}
+
+function slugify(value = "") {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function isDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || "")) && !Number.isNaN(Date.parse(value));
+}
+
+async function existsLocalPath(urlPath) {
+  if (!urlPath.startsWith("/") || /^\/(posts|archive|categories|tags|search|about)\//.test(urlPath)) return true;
+  const pathname = urlPath.split(/[?#]/)[0].replace(/^\/+/, "");
+  await access(path.join(root, pathname));
+  return true;
+}
+
+function markdownAssetPaths(markdown) {
+  const paths = [];
+  for (const match of markdown.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)) paths.push(match[1]);
+  return paths.filter((item) => item.startsWith("/"));
+}
+
+if (postFiles.length === 0) {
+  failures.push("content/posts must contain at least one markdown post.");
+}
+
+const posts = await Promise.all(
   postFiles.map(async (file) => {
     const raw = await readFile(path.join(root, "content/posts", file), "utf8");
-    return {
-      file,
-      hasTitle: /^title:\s+.+$/m.test(raw),
-      hasDate: /^date:\s+\d{4}-\d{2}-\d{2}$/m.test(raw),
-      hasStatus: /^status:\s+(published|draft)$/m.test(raw),
-      hasBody: raw.split("---").slice(2).join("---").trim().length > 20
-    };
+    const parsed = parseFrontMatter(raw);
+    return { file, raw, ...parsed };
   })
 );
 
-const failures = [];
-
 if (!site.title || !site.navigation?.length) failures.push("site config needs title and navigation.");
+if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
+  failures.push("site baseUrl must be an https URL ending with /.");
+}
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
@@ -64,12 +119,68 @@ if (site.baseUrl !== "https://blog.solus.games/") failures.push("site baseUrl mu
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (heroStats.size < 100000) failures.push("Hero asset appears too small or missing.");
+if (site.comments?.enabled) {
+  for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {
+    if (!site.comments[key]) failures.push(`comments.${key} is required when comments are enabled.`);
+  }
+}
+if (site.views?.enabled !== false) {
+  await access(path.join(root, "functions/api/views.js")).catch(() => {
+    failures.push("views are enabled, but functions/api/views.js is missing.");
+  });
+  await access(path.join(root, "migrations/0001_post_views.sql")).catch(() => {
+    failures.push("views are enabled, but migrations/0001_post_views.sql is missing.");
+  });
+}
+for (const [category, cover] of Object.entries(site.categoryCovers || {})) {
+  await existsLocalPath(cover).catch(() => {
+    failures.push(`category cover for ${category} does not exist: ${cover}`);
+  });
+}
 
-for (const check of postChecks) {
-  if (!check.hasTitle) failures.push(`${check.file} is missing title.`);
-  if (!check.hasDate) failures.push(`${check.file} is missing YYYY-MM-DD date.`);
-  if (!check.hasStatus) failures.push(`${check.file} is missing status.`);
-  if (!check.hasBody) failures.push(`${check.file} body is too short.`);
+const slugs = new Map();
+for (const post of posts) {
+  const { file, data, body, hasFrontMatter } = post;
+  const slug = data.slug || slugify(data.title || path.basename(file, ".md"));
+  const status = data.status;
+
+  if (!hasFrontMatter) failures.push(`${file} is missing front matter.`);
+  if (!data.title) failures.push(`${file} is missing title.`);
+  if (!slug) failures.push(`${file} has an empty slug.`);
+  if (!isDate(data.date)) failures.push(`${file} is missing YYYY-MM-DD date.`);
+  if (data.updated && !isDate(data.updated)) failures.push(`${file} has invalid updated date.`);
+  if (isDate(data.date) && isDate(data.updated) && new Date(data.updated) < new Date(data.date)) {
+    failures.push(`${file} updated date cannot be earlier than date.`);
+  }
+  if (!["published", "draft"].includes(status)) failures.push(`${file} status must be published or draft.`);
+  if (body.trim().length <= 20) failures.push(`${file} body is too short.`);
+
+  if (slugs.has(slug)) failures.push(`${file} duplicates slug "${slug}" from ${slugs.get(slug)}.`);
+  slugs.set(slug, file);
+
+  if (data.cover) {
+    await existsLocalPath(data.cover).catch(() => {
+      failures.push(`${file} cover does not exist: ${data.cover}`);
+    });
+  }
+
+  for (const asset of markdownAssetPaths(body)) {
+    await existsLocalPath(asset).catch(() => {
+      failures.push(`${file} references missing asset: ${asset}`);
+    });
+  }
+
+  if (status === "published") {
+    if (!data.category || data.category === "未分类") failures.push(`${file} published posts need a real category.`);
+    if (!Array.isArray(data.tags) || data.tags.length === 0) failures.push(`${file} published posts need at least one tag.`);
+    if (!data.summary || data.summary === "这里写一句文章摘要。" || data.summary.length < 12) {
+      failures.push(`${file} published posts need a useful summary.`);
+    }
+  }
+
+  if (status === "draft" && data.summary === "这里写一句文章摘要。") {
+    warnings.push(`${file} still has the default summary placeholder.`);
+  }
 }
 
 if (failures.length > 0) {
@@ -77,6 +188,10 @@ if (failures.length > 0) {
     console.error(`Failed: ${failure}`);
   }
   process.exit(1);
+}
+
+for (const warning of warnings) {
+  console.warn(`Warning: ${warning}`);
 }
 
 console.log(`Lint checks passed for ${postFiles.length} posts.`);
