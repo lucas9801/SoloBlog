@@ -279,8 +279,15 @@ function inlineMarkdown(text) {
     codeTokens.push(`<code>${code}</code>`);
     return token;
   });
-  html = html.replace(/!\[([^\]]*)]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
-  html = html.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  html = html.replace(
+    /!\[([^\]]*)]\(([^)]+)\)/g,
+    (_, alt, src) => `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" />`
+  );
+  html = html.replace(/\[([^\]]+)]\(([^)]+)\)/g, (_, label, href) => {
+    const external = /^https?:\/\//i.test(href) && !href.startsWith(site.baseUrl);
+    const externalAttrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+    return `<a href="${href}"${externalAttrs}>${label}</a>`;
+  });
   html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
   codeTokens.forEach((code, index) => {
@@ -733,11 +740,6 @@ function paginate(list, page, perPage) {
   };
 }
 
-function paginationUrls(basePath, list) {
-  const totalPages = Math.max(1, Math.ceil(list.length / archivePostsPerPage()));
-  return Array.from({ length: totalPages }, (_, index) => pageHref(basePath, index + 1));
-}
-
 function archiveFilters(categories, activeCategory, totalCount) {
   const allActive = !activeCategory;
   return `<div class="archive-filter-bar">
@@ -1030,6 +1032,29 @@ function listPage({ title, description, posts, current, canonical }) {
   return pageLayout({ title, description, current, body, canonical });
 }
 
+function postNavigation(post, posts) {
+  const index = posts.findIndex((item) => item.slug === post.slug);
+  if (index === -1) return "";
+
+  const previous = posts[index - 1] || null;
+  const next = posts[index + 1] || null;
+  if (!previous && !next) return "";
+
+  const link = (item, label) =>
+    item
+      ? `<a href="${item.url}">
+        <span>${label}</span>
+        <strong>${escapeHtml(item.title)}</strong>
+        <small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small>
+      </a>`
+      : `<span class="post-nav-empty" aria-hidden="true"></span>`;
+
+  return `<nav id="post-navigation" class="post-navigation" aria-label="文章前后导航">
+    ${link(previous, "上一篇")}
+    ${link(next, "下一篇")}
+  </nav>`;
+}
+
 function postPage(post, posts) {
   const related = posts
     .filter((item) => item.slug !== post.slug)
@@ -1071,6 +1096,7 @@ function postPage(post, posts) {
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
         <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
+        ${postNavigation(post, posts)}
       </footer>
       ${giscusComments()}
     </article>
@@ -1129,49 +1155,82 @@ function searchPage() {
 }
 
 function rss(posts) {
+  const latestDate = posts.reduce(
+    (latest, post) => (new Date(post.updated || post.date) > new Date(latest) ? post.updated || post.date : latest),
+    posts[0]?.updated || posts[0]?.date || new Date().toISOString()
+  );
   const items = posts
     .slice(0, 20)
     .map(
-      (post) => `<item>
+      (post) => {
+        const categories = Array.from(new Set([post.category, ...post.tags].filter(Boolean)));
+        return `<item>
   <title>${escapeHtml(post.title)}</title>
   <link>${absoluteUrl(post.url)}</link>
-  <guid>${absoluteUrl(post.url)}</guid>
+  <guid isPermaLink="true">${absoluteUrl(post.url)}</guid>
   <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+  ${categories.map((category) => `<category>${escapeHtml(category)}</category>`).join("\n  ")}
   <description>${escapeHtml(post.summary)}</description>
-</item>`
+</item>`;
+      }
     )
     .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>${escapeHtml(site.title)}</title>
   <link>${absoluteUrl("/")}</link>
+  <atom:link href="${absoluteUrl("/rss.xml")}" rel="self" type="application/rss+xml" />
   <description>${escapeHtml(site.description)}</description>
   <language>${escapeHtml(site.language || "zh-CN")}</language>
+  <lastBuildDate>${new Date(latestDate).toUTCString()}</lastBuildDate>
   ${items}
 </channel>
 </rss>`;
 }
 
+function latestPostDate(list) {
+  return (list || [])
+    .map((post) => post.updated || post.date)
+    .filter(Boolean)
+    .sort((a, b) => new Date(b) - new Date(a))[0];
+}
+
+function sitemapEntry(loc, lastmod, priority = "0.7") {
+  const lastmodXml = lastmod ? `\n    <lastmod>${escapeHtml(lastmod)}</lastmod>` : "";
+  return `  <url>
+    <loc>${escapeHtml(absoluteUrl(loc))}</loc>${lastmodXml}
+    <priority>${priority}</priority>
+  </url>`;
+}
+
+function paginatedSitemapEntries(basePath, list, priority) {
+  const totalPages = Math.max(1, Math.ceil(list.length / archivePostsPerPage()));
+  const lastmod = latestPostDate(list);
+  return Array.from({ length: totalPages }, (_, index) => sitemapEntry(pageHref(basePath, index + 1), lastmod, priority));
+}
+
 function sitemap(posts, categories, tags) {
-  const archiveUrls = paginationUrls("/archive/", posts);
+  const latest = latestPostDate(posts);
+  const archiveUrls = paginatedSitemapEntries("/archive/", posts, "0.8");
   const categoryUrls = categories.flatMap(([category, list]) =>
-    paginationUrls(`/categories/${slugify(category)}/`, list)
+    paginatedSitemapEntries(`/categories/${slugify(category)}/`, list, "0.7")
   );
+  const tagUrls = tags.map(([tag, list]) => sitemapEntry(`/tags/${slugify(tag)}/`, latestPostDate(list), "0.6"));
   const urls = [
-    "/",
+    sitemapEntry("/", latest, "1.0"),
     ...archiveUrls,
-    "/tags/",
-    "/search/",
-    "/about/",
-    ...posts.map((post) => post.url),
+    sitemapEntry("/tags/", latest, "0.7"),
+    sitemapEntry("/search/", latest, "0.5"),
+    sitemapEntry("/about/", latest, "0.5"),
+    ...posts.map((post) => sitemapEntry(post.url, post.updated || post.date, "0.9")),
     ...categoryUrls,
-    ...tags.map(([tag]) => `/tags/${slugify(tag)}/`)
+    ...tagUrls
   ];
   return `<?xml version="1.0" encoding="UTF-8" ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((url) => `  <url><loc>${absoluteUrl(url)}</loc></url>`).join("\n")}
+${urls.join("\n")}
 </urlset>`;
 }
 
