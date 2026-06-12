@@ -296,6 +296,46 @@ function inlineMarkdown(text) {
   return html;
 }
 
+function splitTableRow(line) {
+  let value = line.trim();
+  if (!value.includes("|")) return [];
+  if (value.startsWith("|")) value = value.slice(1);
+  if (value.endsWith("|")) value = value.slice(0, -1);
+  return value.split("|").map((cell) => cell.trim());
+}
+
+function isTableSeparator(line) {
+  const cells = splitTableRow(line);
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, "")));
+}
+
+function tableAlign(separator) {
+  const value = separator.replace(/\s+/g, "");
+  if (value.startsWith(":") && value.endsWith(":")) return "center";
+  if (value.endsWith(":")) return "right";
+  return "left";
+}
+
+function normalizeTableCells(cells, length) {
+  return Array.from({ length }, (_, index) => cells[index] || "");
+}
+
+function renderTable(headers, separators, rows) {
+  const aligns = normalizeTableCells(separators, headers.length).map(tableAlign);
+  const head = normalizeTableCells(headers, headers.length)
+    .map((cell, index) => `<th data-align="${aligns[index]}">${inlineMarkdown(cell)}</th>`)
+    .join("");
+  const body = rows
+    .map(
+      (row) =>
+        `<tr>${normalizeTableCells(row, headers.length)
+          .map((cell, index) => `<td data-align="${aligns[index]}">${inlineMarkdown(cell)}</td>`)
+          .join("")}</tr>`
+    )
+    .join("");
+  return `<div class="table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
 function markdownToHtml(markdown) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const html = [];
@@ -321,7 +361,8 @@ function markdownToHtml(markdown) {
     return `<pre${languageAttr}><button class="code-copy-button" type="button" data-copy-code>复制</button><code>${escapeHtml(block.lines.join("\n"))}</code></pre>`;
   }
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     const trimmed = line.trim();
 
     if (trimmed.startsWith("```")) {
@@ -344,6 +385,26 @@ function markdownToHtml(markdown) {
     if (!trimmed) {
       flushParagraph();
       closeList();
+      continue;
+    }
+
+    const tableHeader = splitTableRow(line);
+    const tableSeparator = splitTableRow(lines[index + 1] || "");
+    if (tableHeader.length > 1 && isTableSeparator(lines[index + 1] || "")) {
+      flushParagraph();
+      closeList();
+      const rows = [];
+      index += 2;
+      while (index < lines.length) {
+        const row = splitTableRow(lines[index]);
+        if (row.length === 0) {
+          index -= 1;
+          break;
+        }
+        rows.push(row);
+        index += 1;
+      }
+      html.push(renderTable(tableHeader, tableSeparator, rows));
       continue;
     }
 

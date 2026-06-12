@@ -17,6 +17,12 @@ status: published
 
 使用 Frame Debugger、RenderDoc 或平台 Profiler 观察一帧里发生了什么：
 
+| 工具 | 适合观察 | 输出结果 |
+| --- | --- | --- |
+| Frame Debugger | 引擎内渲染步骤 | 调用顺序和渲染状态 |
+| RenderDoc | 单帧 GPU 细节 | Draw Call、资源绑定和管线状态 |
+| 平台 Profiler | 真实设备表现 | CPU、GPU 和内存时间线 |
+
 - Draw Call 是否异常增长
 - 透明物体是否造成明显 Overdraw
 - 后处理是否占据主要耗时

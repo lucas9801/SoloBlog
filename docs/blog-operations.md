@@ -318,6 +318,15 @@ slug: renderdoc-frame-debugging
 - 第三项
 ```
 
+表格：
+
+```markdown
+| 工具 | 适合观察 |
+| --- | --- |
+| RenderDoc | 单帧 GPU 细节 |
+| Profiler | CPU、GPU 和内存时间线 |
+```
+
 代码块：
 
 ````markdown

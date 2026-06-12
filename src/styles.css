@@ -1280,7 +1280,8 @@ pre {
 .article-content ul,
 .article-content ol,
 .article-content blockquote,
-.article-content pre {
+.article-content pre,
+.article-content .table-scroll {
   margin: 0 0 1.1em;
 }
 
@@ -1364,6 +1365,53 @@ pre {
   border-left: 3px solid var(--brand);
   background: var(--surface-soft);
   color: var(--muted);
+}
+
+.article-content .table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.article-content table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.article-content th,
+.article-content td {
+  padding: 10px 12px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.article-content th:last-child,
+.article-content td:last-child {
+  border-right: 0;
+}
+
+.article-content tr:last-child td {
+  border-bottom: 0;
+}
+
+.article-content th {
+  background: var(--surface-soft);
+  font-weight: 700;
+}
+
+.article-content [data-align="center"] {
+  text-align: center;
+}
+
+.article-content [data-align="right"] {
+  text-align: right;
 }
 
 .article-footer {
