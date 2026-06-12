@@ -14,7 +14,9 @@ const contentTypes = new Map([
   [".jpg", "image/jpeg"],
   [".jpeg", "image/jpeg"],
   [".webp", "image/webp"],
-  [".svg", "image/svg+xml"]
+  [".svg", "image/svg+xml"],
+  [".json", "application/json; charset=utf-8"],
+  [".webmanifest", "application/manifest+json; charset=utf-8"]
 ]);
 
 function sendFile(response, filePath) {

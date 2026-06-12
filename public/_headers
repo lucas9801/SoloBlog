@@ -6,6 +6,12 @@
 /assets/*
   Cache-Control: public, max-age=86400
 
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+/site.webmanifest
+  Cache-Control: public, max-age=86400
+
 /src/*
   Cache-Control: public, max-age=3600
 

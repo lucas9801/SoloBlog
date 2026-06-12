@@ -401,6 +401,22 @@ content/site.json
 | `navigation` | 顶部导航 |
 | `hero` | 首页 Hero 文案 |
 
+## 修改浏览器图标和安装信息
+
+浏览器标签页图标：
+
+```text
+public/favicon.svg
+```
+
+站点安装信息和移动端收藏名称：
+
+```text
+public/site.webmanifest
+```
+
+这些文件会在 `npm run build` 时复制到 `dist/`。所有页面的 `<head>` 已经自动引用它们，不需要在每篇文章里单独配置。
+
 ## 修改关于页
 
 编辑：

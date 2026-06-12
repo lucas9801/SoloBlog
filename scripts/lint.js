@@ -6,11 +6,15 @@ const requiredFiles = [
   "content/site.json",
   "content/about.md",
   "src/styles.css",
+  "src/article.js",
   "src/search.js",
+  "src/views.js",
   "scripts/build.js",
   "scripts/new-post.js",
   "public/_headers",
   "public/_redirects",
+  "public/favicon.svg",
+  "public/site.webmanifest",
   "wrangler.toml",
   ".node-version",
   "docs/cloudflare-pages.md",
@@ -23,10 +27,15 @@ for (const file of requiredFiles) {
   });
 }
 
-const [site, css, buildScript, heroStats] = await Promise.all([
+const [site, manifest, css, articleScript, buildScript, headers, packageConfig, wranglerConfig, heroStats] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
+  readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
+  readFile(path.join(root, "src/article.js"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
+  readFile(path.join(root, "public/_headers"), "utf8"),
+  readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
+  readFile(path.join(root, "wrangler.toml"), "utf8"),
   stat(path.join(root, "assets/hero-game-tech.png"))
 ]);
 
@@ -118,6 +127,29 @@ if (!buildScript.includes("sitemap.xml")) failures.push("Build must generate sit
 if (site.baseUrl !== "https://blog.solus.games/") failures.push("site baseUrl must use the production domain.");
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
+if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
+if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
+if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
+if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
+  failures.push("Article script must lazy load Giscus comments.");
+}
+if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
+if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
+if (manifest.name !== "SOLUS Dev Notes") failures.push("site.webmanifest name must match the site title.");
+if (manifest.short_name !== "SOLUS") failures.push("site.webmanifest short_name must be SOLUS.");
+if (manifest.start_url !== "/" || manifest.scope !== "/") failures.push("site.webmanifest must start at the site root.");
+if (manifest.display !== "standalone") failures.push("site.webmanifest display must be standalone.");
+if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.src === "/favicon.svg")) {
+  failures.push("site.webmanifest must include /favicon.svg as an icon.");
+}
+if (packageConfig.name !== "solus-blog") failures.push("package name should match the SOLUS blog project.");
+if (!packageConfig.scripts?.["deploy:cloudflare"]?.includes("--project-name soloblog-4w3")) {
+  failures.push("deploy:cloudflare must target the current Cloudflare Pages project.");
+}
+if (!/^name\s*=\s*"soloblog-4w3"/m.test(wranglerConfig)) {
+  failures.push("wrangler.toml must target the current Cloudflare Pages project.");
+}
 if (heroStats.size < 100000) failures.push("Hero asset appears too small or missing.");
 if (site.comments?.enabled) {
   for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {

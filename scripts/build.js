@@ -583,6 +583,9 @@ function pageLayout({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${escapeAttr(pageDescription)}" />
+    <meta name="application-name" content="${escapeAttr(site.title)}" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f8fb" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d12" />
     <meta property="og:type" content="${escapeAttr(type)}" />
     <meta property="og:title" content="${escapeAttr(fullTitle)}" />
     <meta property="og:description" content="${escapeAttr(pageDescription)}" />
@@ -596,6 +599,8 @@ function pageLayout({
     <meta name="twitter:image" content="${escapeAttr(socialImage)}" />
     <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
     ${structuredData ? `<script type="application/ld+json">${jsonLd(structuredData)}</script>` : ""}
     <script>
       (() => {
@@ -670,25 +675,28 @@ function giscusComments() {
 
   if (!ready) return "";
 
-  return `<section class="comments-section" id="comments" aria-labelledby="comments-title">
+  return `<section
+    class="comments-section"
+    id="comments"
+    aria-labelledby="comments-title"
+    data-giscus-comments
+    data-repo="${escapeAttr(comments.repo)}"
+    data-repo-id="${escapeAttr(comments.repoId)}"
+    data-category="${escapeAttr(comments.category)}"
+    data-category-id="${escapeAttr(comments.categoryId)}"
+    data-mapping="${escapeAttr(comments.mapping || "pathname")}"
+    data-strict="${escapeAttr(comments.strict || "0")}"
+    data-reactions-enabled="${escapeAttr(comments.reactionsEnabled || "1")}"
+    data-emit-metadata="${escapeAttr(comments.emitMetadata || "0")}"
+    data-input-position="${escapeAttr(comments.inputPosition || "bottom")}"
+    data-theme="${escapeAttr(comments.theme || "preferred_color_scheme")}"
+    data-lang="${escapeAttr(comments.language || site.language || "zh-CN")}">
     <h2 id="comments-title">评论</h2>
-    <script
-      src="https://giscus.app/client.js"
-      data-repo="${escapeAttr(comments.repo)}"
-      data-repo-id="${escapeAttr(comments.repoId)}"
-      data-category="${escapeAttr(comments.category)}"
-      data-category-id="${escapeAttr(comments.categoryId)}"
-      data-mapping="${escapeAttr(comments.mapping || "pathname")}"
-      data-strict="${escapeAttr(comments.strict || "0")}"
-      data-reactions-enabled="${escapeAttr(comments.reactionsEnabled || "1")}"
-      data-emit-metadata="${escapeAttr(comments.emitMetadata || "0")}"
-      data-input-position="${escapeAttr(comments.inputPosition || "bottom")}"
-      data-theme="${escapeAttr(comments.theme || "preferred_color_scheme")}"
-      data-lang="${escapeAttr(comments.language || site.language || "zh-CN")}"
-      data-loading="lazy"
-      crossorigin="anonymous"
-      async>
-    </script>
+    <div class="comments-loader" data-comments-loader>
+      <p>评论会在靠近此处时加载。</p>
+      <button class="secondary-button" type="button" data-load-comments>加载评论</button>
+    </div>
+    <div class="comments-frame" data-comments-frame></div>
   </section>`;
 }
 

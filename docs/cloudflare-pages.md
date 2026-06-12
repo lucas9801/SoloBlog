@@ -55,7 +55,7 @@ This is useful for quick manual publishing without Git integration.
 
 ```bash
 npm run build
-npx wrangler pages deploy dist --project-name my-game-dev-blog
+npx wrangler pages deploy dist --project-name soloblog-4w3
 ```
 
 Or use:
@@ -68,7 +68,7 @@ You need to log in to Cloudflare in the browser when Wrangler asks.
 
 ## Files For Cloudflare
 
-- `wrangler.toml`: project name and output directory for Wrangler.
+- `wrangler.toml`: Pages project name and output directory for Wrangler.
 - `.node-version`: Node 20 for compatible builds.
 - `public/_headers`: security and cache headers copied into `dist`.
 - `public/_redirects`: RSS aliases copied into `dist`.

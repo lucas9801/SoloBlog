@@ -11,6 +11,7 @@ const tocHeadings = tocLinks
 const viewNodes = Array.from(document.querySelectorAll("[data-view-slug]")).filter(
   (node) => node.dataset.viewSlug === postSlug
 );
+const commentsSection = document.querySelector("[data-giscus-comments]");
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -112,8 +113,93 @@ async function updateViewCount() {
   if (!alreadyViewed) markViewedToday();
 }
 
+function loadComments() {
+  if (!commentsSection || commentsSection.dataset.loaded === "true") return;
+
+  const frame = commentsSection.querySelector("[data-comments-frame]");
+  const loader = commentsSection.querySelector("[data-comments-loader]");
+  if (!frame) return;
+
+  commentsSection.dataset.loaded = "true";
+  const loaderText = loader?.querySelector("p");
+  const loaderButton = loader?.querySelector("[data-load-comments]");
+  if (loaderText) loaderText.textContent = "评论加载中...";
+  if (loaderButton) {
+    loaderButton.disabled = true;
+    loaderButton.textContent = "加载中";
+  }
+
+  let slowTimer = 0;
+  const finish = () => {
+    window.clearTimeout(slowTimer);
+    loader?.remove();
+  };
+  const observer =
+    "MutationObserver" in window
+      ? new MutationObserver(() => {
+          if (frame.querySelector("iframe")) {
+            observer.disconnect();
+            finish();
+          }
+        })
+      : null;
+  observer?.observe(frame, { childList: true, subtree: true });
+  slowTimer = window.setTimeout(() => {
+    if (!frame.querySelector("iframe") && loaderText) {
+      loaderText.textContent = "评论加载较慢，请稍候。";
+    }
+  }, 5000);
+
+  const script = document.createElement("script");
+  script.src = "https://giscus.app/client.js";
+  script.async = true;
+  script.crossOrigin = "anonymous";
+  script.setAttribute("data-repo", commentsSection.dataset.repo || "");
+  script.setAttribute("data-repo-id", commentsSection.dataset.repoId || "");
+  script.setAttribute("data-category", commentsSection.dataset.category || "");
+  script.setAttribute("data-category-id", commentsSection.dataset.categoryId || "");
+  script.setAttribute("data-mapping", commentsSection.dataset.mapping || "pathname");
+  script.setAttribute("data-strict", commentsSection.dataset.strict || "0");
+  script.setAttribute("data-reactions-enabled", commentsSection.dataset.reactionsEnabled || "1");
+  script.setAttribute("data-emit-metadata", commentsSection.dataset.emitMetadata || "0");
+  script.setAttribute("data-input-position", commentsSection.dataset.inputPosition || "bottom");
+  script.setAttribute("data-theme", commentsSection.dataset.theme || "preferred_color_scheme");
+  script.setAttribute("data-lang", commentsSection.dataset.lang || document.documentElement.lang || "zh-CN");
+  script.setAttribute("data-loading", "lazy");
+  script.addEventListener("error", () => {
+    observer?.disconnect();
+    window.clearTimeout(slowTimer);
+    script.remove();
+    commentsSection.dataset.loaded = "false";
+    if (loaderText) loaderText.textContent = "评论暂时加载失败。";
+    if (loaderButton) {
+      loaderButton.disabled = false;
+      loaderButton.textContent = "重新加载";
+    }
+  });
+  frame.append(script);
+}
+
+function prepareComments() {
+  if (!commentsSection) return;
+
+  commentsSection.querySelector("[data-load-comments]")?.addEventListener("click", loadComments);
+
+  if (!("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      loadComments();
+    },
+    { rootMargin: "420px 0px" }
+  );
+  observer.observe(commentsSection);
+}
+
 updateReadingProgress();
 updateActiveToc();
+prepareComments();
 updateViewCount().catch(() => {
   for (const node of viewNodes) node.hidden = true;
 });
