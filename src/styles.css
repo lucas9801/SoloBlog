@@ -1255,10 +1255,19 @@ pre {
   line-height: 1.55;
 }
 
+.toc a {
+  padding-left: 9px;
+  border-left: 2px solid transparent;
+}
+
 .toc a:hover,
 .toc a.active,
 .related-link:hover span {
   color: var(--brand);
+}
+
+.toc a.active {
+  border-left-color: var(--brand);
 }
 
 .toc h2,
@@ -1368,6 +1377,13 @@ pre {
   margin: 0 0 10px;
   color: var(--muted);
   line-height: 1.65;
+}
+
+.search-result-card mark {
+  padding: 0 2px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
 }
 
 .simple-page {

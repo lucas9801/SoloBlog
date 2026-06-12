@@ -415,6 +415,54 @@ function absoluteUrl(pathname) {
   return new URL(pathname, site.baseUrl).toString();
 }
 
+function jsonLd(data) {
+  return JSON.stringify(data).replaceAll("<", "\\u003c");
+}
+
+function siteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.title,
+    alternateName: site.brand,
+    url: absoluteUrl("/"),
+    description: site.description,
+    inLanguage: site.language || "zh-CN",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${absoluteUrl("/search/")}?q={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  };
+}
+
+function articleSchema(post) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: post.title,
+    description: post.summary,
+    url: absoluteUrl(post.url),
+    mainEntityOfPage: absoluteUrl(post.url),
+    image: absoluteUrl(post.cover),
+    datePublished: post.date,
+    dateModified: post.updated || post.date,
+    inLanguage: site.language || "zh-CN",
+    articleSection: post.category,
+    keywords: post.tags.join(", "),
+    author: {
+      "@type": "Organization",
+      name: site.brand || site.title,
+      url: absoluteUrl("/")
+    },
+    publisher: {
+      "@type": "Organization",
+      name: site.title,
+      url: absoluteUrl("/")
+    }
+  };
+}
+
 function categoryCover(category) {
   return site.categoryCovers?.[category] || site.heroCover || "/assets/hero-game-tech.png";
 }
@@ -431,7 +479,8 @@ function pageLayout({
   body,
   canonical = "/",
   image = site.heroCover || "/assets/hero-game-tech.png",
-  type = "website"
+  type = "website",
+  structuredData = null
 }) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
@@ -465,6 +514,7 @@ function pageLayout({
     <meta name="twitter:image" content="${escapeAttr(socialImage)}" />
     <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
+    ${structuredData ? `<script type="application/ld+json">${jsonLd(structuredData)}</script>` : ""}
     <script>
       (() => {
         try {
@@ -512,6 +562,19 @@ function viewCountMeta(post) {
   return `<span class="view-count" data-view-slug="${escapeAttr(post.slug)}" hidden>阅读 --</span>`;
 }
 
+function postMeta(post) {
+  const updated =
+    post.updated && post.updated !== post.date
+      ? `<span class="updated-date">更新 ${formatDate(post.updated)}</span>`
+      : "";
+  return `<div class="post-meta">
+    <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
+    ${updated}
+    <span>${escapeHtml(post.readingTime)}</span>
+    ${viewCountMeta(post)}
+  </div>`;
+}
+
 function giscusComments() {
   const comments = site.comments || {};
   const ready =
@@ -553,11 +616,7 @@ function postCard(post, variant = "") {
       <i></i>
     </a>
     <div class="post-card-body">
-      <div class="post-meta">
-        <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
-        <span>${escapeHtml(post.readingTime)}</span>
-        ${viewCountMeta(post)}
-      </div>
+      ${postMeta(post)}
       <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
       <p>${escapeHtml(post.summary)}</p>
       <div class="tag-row">${post.tags
@@ -574,11 +633,7 @@ function archivePostCard(post) {
       <span>${escapeHtml(post.category)}</span>
     </a>
     <div class="archive-card-body">
-      <div class="post-meta">
-        <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
-        <span>${escapeHtml(post.readingTime)}</span>
-        ${viewCountMeta(post)}
-      </div>
+      ${postMeta(post)}
       <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
       <p>${escapeHtml(post.summary)}</p>
       <div class="tag-row">${post.tags
@@ -830,7 +885,14 @@ function homePage(posts, categories, tags) {
     </section>
   </main>`;
 
-  return pageLayout({ title: site.title, description: site.description, current: "/", body, canonical: "/" });
+  return pageLayout({
+    title: site.title,
+    description: site.description,
+    current: "/",
+    body,
+    canonical: "/",
+    structuredData: siteSchema()
+  });
 }
 
 function archivePage({ posts, categories, activeCategory = "", basePath = "/archive/", page = 1, totalCount }) {
@@ -983,7 +1045,7 @@ function postPage(post, posts) {
   const tocHeadings = post.headings.filter((heading) => heading.level === 2 || heading.level === 3);
   const toc = tocHeadings
     .filter((heading) => heading.level === 2 || heading.level === 3)
-    .map((heading) => `<a class="level-${heading.level}" href="#${heading.id}">${escapeHtml(heading.text)}</a>`)
+    .map((heading) => `<a class="level-${heading.level}" href="#${heading.id}" data-toc-target="${escapeAttr(heading.id)}">${escapeHtml(heading.text)}</a>`)
     .join("");
   const showRelated = fallbackRelated.length >= 3;
   const showToc = tocHeadings.length >= 3;
@@ -1004,11 +1066,7 @@ function postPage(post, posts) {
         <a class="category-pill" href="/categories/${post.categorySlug}/">${escapeHtml(post.category)}</a>
         <h1>${escapeHtml(post.title)}</h1>
         <p>${escapeHtml(post.summary)}</p>
-        <div class="post-meta">
-          <time datetime="${post.date}">${formatDate(post.date)}</time>
-          <span>${post.readingTime}</span>
-          ${viewCountMeta(post)}
-        </div>
+        ${postMeta(post)}
       </header>
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
@@ -1029,7 +1087,8 @@ function postPage(post, posts) {
     body,
     canonical: post.url,
     image: post.cover,
-    type: "article"
+    type: "article",
+    structuredData: articleSchema(post)
   });
 }
 

@@ -4,6 +4,10 @@ const percent = document.querySelector("#readingPercent");
 const remaining = document.querySelector("#readingRemaining");
 const totalMinutes = Math.max(1, Number.parseInt(pill?.dataset.readingMinutes || "1", 10));
 const postSlug = pill?.dataset.postSlug || article?.dataset.postSlug || "";
+const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
+const tocHeadings = tocLinks
+  .map((link) => document.getElementById(link.dataset.tocTarget || ""))
+  .filter(Boolean);
 const viewNodes = Array.from(document.querySelectorAll("[data-view-slug]")).filter(
   (node) => node.dataset.viewSlug === postSlug
 );
@@ -24,6 +28,35 @@ function updateReadingProgress() {
   pill?.style.setProperty("--reading-progress", `${value}%`);
   percent.textContent = `${value}%`;
   remaining.textContent = remainingMinutes > 0 ? `剩余 ≈ ${remainingMinutes} 分钟` : "已读完";
+}
+
+function setActiveToc(id) {
+  for (const link of tocLinks) {
+    const active = link.dataset.tocTarget === id;
+    link.classList.toggle("active", active);
+    if (active) {
+      link.setAttribute("aria-current", "true");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  }
+}
+
+function updateActiveToc() {
+  if (tocHeadings.length === 0) return;
+
+  const threshold = Math.min(180, window.innerHeight * 0.28);
+  let activeId = tocHeadings[0].id;
+
+  for (const heading of tocHeadings) {
+    if (heading.getBoundingClientRect().top <= threshold) {
+      activeId = heading.id;
+    } else {
+      break;
+    }
+  }
+
+  setActiveToc(activeId);
 }
 
 function viewedTodayKey() {
@@ -80,6 +113,7 @@ async function updateViewCount() {
 }
 
 updateReadingProgress();
+updateActiveToc();
 updateViewCount().catch(() => {
   for (const node of viewNodes) node.hidden = true;
 });
@@ -108,4 +142,6 @@ article?.addEventListener("click", async (event) => {
 });
 
 window.addEventListener("scroll", updateReadingProgress, { passive: true });
+window.addEventListener("scroll", updateActiveToc, { passive: true });
 window.addEventListener("resize", updateReadingProgress);
+window.addEventListener("resize", updateActiveToc);

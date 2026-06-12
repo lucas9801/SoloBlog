@@ -24,6 +24,25 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#39;");
 }
 
+function escapeRegExp(value = "") {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlight(value, query) {
+  const escaped = escapeHtml(value);
+  const term = query.trim();
+  if (!term) return escaped;
+  return escaped.replace(new RegExp(escapeRegExp(escapeHtml(term)), "gi"), "<mark>$&</mark>");
+}
+
+function formatDate(date) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date(date));
+}
+
 function tokens(query) {
   return normalize(query).split(" ").filter(Boolean);
 }
@@ -108,13 +127,11 @@ function render(posts, query) {
     return;
   }
 
-  const bestTier = Math.min(...ranked.map((item) => item.tier));
   const matched = ranked
-    .filter((item) => item.tier === bestTier)
-    .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date))
+    .sort((a, b) => a.tier - b.tier || b.score - a.score || new Date(b.post.date) - new Date(a.post.date))
     .map((item) => item.post);
 
-  results.innerHTML = `<p class="search-count">精准匹配到 ${matched.length} 篇文章</p>${matched
+  results.innerHTML = `<p class="search-count">匹配到 ${matched.length} 篇文章</p>${matched
     .map(
       (post) => `<article class="search-result-card">
         <a class="search-result-thumb" href="${escapeHtml(post.url)}" style="--cover-image: url('${escapeHtml(post.cover || "/assets/hero-game-tech.png")}')" aria-label="${escapeHtml(post.title)}">
@@ -122,11 +139,11 @@ function render(posts, query) {
         </a>
         <div class="search-result-body">
           <div class="post-meta">
-            <time datetime="${escapeHtml(post.date)}">${escapeHtml(post.date)}</time>
+            <time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time>
             <span>${escapeHtml(post.readingTime || "")}</span>
           </div>
-          <h2><a href="${escapeHtml(post.url)}">${escapeHtml(post.title)}</a></h2>
-          <p>${escapeHtml(post.summary)}</p>
+          <h2><a href="${escapeHtml(post.url)}">${highlight(post.title, query)}</a></h2>
+          <p>${highlight(post.summary, query)}</p>
           <div class="tag-row">${(post.tags || [])
             .slice(0, 5)
             .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
@@ -137,20 +154,26 @@ function render(posts, query) {
     .join("")}`;
 }
 
-const response = await fetch("/search-index.json");
-const posts = await response.json();
 const initialQuery = params.get("q") || "";
 input.value = initialQuery;
-render(posts, initialQuery);
 
-input.addEventListener("input", () => {
-  const query = input.value;
-  const url = new URL(window.location.href);
-  if (normalize(query)) {
-    url.searchParams.set("q", query.trim());
-  } else {
-    url.searchParams.delete("q");
-  }
-  window.history.replaceState({}, "", url);
-  render(posts, query);
-});
+try {
+  const response = await fetch("/search-index.json");
+  if (!response.ok) throw new Error("Search index is unavailable.");
+  const posts = await response.json();
+  render(posts, initialQuery);
+
+  input.addEventListener("input", () => {
+    const query = input.value;
+    const url = new URL(window.location.href);
+    if (normalize(query)) {
+      url.searchParams.set("q", query.trim());
+    } else {
+      url.searchParams.delete("q");
+    }
+    window.history.replaceState({}, "", url);
+    render(posts, query);
+  });
+} catch {
+  results.innerHTML = '<p class="muted">搜索索引暂时不可用。</p>';
+}
