@@ -385,7 +385,8 @@ content/site.json
   "brand": "SOLUS",
   "tagline": "Game Development Archive",
   "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
-  "baseUrl": "https://blog.solus.games/"
+  "baseUrl": "https://blog.solus.games/",
+  "socialImage": "/assets/og/solus-og.png"
 }
 ```
 
@@ -398,6 +399,7 @@ content/site.json
 | `tagline` | 品牌副标题 |
 | `description` | 网站描述 |
 | `baseUrl` | 正式站点地址，用于 canonical URL、RSS、sitemap 和 robots.txt |
+| `socialImage` | 首页、归档、标签、专题等页面默认分享图，当前 PNG 由 `assets/og/solus-og.svg` 生成 |
 | `navigation` | 顶部导航 |
 | `hero` | 首页 Hero 文案 |
 

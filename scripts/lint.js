@@ -18,6 +18,8 @@ const requiredFiles = [
   "wrangler.toml",
   ".node-version",
   "docs/cloudflare-pages.md",
+  "assets/og/solus-og.svg",
+  "assets/og/solus-og.png",
   "assets/hero-game-tech.png"
 ];
 
@@ -27,7 +29,7 @@ for (const file of requiredFiles) {
   });
 }
 
-const [site, manifest, css, articleScript, buildScript, headers, packageConfig, wranglerConfig, heroStats] = await Promise.all([
+const [site, manifest, css, articleScript, buildScript, headers, packageConfig, wranglerConfig, heroStats, socialImageStats] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
@@ -36,7 +38,8 @@ const [site, manifest, css, articleScript, buildScript, headers, packageConfig, 
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
-  stat(path.join(root, "assets/hero-game-tech.png"))
+  stat(path.join(root, "assets/hero-game-tech.png")),
+  stat(path.join(root, "assets/og/solus-og.png"))
 ]);
 
 const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file) =>
@@ -125,11 +128,25 @@ if (!buildScript.includes("search-index.json")) failures.push("Build must genera
 if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
 if (!buildScript.includes("sitemap.xml")) failures.push("Build must generate sitemap.");
 if (site.baseUrl !== "https://blog.solus.games/") failures.push("site baseUrl must use the production domain.");
+if (!site.socialImage) failures.push("site config must define a default socialImage.");
+if (site.socialImage && !/^\/assets\/og\/.+\.(svg|png|jpe?g|webp)$/i.test(site.socialImage)) {
+  failures.push("site socialImage should point to a dedicated Open Graph asset under /assets/og/.");
+}
+if (site.socialImage) {
+  await existsLocalPath(site.socialImage).catch(() => {
+    failures.push(`site socialImage does not exist: ${site.socialImage}`);
+  });
+}
+if (site.socialImage !== "/assets/og/solus-og.png") failures.push("site socialImage must use the generated PNG social card.");
+if (socialImageStats.size < 50000 || socialImageStats.size > 400000) {
+  failures.push("Open Graph PNG should be a complete but reasonably small social card.");
+}
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
   failures.push("Article script must lazy load Giscus comments.");

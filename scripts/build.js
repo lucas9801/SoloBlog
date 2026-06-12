@@ -333,7 +333,7 @@ function renderTable(headers, separators, rows) {
           .join("")}</tr>`
     )
     .join("");
-  return `<div class="table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  return `<div class="table-scroll" tabindex="0" aria-label="可横向滚动的数据表"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
 function markdownToHtml(markdown) {
@@ -504,7 +504,11 @@ function siteSchema() {
   };
 }
 
-function articleSchema(post) {
+function socialImageForPost(post) {
+  return /\.(png|jpe?g|webp)$/i.test(post.cover) ? post.cover : site.socialImage || post.cover;
+}
+
+function articleSchema(post, image = post.cover) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
@@ -512,7 +516,7 @@ function articleSchema(post) {
     description: post.summary,
     url: absoluteUrl(post.url),
     mainEntityOfPage: absoluteUrl(post.url),
-    image: absoluteUrl(post.cover),
+    image: absoluteUrl(image),
     datePublished: post.date,
     dateModified: post.updated || post.date,
     inLanguage: site.language || "zh-CN",
@@ -557,14 +561,14 @@ function pageLayout({
   current = "",
   body,
   canonical = "/",
-  image = site.heroCover || "/assets/hero-game-tech.png",
+  image = site.socialImage || site.heroCover || "/assets/hero-game-tech.png",
   type = "website",
   structuredData = null
 }) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
   const canonicalUrl = absoluteUrl(canonical);
-  const socialImage = absoluteUrl(image || site.heroCover || "/assets/hero-game-tech.png");
+  const socialImage = absoluteUrl(image || site.socialImage || site.heroCover || "/assets/hero-game-tech.png");
   const bodyWithContentTarget = body.includes('id="content"')
     ? body
     : body.replace("<main", '<main id="content" tabindex="-1"');
@@ -1311,14 +1315,16 @@ function postPage(post, posts) {
   <div class="reading-pill" data-post-slug="${escapeAttr(post.slug)}" data-reading-minutes="${Number.parseInt(post.readingTime, 10) || 1}" aria-label="阅读进度"><span id="readingPercent">0%</span><span id="readingRemaining">剩余 ≈ ${escapeHtml(post.readingTime)}</span></div>
   <script type="module" src="${assetUrl("/src/article.js")}"></script>`;
 
+  const socialImage = socialImageForPost(post);
+
   return pageLayout({
     title: post.title,
     description: post.summary,
     body,
     canonical: post.url,
-    image: post.cover,
+    image: socialImage,
     type: "article",
-    structuredData: articleSchema(post)
+    structuredData: articleSchema(post, socialImage)
   });
 }
 

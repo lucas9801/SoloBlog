@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="SOLUS Dev Notes">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6f8fb"/>
+      <stop offset="0.56" stop-color="#eef3f8"/>
+      <stop offset="1" stop-color="#dfe8f3"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#2563eb" stroke-opacity=".08"/>
+    </pattern>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111821"/>
+      <stop offset="1" stop-color="#090d12"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect x="72" y="72" width="1056" height="486" rx="18" fill="#fff" stroke="#dce3ec"/>
+  <g transform="translate(104 108)">
+    <rect width="64" height="64" rx="14" fill="#f6f8fb" stroke="#2563eb" stroke-width="2"/>
+    <text x="32" y="42" text-anchor="middle" fill="#2563eb" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900">S</text>
+    <rect x="74" y="16" width="4" height="32" rx="2" fill="#14b8a6"/>
+    <text x="96" y="28" fill="#151922" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900">SOLUS</text>
+    <text x="96" y="54" fill="#687385" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700">Game Development Archive</text>
+  </g>
+  <g transform="translate(104 226)">
+    <text fill="#2563eb" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800" letter-spacing="4">TECHNICAL ARCHIVE</text>
+    <text y="70" fill="#151922" font-family="Inter, Arial, sans-serif" font-size="68" font-weight="850">SOLUS Dev Notes</text>
+    <text y="128" fill="#151922" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="750">Game Engine, Rendering, Tools</text>
+    <text y="188" fill="#687385" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Notes for rendering, tools, and game engineering.</text>
+  </g>
+  <g transform="translate(776 146)">
+    <rect width="284" height="320" rx="18" fill="url(#panel)"/>
+    <rect x="32" y="42" width="172" height="18" rx="9" fill="#2dd4bf" opacity=".86"/>
+    <rect x="32" y="86" width="220" height="12" rx="6" fill="#edf2f7" opacity=".28"/>
+    <rect x="32" y="120" width="164" height="12" rx="6" fill="#edf2f7" opacity=".18"/>
+    <path d="M42 244l54-70 54 42 60-88 44 62" fill="none" stroke="#60a5fa" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M40 266h208M40 226h208M40 186h208M40 146h208" stroke="#edf2f7" stroke-opacity=".08"/>
+    <circle cx="228" cy="54" r="28" fill="#2563eb" opacity=".72"/>
+    <circle cx="230" cy="244" r="38" fill="#14b8a6" opacity=".54"/>
+  </g>
+</svg>

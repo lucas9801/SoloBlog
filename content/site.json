@@ -7,6 +7,7 @@
   "language": "zh-CN",
   "postsPerPage": 9,
   "archivePostsPerPage": 9,
+  "socialImage": "/assets/og/solus-og.png",
   "heroCover": "/assets/posts/start-here.svg",
   "categoryCovers": {
     "随笔": "/assets/categories/notes.svg",

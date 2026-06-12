@@ -1373,10 +1373,18 @@ pre {
 }
 
 .article-content .table-scroll {
+  position: relative;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface);
+}
+
+.article-content .table-scroll:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
 }
 
 .article-content table {
@@ -1965,6 +1973,10 @@ pre {
 
   .article-content {
     font-size: 16px;
+  }
+
+  .article-content .table-scroll {
+    box-shadow: inset -28px 0 26px -28px color-mix(in srgb, var(--text) 46%, transparent);
   }
 
   .comments-loader {
