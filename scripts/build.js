@@ -628,7 +628,8 @@ function pageLayout({
   type = "website",
   structuredData = null,
   extraHead = "",
-  viewsScript = "auto"
+  viewsScript = "auto",
+  robots = "index,follow,max-image-preview:large"
 }) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
@@ -656,7 +657,7 @@ function pageLayout({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${escapeAttr(pageDescription)}" />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="robots" content="${escapeAttr(robots)}" />
     <meta name="color-scheme" content="light dark" />
     <meta name="application-name" content="${escapeAttr(site.title)}" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f8fb" />
@@ -1476,6 +1477,29 @@ function searchPage() {
   return pageLayout({ title: "搜索文章", description: "搜索博客文章。", current: "/search/", body, canonical: "/search/" });
 }
 
+function notFoundPage() {
+  const body = `<main class="page-shell narrow">
+    <header class="page-title">
+      <span class="section-kicker">404</span>
+      <h1>页面未找到</h1>
+      <p>这个地址没有对应的技术笔记。可以回到首页，或从全部文章继续查找内容。</p>
+      <div class="hero-actions">
+        <a class="button-link" href="/">返回首页</a>
+        <a class="ghost-link" href="/archive/">全部文章</a>
+        <a class="ghost-link" href="/search/">搜索文章</a>
+      </div>
+    </header>
+  </main>`;
+  return pageLayout({
+    title: "页面未找到",
+    description: "这个地址没有对应的技术笔记。",
+    body,
+    canonical: "/404.html",
+    robots: "noindex,follow",
+    viewsScript: false
+  });
+}
+
 function rss(posts) {
   const latestDate = posts.reduce(
     (latest, post) => (new Date(post.updated || post.date) > new Date(latest) ? post.updated || post.date : latest),
@@ -1589,6 +1613,7 @@ await writePage("tags", tagIndexPage(tags, posts));
 await writePage("series", seriesIndexPage(seriesEntries));
 await writePage("search", searchPage());
 await writePage("about", await aboutPage());
+await writeFile(path.join(dist, "404.html"), notFoundPage(), "utf8");
 
 for (const post of posts) {
   await writePage(path.join("posts", post.slug), postPage(post, posts));
