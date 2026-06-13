@@ -317,14 +317,13 @@ pre {
   align-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background:
-    linear-gradient(90deg, var(--surface) 0 48%, color-mix(in srgb, var(--surface) 78%, transparent) 68%, transparent),
-    var(--hero-cover, url("/assets/posts/start-here.svg")) right center / cover no-repeat;
+  background: var(--surface);
 }
 
 .hero-inner::before {
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--brand) 10%, transparent) 1px, transparent 1px),
@@ -334,9 +333,28 @@ pre {
   opacity: 0.55;
 }
 
+.hero-inner::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--surface) 0 48%, color-mix(in srgb, var(--surface) 78%, transparent) 68%, transparent);
+  content: "";
+}
+
+.hero-cover {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 0;
+  width: 56%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .hero-copy {
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .hero-copy {
@@ -628,9 +646,29 @@ pre {
   position: relative;
   overflow: hidden;
   display: block;
-  background:
-    linear-gradient(180deg, transparent 48%, rgba(4, 8, 14, 0.54)),
-    var(--cover-image, linear-gradient(135deg, #111821, #263241)) center / cover no-repeat;
+  background: linear-gradient(135deg, #111821, #263241);
+}
+
+.archive-card-thumb::after,
+.thumb::after,
+.search-result-thumb::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 48%, rgba(4, 8, 14, 0.54));
+  content: "";
+}
+
+.archive-card-thumb img,
+.thumb img,
+.search-result-thumb img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .archive-card-thumb {
@@ -1989,9 +2027,17 @@ pre {
     padding: 22px 24px;
     grid-template-columns: 1fr;
     align-items: end;
-    background:
-      linear-gradient(180deg, var(--surface) 0 42%, color-mix(in srgb, var(--surface) 78%, transparent) 72%, color-mix(in srgb, var(--surface) 38%, transparent)),
-      var(--hero-cover, url("/assets/posts/start-here.svg")) center bottom / cover no-repeat;
+  }
+
+  .hero-inner::after {
+    background: linear-gradient(180deg, var(--surface) 0 42%, color-mix(in srgb, var(--surface) 78%, transparent) 72%, color-mix(in srgb, var(--surface) 38%, transparent));
+  }
+
+  .hero-cover {
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    height: 72%;
   }
 
   .hero-copy h1 {

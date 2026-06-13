@@ -729,17 +729,7 @@ function pageLayout({
     <link rel="manifest" href="/site.webmanifest" />
     ${extraHead}
     ${jsonLdScripts(structuredData)}
-    <script>
-      (() => {
-        try {
-          const stored = localStorage.getItem("solus-theme");
-          const theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-          document.documentElement.dataset.theme = theme;
-        } catch {
-          document.documentElement.dataset.theme = "light";
-        }
-      })();
-    </script>
+    <script src="${assetUrl("/src/theme-init.js")}"></script>
     <link rel="stylesheet" href="${assetUrl("/src/styles.css")}" />
     <title>${escapeHtml(fullTitle)}</title>
   </head>
@@ -847,7 +837,8 @@ function giscusComments() {
 
 function postCard(post, variant = "") {
   return `<article class="post-card ${variant}">
-    <a class="thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-label="${escapeAttr(post.title)}">
+    <a class="thumb ${post.categorySlug}" href="${post.url}" aria-label="${escapeAttr(post.title)}">
+      <img src="${escapeAttr(post.cover)}" alt="" loading="lazy" decoding="async" />
       <span>${escapeHtml(post.category)}</span>
       <i></i>
     </a>
@@ -865,7 +856,8 @@ function postCard(post, variant = "") {
 
 function archivePostCard(post) {
   return `<article class="archive-card">
-    <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" style="--cover-image: url('${escapeAttr(post.cover)}')" aria-label="${escapeAttr(post.title)}">
+    <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="${escapeAttr(post.title)}">
+      <img src="${escapeAttr(post.cover)}" alt="" loading="lazy" decoding="async" />
       <span>${escapeHtml(post.category)}</span>
     </a>
     <div class="archive-card-body">
@@ -1091,7 +1083,8 @@ function homePage(posts, categories, tags) {
 
   const body = `<main>
     <section class="hero-section">
-      <div class="hero-inner" style="--hero-cover: url('${escapeAttr(site.heroCover || "/assets/posts/start-here.svg")}')">
+      <div class="hero-inner">
+        <img class="hero-cover" src="${escapeAttr(site.heroCover || "/assets/posts/start-here.svg")}" alt="" decoding="async" />
         <div class="hero-copy">
           <p class="eyebrow">${escapeHtml(hero.eyebrow)}</p>
           <h1>${escapeHtml(hero.title)}</h1>
@@ -1446,7 +1439,7 @@ function postPage(post, posts) {
       <section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>
     </aside>` : ""}
     <article class="article-page" data-post-slug="${escapeAttr(post.slug)}">
-      <header class="article-hero" style="--article-cover: url('${escapeAttr(post.cover)}')">
+      <header class="article-hero">
         <a class="category-pill" href="/categories/${post.categorySlug}/">${escapeHtml(post.category)}</a>
         <h1>${escapeHtml(post.title)}</h1>
         <p>${escapeHtml(post.summary)}</p>

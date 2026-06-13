@@ -8,6 +8,7 @@ const requiredFiles = [
   "src/styles.css",
   "src/article.js",
   "src/search.js",
+  "src/theme-init.js",
   "src/views.js",
   "scripts/build.js",
   "scripts/check-output.js",
@@ -181,6 +182,7 @@ if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMail
 }
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (!buildScript.includes("/src/theme-init.js")) failures.push("Page head must load the external theme initializer.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!buildScript.includes("includeViewsScript") || !buildScript.includes("viewsScript: false")) {
@@ -218,6 +220,12 @@ for (const requiredHeader of [
 }
 if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
+if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
+  failures.push("Cloudflare script-src must not allow unsafe-inline.");
+}
+if (/style-src[^;\n]*'unsafe-inline'/.test(headers)) {
+  failures.push("Cloudflare style-src must not allow unsafe-inline.");
+}
 if (manifest.name !== "SOLUS Dev Notes") failures.push("site.webmanifest name must match the site title.");
 if (manifest.short_name !== "SOLUS") failures.push("site.webmanifest short_name must be SOLUS.");
 if (manifest.start_url !== "/" || manifest.scope !== "/") failures.push("site.webmanifest must start at the site root.");

@@ -154,6 +154,16 @@ function checkRobots(file, html) {
   }
 }
 
+function checkInlineScripts(file, html) {
+  const relative = displayPath(file);
+  for (const match of html.matchAll(/<script\b([^>]*)>/gi)) {
+    const attrs = match[1] || "";
+    if (/\bsrc\s*=/i.test(attrs)) continue;
+    if (/\btype\s*=\s*"application\/ld\+json"/i.test(attrs)) continue;
+    failures.push(`${relative} contains an inline executable script.`);
+  }
+}
+
 async function checkSitemap(sitemap) {
   if (!sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')) {
     failures.push("dist/sitemap.xml must declare the sitemap namespace.");
@@ -257,6 +267,12 @@ async function main() {
   for (const requiredHeader of ["Content-Security-Policy", "Strict-Transport-Security", "X-Frame-Options: DENY"]) {
     if (!headers.includes(requiredHeader)) failures.push(`dist/_headers is missing ${requiredHeader}`);
   }
+  if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
+    failures.push("dist/_headers script-src must not allow unsafe-inline.");
+  }
+  if (/style-src[^;\n]*'unsafe-inline'/.test(headers)) {
+    failures.push("dist/_headers style-src must not allow unsafe-inline.");
+  }
 
   const searchIndex = await readFile(path.join(dist, "search-index.json"), "utf8")
     .then(JSON.parse)
@@ -277,13 +293,16 @@ async function main() {
     if (/pages\.dev/i.test(html)) failures.push(`${relative} must not contain a pages.dev URL.`);
     if (/javascript:|data:text\/html/i.test(html)) failures.push(`${relative} contains an unsafe URL scheme.`);
     if (/\son(?:click|error|load|mouseover)=/i.test(html)) failures.push(`${relative} contains an inline event handler.`);
+    if (/\sstyle="/i.test(html)) failures.push(`${relative} contains an inline style attribute.`);
     if (html.includes("@@INLINE_HTML_")) failures.push(`${relative} contains an unreplaced inline token.`);
     if (html.includes("/assets/hero-game-tech.png")) failures.push(`${relative} references the retired hero PNG.`);
     if (/<a\b[^>]*\saria-hidden="true"/i.test(html)) failures.push(`${relative} contains an aria-hidden link.`);
     if (relative.startsWith("dist/posts/") && html.includes("/src/views.js")) {
       failures.push(`${relative} loads views.js even though article.js handles article views.`);
     }
+    if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 
+    checkInlineScripts(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
     checkSocialMeta(file, html);
