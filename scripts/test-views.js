@@ -67,6 +67,12 @@ class MockStatement {
   }
 }
 
+class BrokenDatabase {
+  prepare() {
+    throw new Error("D1 unavailable");
+  }
+}
+
 function context(db, request) {
   return {
     request,
@@ -172,5 +178,20 @@ assert.deepEqual(response.body.ranking, [
   { slug: "render-optimization-checklist", views: 2 }
 ]);
 assert.ok(db.statements.some((sql) => sql.includes("idx_post_views_ranking")));
+
+const brokenDb = new BrokenDatabase();
+response = await readJson(
+  await onRequestGet(context(brokenDb, new Request("https://blog.solus.games/api/views?slug=render-optimization-checklist")))
+);
+assert.equal(response.status, 500);
+assert.deepEqual(response.body, { error: "View counter storage is unavailable." });
+
+response = await readJson(
+  await onRequestPost(
+    context(brokenDb, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "render-optimization-checklist" }))
+  )
+);
+assert.equal(response.status, 500);
+assert.deepEqual(response.body, { error: "View counter storage is unavailable." });
 
 console.log("Views API tests passed.");

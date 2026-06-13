@@ -293,6 +293,9 @@ if (viewsFunction.includes("body.slug ||")) {
 if (!viewsFunction.includes('"X-Content-Type-Options": "nosniff"')) {
   failures.push("Views API JSON responses must set X-Content-Type-Options.");
 }
+if (!viewsFunction.includes("storageError") || !viewsFunction.includes("View counter storage is unavailable.")) {
+  failures.push("Views API must return JSON errors when storage operations fail.");
+}
 if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.includes("idx_post_views_ranking")) {
   failures.push("Views API and migration must create an index for reading ranking queries.");
 }

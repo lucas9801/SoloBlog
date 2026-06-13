@@ -21,6 +21,10 @@ function json(data, status = 200) {
   });
 }
 
+function storageError() {
+  return json({ error: "View counter storage is unavailable." }, 500);
+}
+
 function sanitizeSlug(value) {
   const slug = String(value || "").trim();
   if (!/^[\p{Letter}\p{Number}_-]{1,180}$/u.test(slug)) return "";
@@ -58,7 +62,7 @@ function isJsonRequest(request) {
 }
 
 function getDatabase(context) {
-  return context.env.BLOG_DB || null;
+  return context.env?.BLOG_DB || null;
 }
 
 async function ensureSchema(db) {
@@ -72,41 +76,49 @@ export async function onRequestGet(context) {
 
   const top = parseTop(context.request);
   if (top > 0) {
-    await ensureSchema(db);
-    const result = await db
-      .prepare("SELECT slug, views FROM post_views ORDER BY views DESC, updated_at DESC LIMIT ?")
-      .bind(top)
-      .all();
-    return json({
-      ranking: (result.results || []).map((row) => ({
-        slug: row.slug,
-        views: Number(row.views) || 0
-      }))
-    });
+    try {
+      await ensureSchema(db);
+      const result = await db
+        .prepare("SELECT slug, views FROM post_views ORDER BY views DESC, updated_at DESC LIMIT ?")
+        .bind(top)
+        .all();
+      return json({
+        ranking: (result.results || []).map((row) => ({
+          slug: row.slug,
+          views: Number(row.views) || 0
+        }))
+      });
+    } catch {
+      return storageError();
+    }
   }
 
   const slugs = parseSlugs(context.request);
   if (slugs.length === 0) return json({ views: {} });
 
-  await ensureSchema(db);
+  try {
+    await ensureSchema(db);
 
-  const counts = Object.fromEntries(slugs.map((slug) => [slug, 0]));
-  const placeholders = slugs.map(() => "?").join(", ");
-  const result = await db
-    .prepare(`SELECT slug, views FROM post_views WHERE slug IN (${placeholders})`)
-    .bind(...slugs)
-    .all();
+    const counts = Object.fromEntries(slugs.map((slug) => [slug, 0]));
+    const placeholders = slugs.map(() => "?").join(", ");
+    const result = await db
+      .prepare(`SELECT slug, views FROM post_views WHERE slug IN (${placeholders})`)
+      .bind(...slugs)
+      .all();
 
-  for (const row of result.results || []) {
-    counts[row.slug] = Number(row.views) || 0;
+    for (const row of result.results || []) {
+      counts[row.slug] = Number(row.views) || 0;
+    }
+
+    if (slugs.length === 1) {
+      const slug = slugs[0];
+      return json({ slug, views: counts[slug] });
+    }
+
+    return json({ views: counts });
+  } catch {
+    return storageError();
   }
-
-  if (slugs.length === 1) {
-    const slug = slugs[0];
-    return json({ slug, views: counts[slug] });
-  }
-
-  return json({ views: counts });
 }
 
 export async function onRequestPost(context) {
@@ -124,18 +136,22 @@ export async function onRequestPost(context) {
   const slug = sanitizeSlug(body.slug);
   if (!slug) return json({ error: "Invalid post slug." }, 400);
 
-  await ensureSchema(db);
-  await db
-    .prepare(
-      `INSERT INTO post_views (slug, views, updated_at)
-       VALUES (?, 1, CURRENT_TIMESTAMP)
-       ON CONFLICT(slug) DO UPDATE SET
-         views = views + 1,
-         updated_at = CURRENT_TIMESTAMP`
-    )
-    .bind(slug)
-    .run();
+  try {
+    await ensureSchema(db);
+    await db
+      .prepare(
+        `INSERT INTO post_views (slug, views, updated_at)
+         VALUES (?, 1, CURRENT_TIMESTAMP)
+         ON CONFLICT(slug) DO UPDATE SET
+           views = views + 1,
+           updated_at = CURRENT_TIMESTAMP`
+      )
+      .bind(slug)
+      .run();
 
-  const row = await db.prepare("SELECT views FROM post_views WHERE slug = ?").bind(slug).first();
-  return json({ slug, views: Number(row?.views) || 1 });
+    const row = await db.prepare("SELECT views FROM post_views WHERE slug = ?").bind(slug).first();
+    return json({ slug, views: Number(row?.views) || 1 });
+  } catch {
+    return storageError();
+  }
 }
