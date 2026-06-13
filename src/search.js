@@ -79,6 +79,7 @@ function searchable(post) {
     summary: normalize(post.summary),
     category: normalize(post.category),
     series: normalize(post.series),
+    year: normalize(post.year || String(post.date || "").slice(0, 4)),
     tags: (post.tags || []).map((tag) => normalize(tag)),
     text: normalize(post.text)
   };
@@ -111,7 +112,7 @@ function scoreFields(fields, query, baseScore) {
 
 function scorePost(post, query) {
   const fields = searchable(post);
-  const primaryScore = scoreFields([fields.title, fields.category, fields.series, ...fields.tags], query, 40);
+  const primaryScore = scoreFields([fields.title, fields.category, fields.series, fields.year, ...fields.tags], query, 40);
   if (primaryScore > 0) return { tier: 1, score: primaryScore };
 
   const summaryScore = scoreFields([fields.summary], query, 24);

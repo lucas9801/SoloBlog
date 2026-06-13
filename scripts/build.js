@@ -936,6 +936,15 @@ function groupBy(posts, keyGetter) {
   return [...map.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "zh-CN"));
 }
 
+function postYear(post) {
+  return String(post.date || "").match(/^(\d{4})/)?.[1] || "未归档";
+}
+
+function groupByYear(posts) {
+  const entries = groupBy(posts, postYear);
+  return entries.sort((a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN"));
+}
+
 function archivePostsPerPage() {
   const configured = Number.parseInt(site.archivePostsPerPage || site.postsPerPage || 9, 10);
   return Number.isFinite(configured) && configured > 0 ? configured : 9;
@@ -961,20 +970,34 @@ function paginate(list, page, perPage) {
   };
 }
 
-function archiveFilters(categories, activeCategory, totalCount) {
-  const allActive = !activeCategory;
-  return `<div class="archive-filter-bar">
-    <nav class="archive-filters" aria-label="文章分类筛选">
-      <a class="${allActive ? "active" : ""}" href="/archive/"${allActive ? ` aria-current="page"` : ""}>全部 <b>${totalCount}</b></a>
-      ${categories
-        .map(([category, list]) => {
-          const active = category === activeCategory;
-          const activeClass = active ? "active" : "";
-          const ariaCurrent = active ? ` aria-current="page"` : "";
-          return `<a class="${activeClass}" href="/categories/${slugify(category)}/"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
-        })
-        .join("")}
-    </nav>
+function archiveFilterRow(label, ariaLabel, links) {
+  return `<div class="archive-filter-row">
+    <span>${escapeHtml(label)}</span>
+    <nav class="archive-filters" aria-label="${escapeAttr(ariaLabel)}">${links.join("")}</nav>
+  </div>`;
+}
+
+function archiveFilters(categories, years, { activeCategory = "", activeYear = "", totalCount }) {
+  const allActive = !activeCategory && !activeYear;
+  const categoryLinks = [
+    `<a class="${allActive ? "active" : ""}" href="/archive/"${allActive ? ` aria-current="page"` : ""}>全部 <b>${totalCount}</b></a>`,
+    ...categories.map(([category, list]) => {
+      const active = category === activeCategory;
+      const activeClass = active ? "active" : "";
+      const ariaCurrent = active ? ` aria-current="page"` : "";
+      return `<a class="${activeClass}" href="/categories/${slugify(category)}/"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
+    })
+  ];
+  const yearLinks = years.map(([year, list]) => {
+    const active = year === activeYear;
+    const activeClass = active ? "active" : "";
+    const ariaCurrent = active ? ` aria-current="page"` : "";
+    return `<a class="${activeClass}" href="/years/${slugify(year)}/"${ariaCurrent}>${escapeHtml(year)} <b>${list.length}</b></a>`;
+  });
+
+  return `<div class="archive-filter-stack">
+    ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
+    ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
   </div>`;
 }
 
@@ -1134,26 +1157,28 @@ function homePage(posts, categories, tags) {
   });
 }
 
-function archivePage({ posts, categories, activeCategory = "", basePath = "/archive/", page = 1, totalCount }) {
+function archivePage({ posts, categories, years, activeCategory = "", activeYear = "", basePath = "/archive/", page = 1, totalCount }) {
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
+  const title = activeCategory ? `${activeCategory} 分类` : activeYear ? `${activeYear} 年文章` : "全部文章";
+  const description = activeCategory
+    ? `筛选 ${activeCategory} 分类下的技术笔记。`
+    : activeYear
+      ? `浏览 ${activeYear} 年发布的技术笔记。`
+      : "按时间、分类和主题浏览所有技术笔记。";
   const body = `<main class="page-shell article-index-page">
     ${pageContext({
-      title: activeCategory ? `${activeCategory} 分类` : "全部文章",
-      description: activeCategory
-        ? `筛选 ${activeCategory} 分类下的技术笔记。`
-        : "按时间、分类和主题浏览所有技术笔记。",
+      title,
+      description,
       meta: `${posts.length} 篇`
     })}
-    ${archiveFilters(categories, activeCategory, totalCount)}
+    ${archiveFilters(categories, years, { activeCategory, activeYear, totalCount })}
     <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
     ${paginationNav(basePath, currentPage, totalPages)}
   </main>`;
   return pageLayout({
-    title: activeCategory ? `分类：${activeCategory}` : "全部文章",
-    description: activeCategory
-      ? `筛选 ${activeCategory} 分类下的技术笔记。`
-      : "按时间、分类和主题浏览所有技术笔记。",
+    title: activeCategory ? `分类：${activeCategory}` : activeYear ? `${activeYear} 年文章` : "全部文章",
+    description,
     current: "/archive/",
     body,
     canonical: pageHref(basePath, currentPage),
@@ -1161,7 +1186,7 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
   });
 }
 
-async function writeArchivePages({ posts, categories, baseRoute, basePath, activeCategory = "", totalCount }) {
+async function writeArchivePages({ posts, categories, years, baseRoute, basePath, activeCategory = "", activeYear = "", totalCount }) {
   const totalPages = Math.max(1, Math.ceil(posts.length / archivePostsPerPage()));
   for (let page = 1; page <= totalPages; page += 1) {
     await writePage(
@@ -1169,7 +1194,9 @@ async function writeArchivePages({ posts, categories, baseRoute, basePath, activ
       archivePage({
         posts,
         categories,
+        years,
         activeCategory,
+        activeYear,
         basePath,
         page,
         totalCount
@@ -1606,12 +1633,13 @@ function paginatedSitemapEntries(basePath, list, priority) {
   return Array.from({ length: totalPages }, (_, index) => sitemapEntry(pageHref(basePath, index + 1), lastmod, priority));
 }
 
-function sitemap(posts, categories, tags, seriesEntries) {
+function sitemap(posts, categories, years, tags, seriesEntries) {
   const latest = latestPostDate(posts);
   const archiveUrls = paginatedSitemapEntries("/archive/", posts, "0.8");
   const categoryUrls = categories.flatMap(([category, list]) =>
     paginatedSitemapEntries(`/categories/${slugify(category)}/`, list, "0.7")
   );
+  const yearUrls = years.flatMap(([year, list]) => paginatedSitemapEntries(`/years/${slugify(year)}/`, list, "0.7"));
   const tagUrls = tags.map(([tag, list]) => sitemapEntry(`/tags/${slugify(tag)}/`, latestPostDate(list), "0.6"));
   const seriesUrls = seriesEntries.map(([seriesName, list]) =>
     sitemapEntry(`/series/${slugify(seriesName)}/`, latestPostDate(list), "0.7")
@@ -1625,6 +1653,7 @@ function sitemap(posts, categories, tags, seriesEntries) {
     sitemapEntry("/about/", latest, "0.5"),
     ...posts.map((post) => sitemapEntry(post.url, post.updated || post.date, "0.9")),
     ...categoryUrls,
+    ...yearUrls,
     ...seriesUrls,
     ...tagUrls
   ];
@@ -1636,6 +1665,7 @@ ${urls.join("\n")}
 
 const posts = await loadPosts();
 const categories = groupBy(posts, (post) => post.category);
+const years = groupByYear(posts);
 const tags = groupBy(posts, (post) => post.tags);
 const seriesEntries = groupBy(
   posts.filter((post) => post.series),
@@ -1654,6 +1684,7 @@ await writePage(".", homePage(posts, categories, tags));
 await writeArchivePages({
   posts,
   categories,
+  years,
   baseRoute: "archive",
   basePath: "/archive/",
   totalCount: posts.length
@@ -1673,9 +1704,23 @@ for (const [category, list] of categories) {
   await writeArchivePages({
     posts: list,
     categories,
+    years,
     activeCategory: category,
     baseRoute: path.join("categories", categorySlug),
     basePath: `/categories/${categorySlug}/`,
+    totalCount: posts.length
+  });
+}
+
+for (const [year, list] of years) {
+  const yearSlug = slugify(year);
+  await writeArchivePages({
+    posts: list,
+    categories,
+    years,
+    activeYear: year,
+    baseRoute: path.join("years", yearSlug),
+    basePath: `/years/${yearSlug}/`,
     totalCount: posts.length
   });
 }
@@ -1707,6 +1752,7 @@ await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((
   slug: post.slug,
   url: post.url,
   date: post.date,
+  year: postYear(post),
   category: post.category,
   series: post.series,
   tags: post.tags,
@@ -1716,7 +1762,7 @@ await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((
   text: post.text
 })), null, 2), "utf8");
 await writeFile(path.join(dist, "rss.xml"), rss(posts), "utf8");
-await writeFile(path.join(dist, "sitemap.xml"), sitemap(posts, categories, tags, seriesEntries), "utf8");
+await writeFile(path.join(dist, "sitemap.xml"), sitemap(posts, categories, years, tags, seriesEntries), "utf8");
 await writeFile(
   path.join(dist, "robots.txt"),
   `User-agent: *\nAllow: /\n\nSitemap: ${absoluteUrl("/sitemap.xml")}\n`,

@@ -355,15 +355,28 @@ async function checkSearchIndex(searchIndex) {
   }
 
   const seen = new Set();
+  let previousDate = "";
   for (const item of searchIndex) {
-    if (!item?.title || !item?.slug || !item?.url) {
-      failures.push("dist/search-index.json items must include title, slug, and url.");
+    if (!item?.title || !item?.slug || !item?.url || !item?.date || !item?.year || !item?.category || !item?.summary) {
+      failures.push("dist/search-index.json items must include title, slug, url, date, year, category, and summary.");
       continue;
     }
+    if (!isValidDate(item.date)) failures.push(`dist/search-index.json contains invalid post date: ${item.slug}`);
+    if (!/^\d{4}$/.test(String(item.year))) failures.push(`dist/search-index.json contains invalid post year: ${item.slug}`);
+    if (!Array.isArray(item.tags)) failures.push(`dist/search-index.json item tags must be an array: ${item.slug}`);
+    if (typeof item.text !== "string") failures.push(`dist/search-index.json item text must be a string: ${item.slug}`);
+    if (!item.readingTime) failures.push(`dist/search-index.json item must include readingTime: ${item.slug}`);
     if (seen.has(item.slug)) failures.push(`dist/search-index.json contains duplicate slug: ${item.slug}`);
     seen.add(item.slug);
+    if (previousDate && new Date(item.date) > new Date(previousDate)) {
+      failures.push(`dist/search-index.json must be sorted newest first: ${item.slug}`);
+    }
+    previousDate = item.date;
     if (!(await localTargetExists(item.url))) {
       failures.push(`dist/search-index.json references missing post URL: ${item.url}`);
+    }
+    if (!(await localTargetExists(`/years/${item.year}/`))) {
+      failures.push(`dist/search-index.json references missing year archive: ${item.year}`);
     }
     if (item.cover && !(await localTargetExists(item.cover))) {
       failures.push(`dist/search-index.json references missing post cover: ${item.cover}`);

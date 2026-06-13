@@ -40,6 +40,8 @@ async function defaultPaths() {
     .catch(() => []);
   const firstPost = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.url)?.url : "";
   if (firstPost) paths.splice(1, 0, firstPost);
+  const firstYear = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.year)?.year : "";
+  if (firstYear) paths.splice(3, 0, `/years/${firstYear}/`);
 
   return [...new Set(paths)];
 }

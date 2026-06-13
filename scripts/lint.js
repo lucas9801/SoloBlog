@@ -194,6 +194,9 @@ if (!buildScript.includes("BreadcrumbList")) failures.push("Article pages must e
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
 }
+if (!buildScript.includes("groupByYear") || !buildScript.includes("/years/") || !css.includes(".archive-filter-stack")) {
+  failures.push("Archive pages must expose year-based browsing alongside category filters.");
+}
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
 }
@@ -225,6 +228,9 @@ if (!articleScript.includes("readingTarget") || !articleScript.includes(".articl
 }
 if (!searchScript.includes("searchFacets") || !searchScript.includes("data-facet-type")) {
   failures.push("Search page must support category and tag facets.");
+}
+if (!searchScript.includes("fields.year")) {
+  failures.push("Search page must index post years for archive-scale discovery.");
 }
 if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
   failures.push("Search page must provide clear/reset controls.");
