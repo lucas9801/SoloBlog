@@ -15,6 +15,7 @@ const requiredFiles = [
   "scripts/check-layout.js",
   "scripts/check-output.js",
   "scripts/new-post.js",
+  "scripts/test-new-post.js",
   "scripts/test-preview.js",
   "scripts/test-views.js",
   "public/_headers",
@@ -245,6 +246,9 @@ if (packageConfig.scripts?.["check:output"] !== "node scripts/check-output.js") 
 }
 if (packageConfig.scripts?.["check:layout"] !== "node scripts/check-layout.js") {
   failures.push("package scripts must expose check:layout.");
+}
+if (packageConfig.scripts?.["test:new-post"] !== "node scripts/test-new-post.js") {
+  failures.push("package scripts must expose test:new-post.");
 }
 if (packageConfig.scripts?.["test:preview"] !== "node scripts/test-preview.js") {
   failures.push("package scripts must expose test:preview.");

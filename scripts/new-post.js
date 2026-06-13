@@ -22,6 +22,10 @@ function parseFrontMatterValue(value) {
   return value.replace(/^["']|["']$/g, "");
 }
 
+function yamlString(value) {
+  return JSON.stringify(String(value).replace(/\r\n/g, "\n").replace(/\r/g, "\n"));
+}
+
 function parseSlug(source) {
   const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return "";
@@ -71,8 +75,8 @@ while (usedSlugs.has(slug) || (await fileExists(file))) {
 }
 
 const template = `---
-title: ${title}
-slug: ${slug}
+title: ${yamlString(title)}
+slug: ${yamlString(slug)}
 date: ${date}
 category: 未分类
 tags: []
@@ -93,4 +97,4 @@ await mkdir(path.dirname(file), { recursive: true });
 await writeFile(file, template, { encoding: "utf8", flag: "wx" });
 
 console.log(`Created ${file}`);
-console.log("Edit it, change status to published, then run: npm run build");
+console.log("Edit it, change status to published, then run: npm run check:all");
