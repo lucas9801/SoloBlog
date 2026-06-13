@@ -7,9 +7,18 @@ const dist = path.join(root, "dist");
 const contentDir = path.join(root, "content");
 const postsDir = path.join(contentDir, "posts");
 const siteConfig = JSON.parse(await readFile(path.join(contentDir, "site.json"), "utf8"));
+
+function normalizeBaseUrl(value) {
+  const url = new URL(value);
+  url.pathname = `${url.pathname.replace(/\/+$/, "")}/`;
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
 const site = {
   ...siteConfig,
-  baseUrl: (process.env.SITE_URL || siteConfig.baseUrl).replace(/\/+$/, "/")
+  baseUrl: normalizeBaseUrl(process.env.SITE_URL || siteConfig.baseUrl)
 };
 const assetVersion = encodeURIComponent(
   (process.env.CF_PAGES_COMMIT_SHA || siteConfig.assetVersion || "local").slice(0, 12)
