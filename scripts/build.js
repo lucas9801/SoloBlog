@@ -340,9 +340,17 @@ function markdownToHtml(markdown) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const html = [];
   const headings = [];
+  const headingIds = new Map();
   let paragraph = [];
   let listType = null;
   let codeBlock = null;
+
+  function uniqueHeadingId(text) {
+    const baseId = slugify(text);
+    const count = headingIds.get(baseId) || 0;
+    headingIds.set(baseId, count + 1);
+    return count === 0 ? baseId : `${baseId}-${count + 1}`;
+  }
 
   function flushParagraph() {
     if (paragraph.length === 0) return;
@@ -414,9 +422,9 @@ function markdownToHtml(markdown) {
       closeList();
       const level = heading[1].length;
       const text = heading[2].trim();
-      const id = slugify(text);
+      const id = uniqueHeadingId(text);
       headings.push({ level, text, id });
-      html.push(`<h${level} id="${id}">${inlineMarkdown(text)}</h${level}>`);
+      html.push(`<h${level} id="${escapeAttr(id)}">${inlineMarkdown(text)}</h${level}>`);
       continue;
     }
 

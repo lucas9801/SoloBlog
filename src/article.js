@@ -1,4 +1,5 @@
 const article = document.querySelector(".article-page");
+const readingTarget = document.querySelector(".article-content") || article;
 const pill = document.querySelector(".reading-pill");
 const percent = document.querySelector("#readingPercent");
 const remaining = document.querySelector("#readingRemaining");
@@ -18,12 +19,12 @@ function clamp(value, min, max) {
 }
 
 function updateReadingProgress() {
-  if (!article || !percent || !remaining) return;
+  if (!readingTarget || !percent || !remaining) return;
 
-  const root = document.documentElement;
-  const maxScroll = Math.max(1, root.scrollHeight - window.innerHeight);
-  const current = window.scrollY || root.scrollTop || 0;
-  const value = clamp(Math.round((current / maxScroll) * 100), 0, 100);
+  const rect = readingTarget.getBoundingClientRect();
+  const readingLine = Math.min(220, window.innerHeight * 0.32);
+  const readDistance = readingLine - rect.top;
+  const value = clamp(Math.round((readDistance / Math.max(1, rect.height)) * 100), 0, 100);
   const remainingMinutes = Math.max(0, Math.ceil(totalMinutes * (1 - value / 100)));
 
   pill?.style.setProperty("--reading-progress", `${value}%`);

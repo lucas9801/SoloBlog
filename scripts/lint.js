@@ -165,12 +165,18 @@ if (!buildScript.includes("BreadcrumbList")) failures.push("Article pages must e
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
 }
+if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
+  failures.push("Markdown heading IDs must be stable and unique within each post.");
+}
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
   failures.push("Article script must lazy load Giscus comments.");
+}
+if (!articleScript.includes("readingTarget") || !articleScript.includes(".article-content")) {
+  failures.push("Article reading progress must be based on article content, not the whole document.");
 }
 if (!searchScript.includes("searchFacets") || !searchScript.includes("data-facet-type")) {
   failures.push("Search page must support category and tag facets.");
