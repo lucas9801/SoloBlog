@@ -159,7 +159,7 @@ tags: [渲染, Shader, 性能]
 series: 性能与渲染排查
 seriesOrder: 1
 summary: 一份用于定位渲染性能问题的实践清单。
-cover: /assets/hero-game-tech.png
+cover: /assets/posts/render-optimization-checklist.svg
 featured: true
 status: published
 ---
@@ -574,7 +574,7 @@ npm run new:post -- "文章标题"
 category: Unity
 tags: [Unity, 性能]
 summary: 这里写摘要。
-cover: /assets/hero-game-tech.png
+# cover 可省略；省略时构建脚本会按文章自动生成封面
 status: published
 ```
 

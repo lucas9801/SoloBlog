@@ -319,7 +319,7 @@ pre {
   border-radius: 8px;
   background:
     linear-gradient(90deg, var(--surface) 0 48%, color-mix(in srgb, var(--surface) 78%, transparent) 68%, transparent),
-    var(--hero-cover, url("/assets/hero-game-tech.png")) right center / cover no-repeat;
+    var(--hero-cover, url("/assets/posts/start-here.svg")) right center / cover no-repeat;
 }
 
 .hero-inner::before {
@@ -1991,7 +1991,7 @@ pre {
     align-items: end;
     background:
       linear-gradient(180deg, var(--surface) 0 42%, color-mix(in srgb, var(--surface) 78%, transparent) 72%, color-mix(in srgb, var(--surface) 38%, transparent)),
-      var(--hero-cover, url("/assets/hero-game-tech.png")) center bottom / cover no-repeat;
+      var(--hero-cover, url("/assets/posts/start-here.svg")) center bottom / cover no-repeat;
   }
 
   .hero-copy h1 {

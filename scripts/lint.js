@@ -19,8 +19,7 @@ const requiredFiles = [
   ".node-version",
   "docs/cloudflare-pages.md",
   "assets/og/solus-og.svg",
-  "assets/og/solus-og.png",
-  "assets/hero-game-tech.png"
+  "assets/og/solus-og.png"
 ];
 
 for (const file of requiredFiles) {
@@ -29,7 +28,7 @@ for (const file of requiredFiles) {
   });
 }
 
-const [site, manifest, css, articleScript, searchScript, buildScript, headers, packageConfig, wranglerConfig, heroStats, socialImageStats] = await Promise.all([
+const [site, manifest, css, articleScript, searchScript, buildScript, headers, packageConfig, wranglerConfig, socialImageStats] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
@@ -39,7 +38,6 @@ const [site, manifest, css, articleScript, searchScript, buildScript, headers, p
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
-  stat(path.join(root, "assets/hero-game-tech.png")),
   stat(path.join(root, "assets/og/solus-og.png"))
 ]);
 
@@ -130,6 +128,12 @@ if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
 if (!buildScript.includes("sitemap.xml")) failures.push("Build must generate sitemap.");
 if (site.baseUrl !== "https://blog.solus.games/") failures.push("site baseUrl must use the production domain.");
 if (!site.socialImage) failures.push("site config must define a default socialImage.");
+if (!site.heroCover) failures.push("site config must define a heroCover.");
+if (site.heroCover) {
+  await existsLocalPath(site.heroCover).catch(() => {
+    failures.push(`site heroCover does not exist: ${site.heroCover}`);
+  });
+}
 if (site.socialImage && !/^\/assets\/og\/.+\.(svg|png|jpe?g|webp)$/i.test(site.socialImage)) {
   failures.push("site socialImage should point to a dedicated Open Graph asset under /assets/og/.");
 }
@@ -141,6 +145,9 @@ if (site.socialImage) {
 if (site.socialImage !== "/assets/og/solus-og.png") failures.push("site socialImage must use the generated PNG social card.");
 if (socialImageStats.size < 50000 || socialImageStats.size > 400000) {
   failures.push("Open Graph PNG should be a complete but reasonably small social card.");
+}
+if (css.includes("/assets/hero-game-tech.png") || searchScript.includes("/assets/hero-game-tech.png")) {
+  failures.push("Runtime fallbacks should not reference the retired large hero PNG.");
 }
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
@@ -187,7 +194,6 @@ if (!packageConfig.scripts?.["deploy:cloudflare"]?.includes("--project-name solo
 if (!/^name\s*=\s*"soloblog-4w3"/m.test(wranglerConfig)) {
   failures.push("wrangler.toml must target the current Cloudflare Pages project.");
 }
-if (heroStats.size < 100000) failures.push("Hero asset appears too small or missing.");
 if (site.comments?.enabled) {
   for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {
     if (!site.comments[key]) failures.push(`comments.${key} is required when comments are enabled.`);

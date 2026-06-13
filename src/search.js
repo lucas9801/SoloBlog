@@ -196,7 +196,7 @@ function selectedFilters() {
 
 function renderCard(post, query) {
   return `<article class="search-result-card" role="listitem">
-    <a class="search-result-thumb" href="${escapeHtml(post.url)}" style="--cover-image: url('${escapeHtml(post.cover || "/assets/hero-game-tech.png")}')" aria-label="${escapeHtml(post.title)}">
+    <a class="search-result-thumb" href="${escapeHtml(post.url)}" style="--cover-image: url('${escapeHtml(post.cover || "/assets/posts/start-here.svg")}')" aria-label="${escapeHtml(post.title)}">
       <span>${escapeHtml(post.category)}</span>
     </a>
     <div class="search-result-body">

@@ -578,7 +578,7 @@ function articleStructuredData(post, image) {
 }
 
 function categoryCover(category) {
-  return site.categoryCovers?.[category] || site.heroCover || "/assets/hero-game-tech.png";
+  return site.categoryCovers?.[category] || site.heroCover || "/assets/posts/start-here.svg";
 }
 
 function resolvePostCover(cover, category) {
@@ -592,7 +592,7 @@ function pageLayout({
   current = "",
   body,
   canonical = "/",
-  image = site.socialImage || site.heroCover || "/assets/hero-game-tech.png",
+  image = site.socialImage || site.heroCover || "/assets/posts/start-here.svg",
   type = "website",
   structuredData = null,
   extraHead = ""
@@ -600,7 +600,7 @@ function pageLayout({
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
   const canonicalUrl = absoluteUrl(canonical);
-  const socialImage = absoluteUrl(image || site.socialImage || site.heroCover || "/assets/hero-game-tech.png");
+  const socialImage = absoluteUrl(image || site.socialImage || site.heroCover || "/assets/posts/start-here.svg");
   const bodyWithContentTarget = body.includes('id="content"')
     ? body
     : body.replace("<main", '<main id="content" tabindex="-1"');
@@ -1008,7 +1008,7 @@ function homePage(posts, categories, tags) {
 
   const body = `<main>
     <section class="hero-section">
-      <div class="hero-inner" style="--hero-cover: url('${escapeAttr(site.heroCover || "/assets/hero-game-tech.png")}')">
+      <div class="hero-inner" style="--hero-cover: url('${escapeAttr(site.heroCover || "/assets/posts/start-here.svg")}')">
         <div class="hero-copy">
           <p class="eyebrow">${escapeHtml(hero.eyebrow)}</p>
           <h1>${escapeHtml(hero.title)}</h1>
