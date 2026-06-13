@@ -346,7 +346,54 @@ async function checkViewport(viewport, page) {
             })()`
           })
         : { result: { value: [] } };
-    result.result.value.runtimeFailures = searchRuntime.result.value || [];
+    const articleRuntime =
+      page.pathname.startsWith("/posts/")
+        ? await send("Runtime.evaluate", {
+            awaitPromise: true,
+            returnByValue: true,
+            expression: `(async () => {
+              const failures = [];
+              const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+              const percentNode = document.querySelector("#readingPercent");
+              const remainingNode = document.querySelector("#readingRemaining");
+              const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
+              const articleContent = document.querySelector(".article-content");
+              if (!percentNode) failures.push("reading percent node is missing");
+              if (!remainingNode) failures.push("reading remaining node is missing");
+              if (!articleContent) failures.push("article content is missing");
+              if (tocLinks.length < 3) failures.push("article table of contents has fewer than 3 links");
+              if (failures.length > 0) return failures;
+
+              const readPercent = () => Number.parseInt(percentNode.textContent || "0", 10) || 0;
+              scrollTo(0, 0);
+              await wait(180);
+              const topPercent = readPercent();
+              const topActive = document.querySelector("[data-toc-target].active")?.dataset.tocTarget || "";
+              if (topPercent > 20) failures.push("reading progress starts too high");
+              if (tocLinks.length > 0 && topActive !== tocLinks[0].dataset.tocTarget) {
+                failures.push("first toc entry is not active near the top");
+              }
+
+              scrollTo(0, document.documentElement.scrollHeight);
+              await wait(260);
+              const bottomPercent = readPercent();
+              const bottomActive = document.querySelector("[data-toc-target].active")?.dataset.tocTarget || "";
+              const lastToc = tocLinks[tocLinks.length - 1]?.dataset.tocTarget || "";
+              if (bottomPercent <= topPercent) failures.push("reading progress did not increase after scrolling");
+              if (bottomPercent < 90) failures.push("reading progress did not approach completion at the bottom");
+              if (!remainingNode.textContent) failures.push("reading remaining text is empty");
+              if (lastToc && bottomActive !== lastToc) failures.push("last toc entry is not active near the bottom");
+
+              scrollTo(0, 0);
+              await wait(100);
+              return failures;
+            })()`
+          })
+        : { result: { value: [] } };
+    result.result.value.runtimeFailures = [
+      ...(searchRuntime.result.value || []),
+      ...(articleRuntime.result.value || [])
+    ];
 
     await mkdir(path.join(root, "screenshots"), { recursive: true });
     const screenshot = await send("Page.captureScreenshot", {

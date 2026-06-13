@@ -23,8 +23,11 @@ function updateReadingProgress() {
 
   const rect = readingTarget.getBoundingClientRect();
   const readingLine = Math.min(220, window.innerHeight * 0.32);
+  const completionLine = Math.min(window.innerHeight * 0.76, window.innerHeight - 96);
   const readDistance = readingLine - rect.top;
-  const value = clamp(Math.round((readDistance / Math.max(1, rect.height)) * 100), 0, 100);
+  const readableDistance = Math.max(1, rect.height - Math.max(0, completionLine - readingLine));
+  const pageBottomReached = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+  const value = pageBottomReached ? 100 : clamp(Math.round((readDistance / readableDistance) * 100), 0, 100);
   const remainingMinutes = Math.max(0, Math.ceil(totalMinutes * (1 - value / 100)));
 
   pill?.style.setProperty("--reading-progress", `${value}%`);
