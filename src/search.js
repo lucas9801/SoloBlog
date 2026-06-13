@@ -133,6 +133,32 @@ function countEntries(posts, getter) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
 }
 
+function availableValues(posts, getter) {
+  const values = new Set();
+  for (const post of posts) {
+    const entries = Array.isArray(getter(post)) ? getter(post) : [getter(post)];
+    for (const value of entries.filter(Boolean)) values.add(value);
+  }
+  return values;
+}
+
+function sanitizeState(posts) {
+  let changed = false;
+  const categories = availableValues(posts, (post) => post.category);
+  const tags = availableValues(posts, (post) => post.tags);
+
+  if (state.category && !categories.has(state.category)) {
+    state.category = "";
+    changed = true;
+  }
+  if (state.tag && !tags.has(state.tag)) {
+    state.tag = "";
+    changed = true;
+  }
+
+  if (changed) updateUrl();
+}
+
 function facetButton(type, value, count) {
   const active = state[type] === value;
   return `<button class="facet-button${active ? " active" : ""}" type="button" data-facet-type="${type}" data-facet-value="${escapeHtml(value)}" aria-pressed="${active}">
@@ -285,6 +311,7 @@ async function boot() {
   if (!response.ok) throw new Error("Search index is unavailable.");
   const posts = await response.json();
 
+  sanitizeState(posts);
   renderFacets(posts);
   render(posts);
 

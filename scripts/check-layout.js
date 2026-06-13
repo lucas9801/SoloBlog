@@ -49,6 +49,8 @@ async function defaultPaths() {
     const seriesIndex = paths.indexOf("/series/");
     paths.splice(seriesIndex === -1 ? paths.length : seriesIndex + 1, 0, `/series/${slugifyForPath(firstSeries)}/`);
   }
+  const searchIndexPath = paths.indexOf("/search/");
+  paths.splice(searchIndexPath === -1 ? paths.length : searchIndexPath + 1, 0, "/search/?category=__missing__&tag=__missing__");
 
   return [...new Set(paths)];
 }
@@ -71,11 +73,15 @@ async function pagesToCheck() {
     ? process.env.CHECK_PATHS.split(",").map((item) => item.trim()).filter(Boolean)
     : await defaultPaths();
 
-  return paths.map((pathname) => ({
-    name: pageName(pathname),
-    pathname,
-    url: new URL(pathname, baseUrl).toString()
-  }));
+  return paths.map((pathname) => {
+    const url = new URL(pathname, baseUrl);
+    return {
+      name: pageName(pathname),
+      pathname: url.pathname,
+      search: url.search,
+      url: url.toString()
+    };
+  });
 }
 
 function getFreePort() {
@@ -380,6 +386,7 @@ async function checkViewport(viewport, page) {
               const results = document.querySelector("#searchResults");
               const facets = document.querySelector("#searchFacets");
               const clearButton = document.querySelector("[data-search-clear]");
+              const invalidFacetUrl = ${JSON.stringify(page.search.includes("__missing__"))};
               if (!input) failures.push("search input is missing");
               if (!results) failures.push("search results container is missing");
               if (!facets) failures.push("search facets container is missing");
@@ -391,6 +398,9 @@ async function checkViewport(viewport, page) {
               const facetButtons = document.querySelectorAll("[data-facet-type]").length;
               if (initialCards === 0) failures.push("search page did not render initial recent posts");
               if (facetButtons === 0) failures.push("search page did not render facet buttons");
+              if (invalidFacetUrl && new URL(location.href).search !== "") {
+                failures.push("search page did not remove invalid facet URL params");
+              }
 
               input.value = "Unity";
               input.dispatchEvent(new Event("input", { bubbles: true }));
