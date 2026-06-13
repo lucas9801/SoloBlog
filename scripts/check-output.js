@@ -459,6 +459,60 @@ function checkLinks(file, html) {
   }
 }
 
+function stripTags(value = "") {
+  return String(value)
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&(?:nbsp|#160);/gi, " ")
+    .replace(/&[#a-z0-9]+;/gi, "x")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function elementInnerHtml(html, tagName, index) {
+  const openEnd = html.indexOf(">", index);
+  if (openEnd === -1) return "";
+  const close = html.indexOf(`</${tagName}>`, openEnd);
+  return close === -1 ? "" : html.slice(openEnd + 1, close);
+}
+
+function accessibleName(attrs, innerHtml) {
+  const ariaLabel = attrs.get("aria-label") || "";
+  if (ariaLabel.trim()) return ariaLabel.trim();
+  if ((attrs.get("aria-labelledby") || "").trim()) return attrs.get("aria-labelledby").trim();
+
+  const withoutHidden = String(innerHtml || "").replace(
+    /<([a-z][\w:-]*)\b[^>]*\saria-hidden=(?:"true"|'true'|true)[^>]*>[\s\S]*?<\/\1>/gi,
+    " "
+  );
+  const text = stripTags(withoutHidden);
+  const imageAlts = [...withoutHidden.matchAll(/<img\b[^>]*>/gi)]
+    .map((match) => tagAttributes(match[0]).get("alt") || "")
+    .filter((alt) => alt.trim())
+    .join(" ");
+  return `${text} ${imageAlts}`.trim();
+}
+
+function checkInteractiveNames(file, html) {
+  const relative = displayPath(file);
+
+  for (const match of html.matchAll(/<a\b[^>]*>/gi)) {
+    const attrs = tagAttributes(match[0]);
+    if (!attrs.get("href")) continue;
+    if (!accessibleName(attrs, elementInnerHtml(html, "a", match.index))) {
+      failures.push(`${relative} contains an anchor without an accessible name: ${attrs.get("href")}`);
+    }
+  }
+
+  for (const match of html.matchAll(/<button\b[^>]*>/gi)) {
+    const attrs = tagAttributes(match[0]);
+    if (!accessibleName(attrs, elementInnerHtml(html, "button", match.index))) {
+      failures.push(`${relative} contains a button without an accessible name.`);
+    }
+  }
+}
+
 async function checkSitemap(sitemap) {
   if (!sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')) {
     failures.push("dist/sitemap.xml must declare the sitemap namespace.");
@@ -750,6 +804,7 @@ async function main() {
     checkInlineScripts(file, html);
     checkImages(file, html);
     checkLinks(file, html);
+    checkInteractiveNames(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
     await checkStructuredData(file, html);

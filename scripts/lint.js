@@ -252,6 +252,9 @@ if (!buildScript.includes("BreadcrumbList")) failures.push("Article pages must e
 if (!checkOutputScript.includes("checkStructuredData") || !checkOutputScript.includes("TechArticle")) {
   failures.push("Output checks must validate structured data.");
 }
+if (!checkOutputScript.includes("checkInteractiveNames")) {
+  failures.push("Output checks must validate accessible names for interactive elements.");
+}
 if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("CollectionPage")) {
   failures.push("Index pages must expose page-level structured data.");
 }
