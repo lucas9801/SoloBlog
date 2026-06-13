@@ -213,6 +213,9 @@ if (!buildScript.includes("BreadcrumbList")) failures.push("Article pages must e
 if (!checkOutputScript.includes("checkStructuredData") || !checkOutputScript.includes("TechArticle")) {
   failures.push("Output checks must validate structured data.");
 }
+if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("CollectionPage")) {
+  failures.push("Index pages must expose page-level structured data.");
+}
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
 }

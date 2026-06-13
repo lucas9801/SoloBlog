@@ -587,6 +587,51 @@ function siteSchema() {
   };
 }
 
+function pageSchema({ type = "WebPage", name, description, url, items = [] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": type,
+    name,
+    description,
+    url: absoluteUrl(url),
+    inLanguage: site.language || "zh-CN",
+    isPartOf: {
+      "@type": "WebSite",
+      name: site.title,
+      url: absoluteUrl("/")
+    }
+  };
+
+  if (items.length > 0) {
+    schema.mainEntity = {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        url: absoluteUrl(item.url)
+      }))
+    };
+  }
+
+  return schema;
+}
+
+function postListItems(posts) {
+  return posts.map((post) => ({
+    name: post.title,
+    url: post.url
+  }));
+}
+
+function taxonomyListItems(entries, basePath) {
+  return entries.map(([name]) => ({
+    name,
+    url: `${basePath}${slugify(name)}/`
+  }));
+}
+
 function breadcrumbSchema(items) {
   return {
     "@context": "https://schema.org",
@@ -1191,7 +1236,14 @@ function archivePage({ posts, categories, years, activeCategory = "", activeYear
     current: "/archive/",
     body,
     canonical: pageHref(basePath, currentPage),
-    extraHead: paginationHead(basePath, currentPage, totalPages)
+    extraHead: paginationHead(basePath, currentPage, totalPages),
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: title,
+      description,
+      url: pageHref(basePath, currentPage),
+      items: postListItems(items)
+    })
   });
 }
 
@@ -1230,7 +1282,20 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
       )
       .join("")}</div>
   </main>`;
-  return pageLayout({ title, description, current, body, canonical: current });
+  return pageLayout({
+    title,
+    description,
+    current,
+    body,
+    canonical: current,
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: title,
+      description,
+      url: current,
+      items: taxonomyListItems(entries, basePath)
+    })
+  });
 }
 
 function tagIndexPage(entries, posts) {
@@ -1244,7 +1309,20 @@ function tagIndexPage(entries, posts) {
       ${tagCloud(entries)}
     </section>
   </main>`;
-  return pageLayout({ title: "标签", description: "按标签浏览文章。", current: "/tags/", body, canonical: "/tags/" });
+  return pageLayout({
+    title: "标签",
+    description: "按标签浏览文章。",
+    current: "/tags/",
+    body,
+    canonical: "/tags/",
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: "标签索引",
+      description: "按标签浏览文章。",
+      url: "/tags/",
+      items: taxonomyListItems(entries, "/tags/")
+    })
+  });
 }
 
 function tagWeightClass(count, maxCount) {
@@ -1270,6 +1348,8 @@ function tagCloud(entries, activeTag = "") {
 function tagListPage({ tag, posts, tags, page = 1, basePath }) {
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
+  const title = `标签：${tag}`;
+  const description = `带有 ${tag} 标签的全部文章。`;
   const body = `<main class="page-shell tags-page">
     ${pageContext({
       title: `${tag} 标签`,
@@ -1289,12 +1369,19 @@ function tagListPage({ tag, posts, tags, page = 1, basePath }) {
     </section>
   </main>`;
   return pageLayout({
-    title: `标签：${tag}`,
-    description: `带有 ${tag} 标签的全部文章。`,
+    title,
+    description,
     current: "/tags/",
     body,
     canonical: pageHref(basePath, currentPage),
-    extraHead: paginationHead(basePath, currentPage, totalPages)
+    extraHead: paginationHead(basePath, currentPage, totalPages),
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: title,
+      description,
+      url: pageHref(basePath, currentPage),
+      items: postListItems(items)
+    })
   });
 }
 
@@ -1327,7 +1414,20 @@ function listPage({ title, description, posts, current, canonical }) {
     </header>
     <div class="post-grid">${posts.map((post) => postCard(post)).join("")}</div>
   </main>`;
-  return pageLayout({ title, description, current, body, canonical });
+  return pageLayout({
+    title,
+    description,
+    current,
+    body,
+    canonical,
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: title,
+      description,
+      url: canonical,
+      items: postListItems(posts)
+    })
+  });
 }
 
 function sortSeriesPosts(posts) {
@@ -1361,7 +1461,20 @@ function seriesIndexPage(entries) {
         .join("")}
     </section>
   </main>`;
-  return pageLayout({ title: "专题", description: "按专题浏览技术笔记。", current: "/series/", body, canonical: "/series/" });
+  return pageLayout({
+    title: "专题",
+    description: "按专题浏览技术笔记。",
+    current: "/series/",
+    body,
+    canonical: "/series/",
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: "专题索引",
+      description: "按专题浏览技术笔记。",
+      url: "/series/",
+      items: taxonomyListItems(entries, "/series/")
+    })
+  });
 }
 
 function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
@@ -1418,7 +1531,14 @@ function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
     current: "/series/",
     body,
     canonical: pageHref(seriesBasePath, currentPage),
-    extraHead: paginationHead(seriesBasePath, currentPage, totalPages)
+    extraHead: paginationHead(seriesBasePath, currentPage, totalPages),
+    structuredData: pageSchema({
+      type: "CollectionPage",
+      name: `专题：${name}`,
+      description: `${name} 专题下的全部技术笔记。`,
+      url: pageHref(seriesBasePath, currentPage),
+      items: postListItems(items)
+    })
   });
 }
 
@@ -1564,20 +1684,36 @@ async function aboutPage() {
   const raw = await readFile(path.join(contentDir, "about.md"), "utf8");
   const { data, body } = parseFrontMatter(raw);
   const rendered = markdownToHtml(body);
+  const title = data.title || "关于";
+  const description = data.summary || site.description;
   const pageBody = `<main class="page-shell narrow">
     <article class="article-page simple-page">
       <header class="page-title">
         <span class="section-kicker">About</span>
-        <h1>${escapeHtml(data.title || "关于")}</h1>
+        <h1>${escapeHtml(title)}</h1>
         <p>${escapeHtml(data.summary || "")}</p>
       </header>
       <div class="article-content">${rendered.html}</div>
     </article>
   </main>`;
-  return pageLayout({ title: data.title || "关于", description: data.summary || site.description, current: "/about/", body: pageBody, canonical: "/about/" });
+  return pageLayout({
+    title,
+    description,
+    current: "/about/",
+    body: pageBody,
+    canonical: "/about/",
+    structuredData: pageSchema({
+      type: "AboutPage",
+      name: title,
+      description,
+      url: "/about/"
+    })
+  });
 }
 
 function searchPage() {
+  const title = "搜索文章";
+  const description = "搜索博客文章。";
   const body = `<main class="page-shell narrow">
     <header class="page-title">
       <span class="section-kicker">Search</span>
@@ -1597,7 +1733,19 @@ function searchPage() {
     </section>
   </main>
   <script type="module" src="${assetUrl("/src/search.js")}"></script>`;
-  return pageLayout({ title: "搜索文章", description: "搜索博客文章。", current: "/search/", body, canonical: "/search/" });
+  return pageLayout({
+    title,
+    description,
+    current: "/search/",
+    body,
+    canonical: "/search/",
+    structuredData: pageSchema({
+      type: "SearchResultsPage",
+      name: title,
+      description,
+      url: "/search/"
+    })
+  });
 }
 
 function notFoundPage() {

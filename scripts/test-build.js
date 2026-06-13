@@ -138,6 +138,10 @@ try {
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
+  const archiveCollection = jsonLdObjects(archive).find((item) => item["@type"] === "CollectionPage");
+  assert.equal(archiveCollection.url, "https://blog.solus.games/archive/");
+  assert.equal(archiveCollection.mainEntity["@type"], "ItemList");
+  assert.equal(archiveCollection.mainEntity.itemListElement.length, 1);
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
@@ -153,12 +157,20 @@ try {
   assert.match(yearPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(yearPage, /aria-current="page">2026 <b>2<\/b><\/a>/);
   assert.match(yearPage, /href="\/years\/2026\/page\/2\/"/);
+  assert.equal(
+    jsonLdObjects(yearPage).find((item) => item["@type"] === "CollectionPage").url,
+    "https://blog.solus.games/years/2026/"
+  );
 
   const tagPage = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "index.html"), "utf8");
   assert.match(tagPage, /Markdown 标签/);
   assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
   assert.match(tagPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\/" \/>/);
+  assert.equal(
+    jsonLdObjects(tagPage).find((item) => item["@type"] === "CollectionPage").url,
+    "https://blog.solus.games/tags/markdown/"
+  );
 
   const tagPage2 = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "page", "2", "index.html"), "utf8");
   assert.match(tagPage2, /href="\/posts\/markdown-edge-cases\/"/);
@@ -169,10 +181,32 @@ try {
   assert.doesNotMatch(seriesPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(seriesPage, /href="\/series\/markdown-lab\/page\/2\/"/);
   assert.match(seriesPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\/" \/>/);
+  assert.equal(
+    jsonLdObjects(seriesPage).find((item) => item["@type"] === "CollectionPage").url,
+    "https://blog.solus.games/series/markdown-lab/"
+  );
 
   const seriesPage2 = await readFile(path.join(tempRoot, "dist", "series", "markdown-lab", "page", "2", "index.html"), "utf8");
   assert.match(seriesPage2, /href="\/posts\/markdown-followup\/"/);
   assert.match(seriesPage2, /<link rel="prev" href="https:\/\/blog\.solus\.games\/series\/markdown-lab\/" \/>/);
+
+  const tagIndex = await readFile(path.join(tempRoot, "dist", "tags", "index.html"), "utf8");
+  assert.equal(jsonLdObjects(tagIndex).find((item) => item["@type"] === "CollectionPage").url, "https://blog.solus.games/tags/");
+
+  const seriesIndex = await readFile(path.join(tempRoot, "dist", "series", "index.html"), "utf8");
+  assert.equal(
+    jsonLdObjects(seriesIndex).find((item) => item["@type"] === "CollectionPage").url,
+    "https://blog.solus.games/series/"
+  );
+
+  const about = await readFile(path.join(tempRoot, "dist", "about", "index.html"), "utf8");
+  assert.equal(jsonLdObjects(about).find((item) => item["@type"] === "AboutPage").url, "https://blog.solus.games/about/");
+
+  const search = await readFile(path.join(tempRoot, "dist", "search", "index.html"), "utf8");
+  assert.equal(
+    jsonLdObjects(search).find((item) => item["@type"] === "SearchResultsPage").url,
+    "https://blog.solus.games/search/"
+  );
 
   const searchIndex = JSON.parse(await readFile(path.join(tempRoot, "dist", "search-index.json"), "utf8"));
   assert.equal(searchIndex.length, 2);

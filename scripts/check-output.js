@@ -245,6 +245,13 @@ function schemaTypes(item) {
   return Array.isArray(type) ? type : [type].filter(Boolean);
 }
 
+function expectedPageSchemaType(relative) {
+  if (relative === "dist/about/index.html") return "AboutPage";
+  if (relative === "dist/search/index.html") return "SearchResultsPage";
+  if (/^dist\/(?:archive|categories|years|tags|series)\//.test(relative)) return "CollectionPage";
+  return "";
+}
+
 async function checkStructuredData(file, html) {
   const relative = displayPath(file);
   const expectedUrl = new URL(pagePathFromFile(file), absoluteSiteRoot).toString();
@@ -281,6 +288,43 @@ async function checkStructuredData(file, html) {
         const targetUrl = checkSiteUrl("dist/index.html SearchAction target", target);
         if (targetUrl && (targetUrl.pathname !== "/search/" || targetUrl.searchParams.get("q") !== "unity")) {
           failures.push("dist/index.html SearchAction target must point to /search/?q={search_term_string}.");
+        }
+      }
+    }
+  }
+
+  const expectedPageType = expectedPageSchemaType(relative);
+  if (expectedPageType) {
+    const page = items.find((item) => schemaTypes(item).includes(expectedPageType));
+    if (!page) {
+      failures.push(`${relative} must include ${expectedPageType} structured data.`);
+    } else {
+      const pageUrl = checkSiteUrl(`${relative} ${expectedPageType} URL`, page.url || "");
+      if (pageUrl?.toString() !== expectedUrl) {
+        failures.push(`${relative} ${expectedPageType} URL must match the canonical output URL.`);
+      }
+      if (!page.name?.trim()) failures.push(`${relative} ${expectedPageType} name must not be empty.`);
+      if (!page.description?.trim()) failures.push(`${relative} ${expectedPageType} description must not be empty.`);
+
+      if (page.mainEntity) {
+        if (!schemaTypes(page.mainEntity).includes("ItemList")) {
+          failures.push(`${relative} ${expectedPageType} mainEntity must be an ItemList.`);
+        }
+        const elements = Array.isArray(page.mainEntity.itemListElement) ? page.mainEntity.itemListElement : [];
+        if (elements.length === 0) {
+          failures.push(`${relative} ${expectedPageType} ItemList must include at least one item.`);
+        }
+        for (const [index, element] of elements.entries()) {
+          if (element.position !== index + 1) {
+            failures.push(`${relative} ${expectedPageType} ItemList positions must be sequential.`);
+          }
+          if (!element.name?.trim()) {
+            failures.push(`${relative} ${expectedPageType} ItemList items must include names.`);
+          }
+          const elementUrl = checkSiteUrl(`${relative} ${expectedPageType} ItemList URL`, element.url || "");
+          if (elementUrl?.origin === siteOrigin && !(await localTargetExists(elementUrl.pathname))) {
+            failures.push(`${relative} ${expectedPageType} ItemList URL references missing local target: ${element.url}`);
+          }
         }
       }
     }
