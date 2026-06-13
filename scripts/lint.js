@@ -12,6 +12,7 @@ const requiredFiles = [
   "scripts/build.js",
   "scripts/check-output.js",
   "scripts/new-post.js",
+  "scripts/test-views.js",
   "public/_headers",
   "public/_redirects",
   "public/favicon.svg",
@@ -227,6 +228,9 @@ if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.src ==
 if (packageConfig.name !== "solus-blog") failures.push("package name should match the SOLUS blog project.");
 if (packageConfig.scripts?.["check:output"] !== "node scripts/check-output.js") {
   failures.push("package scripts must expose check:output.");
+}
+if (packageConfig.scripts?.["test:views"] !== "node scripts/test-views.js") {
+  failures.push("package scripts must expose test:views.");
 }
 if (!packageConfig.scripts?.["deploy:cloudflare"]?.includes("--project-name soloblog-4w3")) {
   failures.push("deploy:cloudflare must target the current Cloudflare Pages project.");

@@ -11,6 +11,7 @@
     "build": "node scripts/build.js",
     "check:output": "node scripts/check-output.js",
     "check:layout": "node scripts/check-layout.js",
+    "test:views": "node scripts/test-views.js",
     "new:post": "node scripts/new-post.js",
     "deploy:cloudflare": "npm run build && npx wrangler pages deploy dist --project-name soloblog-4w3",
     "preview": "node scripts/preview.js"

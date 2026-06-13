@@ -330,11 +330,47 @@ function inlineMarkdown(text) {
 }
 
 function splitTableRow(line) {
-  let value = line.trim();
+  const value = line.trim();
   if (!value.includes("|")) return [];
-  if (value.startsWith("|")) value = value.slice(1);
-  if (value.endsWith("|")) value = value.slice(0, -1);
-  return value.split("|").map((cell) => cell.trim());
+
+  const cells = [];
+  let cell = "";
+  let escaped = false;
+
+  for (const char of value) {
+    if (escaped) {
+      cell += char === "|" ? "|" : `\\${char}`;
+      escaped = false;
+      continue;
+    }
+
+    if (char === "\\") {
+      escaped = true;
+      continue;
+    }
+
+    if (char === "|") {
+      cells.push(cell.trim());
+      cell = "";
+      continue;
+    }
+
+    cell += char;
+  }
+
+  if (escaped) cell += "\\";
+  cells.push(cell.trim());
+  if (value.startsWith("|")) cells.shift();
+  if (value.endsWith("|") && !isEscapedAt(value, value.length - 1)) cells.pop();
+  return cells;
+}
+
+function isEscapedAt(value, index) {
+  let slashes = 0;
+  for (let cursor = index - 1; cursor >= 0 && value[cursor] === "\\"; cursor -= 1) {
+    slashes += 1;
+  }
+  return slashes % 2 === 1;
 }
 
 function isTableSeparator(line) {
