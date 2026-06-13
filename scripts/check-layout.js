@@ -277,6 +277,57 @@ async function checkViewport(viewport, page) {
         return metrics;
       })()`
     });
+    const siteRuntime =
+      page.pathname === "/"
+        ? await send("Runtime.evaluate", {
+            awaitPromise: true,
+            returnByValue: true,
+            expression: `(async () => {
+              const failures = [];
+              const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+              const header = document.querySelector(".site-header");
+              const toggle = document.querySelector("[data-theme-toggle]");
+              if (!header) failures.push("site header is missing");
+              if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
+              if (failures.length > 0) return failures;
+
+              const originalTheme = document.documentElement.dataset.theme || "light";
+              const expectedNext = originalTheme === "dark" ? "light" : "dark";
+              toggle.click();
+              await wait(120);
+              if (document.documentElement.dataset.theme !== expectedNext) {
+                failures.push("theme toggle did not update document theme");
+              }
+              if (toggle.getAttribute("aria-pressed") !== String(expectedNext === "dark")) {
+                failures.push("theme toggle aria-pressed is out of sync");
+              }
+              try {
+                if (localStorage.getItem("solus-theme") !== expectedNext) {
+                  failures.push("theme toggle did not persist the selected theme");
+                }
+              } catch {
+                // Storage can be unavailable; the click behavior still matters.
+              }
+              toggle.click();
+              await wait(120);
+              if (document.documentElement.dataset.theme !== originalTheme) {
+                failures.push("theme toggle did not restore original theme");
+              }
+
+              scrollTo(0, Math.min(520, document.documentElement.scrollHeight));
+              await wait(220);
+              if (!header.classList.contains("is-hidden")) {
+                failures.push("header did not hide after scrolling down");
+              }
+              scrollTo(0, 0);
+              await wait(220);
+              if (header.classList.contains("is-hidden")) {
+                failures.push("header did not show after scrolling back to top");
+              }
+              return failures;
+            })()`
+          })
+        : { result: { value: [] } };
     const searchRuntime =
       page.pathname === "/search/"
         ? await send("Runtime.evaluate", {
@@ -391,6 +442,7 @@ async function checkViewport(viewport, page) {
           })
         : { result: { value: [] } };
     result.result.value.runtimeFailures = [
+      ...(siteRuntime.result.value || []),
       ...(searchRuntime.result.value || []),
       ...(articleRuntime.result.value || [])
     ];
