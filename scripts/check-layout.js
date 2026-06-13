@@ -277,6 +277,76 @@ async function checkViewport(viewport, page) {
         return metrics;
       })()`
     });
+    const searchRuntime =
+      page.pathname === "/search/"
+        ? await send("Runtime.evaluate", {
+            awaitPromise: true,
+            returnByValue: true,
+            expression: `(async () => {
+              const failures = [];
+              const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+              const waitFor = async (predicate, timeoutMs = 4000) => {
+                const started = Date.now();
+                while (Date.now() - started < timeoutMs) {
+                  if (predicate()) return true;
+                  await wait(80);
+                }
+                return false;
+              };
+
+              const input = document.querySelector("#searchInputPage");
+              const results = document.querySelector("#searchResults");
+              const facets = document.querySelector("#searchFacets");
+              const clearButton = document.querySelector("[data-search-clear]");
+              if (!input) failures.push("search input is missing");
+              if (!results) failures.push("search results container is missing");
+              if (!facets) failures.push("search facets container is missing");
+              if (!clearButton) failures.push("search clear button is missing");
+              if (failures.length > 0) return failures;
+
+              await waitFor(() => document.querySelectorAll(".search-result-card").length > 0 || document.querySelector(".search-empty"));
+              const initialCards = document.querySelectorAll(".search-result-card").length;
+              const facetButtons = document.querySelectorAll("[data-facet-type]").length;
+              if (initialCards === 0) failures.push("search page did not render initial recent posts");
+              if (facetButtons === 0) failures.push("search page did not render facet buttons");
+
+              input.value = "Unity";
+              input.dispatchEvent(new Event("input", { bubbles: true }));
+              await wait(120);
+              const queryCards = document.querySelectorAll(".search-result-card").length;
+              const queryText = results.textContent || "";
+              if (queryCards === 0) failures.push("search query did not render result cards");
+              if (!queryText.toLowerCase().includes("unity")) failures.push("search query results do not mention Unity");
+              if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
+              if (clearButton.hidden) failures.push("clear button stayed hidden after search input");
+
+              const categoryFacet = document.querySelector('[data-facet-type="category"]');
+              if (categoryFacet instanceof HTMLButtonElement) {
+                categoryFacet.click();
+                await wait(120);
+                if (categoryFacet.getAttribute("aria-pressed") !== "true") {
+                  failures.push("category facet did not become active after click");
+                }
+              } else {
+                failures.push("category facet button is missing");
+              }
+
+              clearButton.click();
+              await wait(120);
+              if (input.value !== "") failures.push("clear button did not empty the search input");
+              if (new URL(location.href).search !== "") failures.push("clear button did not reset the URL search params");
+              if (document.querySelectorAll("[data-facet-type].active").length > 0) {
+                failures.push("clear button did not clear active facets");
+              }
+              if (document.querySelectorAll(".search-result-card").length === 0) {
+                failures.push("clear button did not restore recent results");
+              }
+
+              return failures;
+            })()`
+          })
+        : { result: { value: [] } };
+    result.result.value.runtimeFailures = searchRuntime.result.value || [];
 
     await mkdir(path.join(root, "screenshots"), { recursive: true });
     const screenshot = await send("Page.captureScreenshot", {
@@ -322,6 +392,9 @@ for (const page of pages) {
     }
     if (metrics.visibleBrokenImages.length > 0) {
       failures.push(`${page.name}/${viewport.name} has broken visible images: ${metrics.visibleBrokenImages.join(", ")}`);
+    }
+    for (const runtimeFailure of metrics.runtimeFailures || []) {
+      failures.push(`${page.name}/${viewport.name} runtime check failed: ${runtimeFailure}`);
     }
     if (overflow > 1) {
       failures.push(`${page.name}/${viewport.name} has ${overflow}px horizontal overflow`);
