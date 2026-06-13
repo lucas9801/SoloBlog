@@ -220,12 +220,15 @@ try {
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
   assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
+  assert.equal((rss.match(/<item>/g) || []).length, 2);
+  assert.ok(rss.indexOf("https://blog.solus.games/posts/markdown-followup/") < rss.indexOf("https://blog.solus.games/posts/markdown-edge-cases/"));
 
   const jsonFeed = JSON.parse(await readFile(path.join(tempRoot, "dist", "feed.json"), "utf8"));
   assert.equal(jsonFeed.version, "https://jsonfeed.org/version/1.1");
   assert.equal(jsonFeed.home_page_url, "https://blog.solus.games/");
   assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
   assert.equal(jsonFeed.items.length, 2);
+  assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-followup/");
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
   assert.doesNotMatch(feedMarkdownEdge.content_html, /\s(?:href|src)="\//);

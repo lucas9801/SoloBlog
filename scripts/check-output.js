@@ -496,6 +496,10 @@ async function checkRss(rss) {
     failures.push("dist/rss.xml must not contain relative local href/src URLs.");
   }
 
+  const items = [...rss.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((match) => match[1]);
+  if (items.length === 0) failures.push("dist/rss.xml must contain at least one item.");
+  if (items.length > 20) failures.push("dist/rss.xml must contain no more than 20 items.");
+
   const self = rss.match(/<atom:link\s+href="([^"]+)"\s+rel="self"\s+type="application\/rss\+xml"\s+\/>/)?.[1];
   const expectedSelf = new URL("/rss.xml", absoluteSiteRoot).toString();
   if (self !== expectedSelf) failures.push(`dist/rss.xml self link must be ${expectedSelf}.`);
@@ -525,6 +529,23 @@ async function checkRss(rss) {
 
   for (const match of rss.matchAll(/<(?:pubDate|lastBuildDate)>([^<]+)<\/(?:pubDate|lastBuildDate)>/g)) {
     if (!isValidDate(match[1])) failures.push(`dist/rss.xml contains invalid date: ${match[1]}`);
+  }
+
+  let previousItemDate = "";
+  for (const item of items) {
+    const title = item.match(/<title>([\s\S]*?)<\/title>/)?.[1] || "";
+    const link = item.match(/<link>(https?:\/\/[^<]+)<\/link>/)?.[1] || "";
+    const pubDate = item.match(/<pubDate>([^<]+)<\/pubDate>/)?.[1] || "";
+    if (!title.trim()) failures.push("dist/rss.xml item title must not be empty.");
+    if (!link.trim()) failures.push("dist/rss.xml item link must not be empty.");
+    if (!isValidDate(pubDate)) {
+      failures.push(`dist/rss.xml item has invalid pubDate: ${title || link || "unknown item"}`);
+      continue;
+    }
+    if (previousItemDate && new Date(pubDate) > new Date(previousItemDate)) {
+      failures.push(`dist/rss.xml items must be sorted newest first: ${title || link}`);
+    }
+    previousItemDate = pubDate;
   }
 }
 
@@ -583,8 +604,12 @@ async function checkJsonFeed(feed) {
     failures.push("dist/feed.json must contain at least one item.");
     return;
   }
+  if (feed.items.length > 20) {
+    failures.push("dist/feed.json must contain no more than 20 items.");
+  }
 
   const seen = new Set();
+  let previousDate = "";
   for (const item of feed.items) {
     if (!item.id || !item.url || !item.title || !item.content_html || !item.date_published) {
       failures.push("dist/feed.json items must include id, url, title, content_html, and date_published.");
@@ -598,6 +623,10 @@ async function checkJsonFeed(feed) {
       failures.push(`dist/feed.json item references missing local target: ${item.url}`);
     }
     if (!isValidDate(item.date_published)) failures.push(`dist/feed.json item has invalid published date: ${item.id}`);
+    if (previousDate && new Date(item.date_published) > new Date(previousDate)) {
+      failures.push(`dist/feed.json items must be sorted newest first: ${item.id}`);
+    }
+    previousDate = item.date_published;
     if (item.date_modified && !isValidDate(item.date_modified)) {
       failures.push(`dist/feed.json item has invalid modified date: ${item.id}`);
     }
