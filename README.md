@@ -7,8 +7,7 @@
 ```powershell
 cd D:\MyBlog
 npm run new:post -- "文章标题"
-npm run lint
-npm run build
+npm run check:all
 npm run preview
 ```
 

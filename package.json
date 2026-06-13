@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "node scripts/lint.js",
     "build": "node scripts/build.js",
+    "check:all": "node scripts/check-all.js",
     "check:output": "node scripts/check-output.js",
     "check:layout": "node scripts/check-layout.js",
     "test:views": "node scripts/test-views.js",

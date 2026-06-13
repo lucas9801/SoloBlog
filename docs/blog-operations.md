@@ -43,6 +43,14 @@ cd D:\MyBlog
 npm run new:post -- "文章标题"
 ```
 
+发布前完整检查：
+
+```powershell
+npm run check:all
+```
+
+这一步会顺序执行内容配置检查、阅读量接口测试、静态构建、构建产物检查，并启动本地预览做多页面桌面/移动布局回归检查。发布前优先跑这个命令。
+
 检查内容和配置：
 
 ```powershell
@@ -137,8 +145,7 @@ status: published
 然后运行：
 
 ```powershell
-npm run lint
-npm run build
+npm run check:all
 ```
 
 本地确认没问题后提交并推送：
@@ -590,9 +597,7 @@ status: published
 检查和构建：
 
 ```powershell
-npm run lint
-npm run build
-npm run check:output
+npm run check:all
 ```
 
 提交发布：

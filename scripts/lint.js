@@ -11,6 +11,7 @@ const requiredFiles = [
   "src/theme-init.js",
   "src/views.js",
   "scripts/build.js",
+  "scripts/check-all.js",
   "scripts/check-output.js",
   "scripts/new-post.js",
   "scripts/test-views.js",
@@ -234,6 +235,9 @@ if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.src ==
   failures.push("site.webmanifest must include /favicon.svg as an icon.");
 }
 if (packageConfig.name !== "solus-blog") failures.push("package name should match the SOLUS blog project.");
+if (packageConfig.scripts?.["check:all"] !== "node scripts/check-all.js") {
+  failures.push("package scripts must expose check:all.");
+}
 if (packageConfig.scripts?.["check:output"] !== "node scripts/check-output.js") {
   failures.push("package scripts must expose check:output.");
 }

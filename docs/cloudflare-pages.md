@@ -83,8 +83,7 @@ You need to log in to Cloudflare in the browser when Wrangler asks.
 3. Run:
 
 ```bash
-npm run lint
-npm run build
+npm run check:all
 ```
 
 4. Commit and push.
