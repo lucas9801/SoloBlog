@@ -125,6 +125,8 @@ try {
 
   response = await request(baseUrl, "/missing-page");
   assert.equal(response.status, 404);
+  assert.match(response.headers.get("content-type") || "", /text\/html/);
+  assert.match(await response.text(), /noindex,follow/);
 
   let rawResponse = await rawHttpRequest(port, "/%2e%2e%2fdist-secret.txt");
   assert.equal(rawResponse.status, 403);

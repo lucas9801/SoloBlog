@@ -43,9 +43,19 @@ async function resolveRequestPath(pathname) {
   return { status: 200, filePath: target, size: info.size };
 }
 
-function sendFile(request, response, filePath, size) {
+async function resolveNotFoundPage() {
+  const filePath = path.join(root, "404.html");
+  try {
+    const info = await stat(filePath);
+    return info.isFile() ? { filePath, size: info.size } : null;
+  } catch {
+    return null;
+  }
+}
+
+function sendFile(request, response, filePath, size, status = 200) {
   const extension = path.extname(filePath).toLowerCase();
-  response.writeHead(200, {
+  response.writeHead(status, {
     "Content-Type": contentTypes.get(extension) || "application/octet-stream",
     "Content-Length": size,
     "Cache-Control": "no-store"
@@ -78,14 +88,24 @@ const server = createServer(async (request, response) => {
       return;
     }
     if (resolved.status !== 200) {
-      response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end("Not found");
+      const notFound = await resolveNotFoundPage();
+      if (notFound) {
+        sendFile(request, response, notFound.filePath, notFound.size, 404);
+      } else {
+        response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+        response.end("Not found");
+      }
       return;
     }
     sendFile(request, response, resolved.filePath, resolved.size);
   } catch {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end("Not found");
+    const notFound = await resolveNotFoundPage();
+    if (notFound) {
+      sendFile(request, response, notFound.filePath, notFound.size, 404);
+    } else {
+      response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      response.end("Not found");
+    }
   }
 });
 
