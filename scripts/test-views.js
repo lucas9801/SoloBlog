@@ -28,6 +28,19 @@ class MockStatement {
   }
 
   async run() {
+    if (this.sql.includes("DELETE FROM post_view_events")) {
+      const [cutoff] = this.args;
+      let changes = 0;
+      for (const key of [...this.db.events]) {
+        const viewedOn = key.split(":").at(-1);
+        if (viewedOn < cutoff) {
+          this.db.events.delete(key);
+          changes += 1;
+        }
+      }
+      return { success: true, meta: { changes } };
+    }
+
     if (this.sql.includes("INSERT OR IGNORE INTO post_view_events")) {
       const [slug, viewerKey, viewedOn] = this.args;
       const key = `${slug}:${viewerKey}:${viewedOn}`;
@@ -115,6 +128,7 @@ async function readJson(response) {
 }
 
 const db = new MockDatabase();
+db.events.add("old-post:test-key:2000-01-01");
 
 let response = await readJson(await onRequestGet(context(null, new Request("https://blog.solus.games/api/views"))));
 assert.equal(response.status, 503);
@@ -157,6 +171,7 @@ response = await readJson(
 );
 assert.equal(response.status, 200);
 assert.deepEqual(response.body, { slug: "render-optimization-checklist", views: 1 });
+assert.equal([...db.events].some((key) => key.endsWith(":2000-01-01")), false);
 
 response = await readJson(
   await onRequestPost(
@@ -202,6 +217,7 @@ assert.deepEqual(response.body.ranking, [
 ]);
 assert.ok(db.statements.some((sql) => sql.includes("idx_post_views_ranking")));
 assert.ok(db.statements.some((sql) => sql.includes("idx_post_view_events_date")));
+assert.ok(db.statements.some((sql) => sql.includes("DELETE FROM post_view_events WHERE viewed_on < ?")));
 
 const brokenDb = new BrokenDatabase();
 response = await readJson(

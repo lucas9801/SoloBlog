@@ -340,6 +340,9 @@ if (
 ) {
   failures.push("Views API must enforce server-side daily view dedupe with a post_view_events migration.");
 }
+if (!viewsFunction.includes("DELETE FROM post_view_events WHERE viewed_on < ?")) {
+  failures.push("Views API must prune old post_view_events rows.");
+}
 for (const requiredHeader of [
   "Content-Security-Policy",
   "Strict-Transport-Security",

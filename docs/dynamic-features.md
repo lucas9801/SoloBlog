@@ -60,7 +60,7 @@ npx wrangler d1 execute soloblog --file=migrations/0002_post_view_events.sql --r
 
 不再接受 URL 查询参数里的 `slug` 写入，避免外站用普通表单请求刷阅读数。
 
-服务端会对同一篇文章、同一匿名访问者、同一天的重复写入做去重。D1 只保存匿名哈希，不保存原始 IP。需要让哈希更稳定时，可以在 Cloudflare Pages 环境变量里增加：
+服务端会对同一篇文章、同一匿名访问者、同一天的重复写入做去重。D1 只保存匿名哈希，不保存原始 IP；用于去重的临时事件会自动清理，只保留最近 2 天左右的数据，阅读总数仍保存在 `post_views` 中。需要让哈希更稳定时，可以在 Cloudflare Pages 环境变量里增加：
 
 ```text
 VIEW_SALT=一段只保存在 Cloudflare 后台的随机字符串

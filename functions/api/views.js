@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS post_view_events (
 const CREATE_EVENTS_DATE_INDEX_SQL = `
 CREATE INDEX IF NOT EXISTS idx_post_view_events_date
 ON post_view_events (viewed_on)`;
+const VIEW_EVENT_RETENTION_DAYS = 2;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -87,6 +88,12 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function dateIsoOffset(days) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 function clientAddress(request) {
   return (
     request.headers.get("CF-Connecting-IP") ||
@@ -115,6 +122,11 @@ function mutationChanged(result) {
   return changes === undefined ? true : Number(changes) > 0;
 }
 
+async function pruneOldViewEvents(db) {
+  const cutoff = dateIsoOffset(-VIEW_EVENT_RETENTION_DAYS);
+  await db.prepare("DELETE FROM post_view_events WHERE viewed_on < ?").bind(cutoff).run();
+}
+
 async function recordView(db, context, slug) {
   const key = await viewerKey(context);
   const viewedOn = todayIso();
@@ -138,6 +150,8 @@ async function recordView(db, context, slug) {
       .bind(slug)
       .run();
   }
+
+  await pruneOldViewEvents(db);
 
   const row = await db.prepare("SELECT views FROM post_views WHERE slug = ?").bind(slug).first();
   return Number(row?.views) || 0;
