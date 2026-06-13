@@ -603,7 +603,8 @@ function pageLayout({
   image = site.socialImage || site.heroCover || "/assets/posts/start-here.svg",
   type = "website",
   structuredData = null,
-  extraHead = ""
+  extraHead = "",
+  viewsScript = "auto"
 }) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
@@ -612,6 +613,10 @@ function pageLayout({
   const bodyWithContentTarget = body.includes('id="content"')
     ? body
     : body.replace("<main", '<main id="content" tabindex="-1"');
+  const includeViewsScript =
+    site.views?.enabled !== false &&
+    (viewsScript === true ||
+      (viewsScript === "auto" && (body.includes("data-view-slug") || body.includes("data-ranking-posts"))));
   const nav = site.navigation
     .map((item) => {
       const active = current === item.href;
@@ -692,7 +697,7 @@ function pageLayout({
       <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">Sitemap</a></p>
     </footer>
     <script type="module" src="${assetUrl("/src/site.js")}"></script>
-    ${site.views?.enabled === false ? "" : `<script type="module" src="${assetUrl("/src/views.js")}"></script>`}
+    ${includeViewsScript ? `<script type="module" src="${assetUrl("/src/views.js")}"></script>` : ""}
   </body>
 </html>`;
 }
@@ -1402,7 +1407,8 @@ function postPage(post, posts) {
     image: socialImage,
     type: "article",
     structuredData: articleStructuredData(post, socialImage),
-    extraHead: articleHeadMeta(post)
+    extraHead: articleHeadMeta(post),
+    viewsScript: false
   });
 }
 

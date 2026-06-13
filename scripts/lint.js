@@ -172,6 +172,9 @@ if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link fa
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
+if (!buildScript.includes("includeViewsScript") || !buildScript.includes("viewsScript: false")) {
+  failures.push("Views script must load only on pages that need it, with article pages handled by article.js.");
+}
 if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
   failures.push("Article script must lazy load Giscus comments.");
 }
