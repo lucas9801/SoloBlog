@@ -44,6 +44,11 @@ async function defaultPaths() {
   if (firstYear) paths.splice(3, 0, `/years/${firstYear}/`);
   const firstTag = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.tags?.length)?.tags[0] : "";
   if (firstTag) paths.splice(5, 0, `/tags/${slugifyForPath(firstTag)}/`);
+  const firstSeries = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.series)?.series : "";
+  if (firstSeries) {
+    const seriesIndex = paths.indexOf("/series/");
+    paths.splice(seriesIndex === -1 ? paths.length : seriesIndex + 1, 0, `/series/${slugifyForPath(firstSeries)}/`);
+  }
 
   return [...new Set(paths)];
 }

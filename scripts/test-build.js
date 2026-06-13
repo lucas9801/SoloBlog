@@ -94,12 +94,12 @@ async function writeFixtureProject(target) {
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-13-markdown-edge.md"),
-    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), and [bad](javascript:alert(1)).\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
+    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), and [bad](javascript:alert(1)).\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
     "utf8"
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-14-markdown-followup.md"),
-    `---\ntitle: "Markdown Followup"\nslug: "markdown-followup"\ndate: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 工程]\nsummary: 第二篇同标签文章用于验证标签分页和 sitemap 输出。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Followup\n\nParagraph for the second Markdown article.\n`,
+    `---\ntitle: "Markdown Followup"\nslug: "markdown-followup"\ndate: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 工程]\nsummary: 第二篇同标签文章用于验证标签分页和 sitemap 输出。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 2\nstatus: published\n---\n\n## Followup\n\nParagraph for the second Markdown article.\n`,
     "utf8"
   );
 }
@@ -164,6 +164,16 @@ try {
   assert.match(tagPage2, /href="\/posts\/markdown-edge-cases\/"/);
   assert.match(tagPage2, /<link rel="prev" href="https:\/\/blog\.solus\.games\/tags\/markdown\/" \/>/);
 
+  const seriesPage = await readFile(path.join(tempRoot, "dist", "series", "markdown-lab", "index.html"), "utf8");
+  assert.match(seriesPage, /href="\/posts\/markdown-edge-cases\/"/);
+  assert.doesNotMatch(seriesPage, /href="\/posts\/markdown-followup\/"/);
+  assert.match(seriesPage, /href="\/series\/markdown-lab\/page\/2\/"/);
+  assert.match(seriesPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\/" \/>/);
+
+  const seriesPage2 = await readFile(path.join(tempRoot, "dist", "series", "markdown-lab", "page", "2", "index.html"), "utf8");
+  assert.match(seriesPage2, /href="\/posts\/markdown-followup\/"/);
+  assert.match(seriesPage2, /<link rel="prev" href="https:\/\/blog\.solus\.games\/series\/markdown-lab\/" \/>/);
+
   const searchIndex = JSON.parse(await readFile(path.join(tempRoot, "dist", "search-index.json"), "utf8"));
   assert.equal(searchIndex.length, 2);
   const markdownEdge = searchIndex.find((item) => item.slug === "markdown-edge-cases");
@@ -194,6 +204,7 @@ try {
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/years\/2026\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\//);
+  assert.match(sitemap, /https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\//);
 
   const robots = await readFile(path.join(tempRoot, "dist", "robots.txt"), "utf8");
   assert.match(robots, /Sitemap: https:\/\/blog\.solus\.games\/sitemap\.xml/);

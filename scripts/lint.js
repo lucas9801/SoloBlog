@@ -222,6 +222,9 @@ if (!buildScript.includes("groupByYear") || !buildScript.includes("/years/") || 
 if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage({ tag, posts, tags, page")) {
   failures.push("Tag result pages must be paginated.");
 }
+if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPage({ name, posts, seriesEntries, page")) {
+  failures.push("Series detail pages must be paginated.");
+}
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
 }

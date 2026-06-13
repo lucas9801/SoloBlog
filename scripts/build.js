@@ -1364,8 +1364,11 @@ function seriesIndexPage(entries) {
   return pageLayout({ title: "专题", description: "按专题浏览技术笔记。", current: "/series/", body, canonical: "/series/" });
 }
 
-function seriesPage({ name, posts, seriesEntries }) {
+function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
   const sorted = sortSeriesPosts(posts);
+  const seriesBasePath = basePath || `/series/${slugify(name)}/`;
+  const perPage = archivePostsPerPage();
+  const { items, currentPage, totalPages } = paginate(sorted, page, perPage);
   const body = `<main class="page-shell series-page">
     ${pageContext({
       title: name,
@@ -1373,10 +1376,10 @@ function seriesPage({ name, posts, seriesEntries }) {
       meta: `${sorted.length} 篇`
     })}
     <section class="series-timeline" aria-label="${escapeAttr(name)} 专题文章">
-      ${sorted
+      ${items
         .map(
           (post, index) => `<article class="series-timeline-item">
-            <span>${String(index + 1).padStart(2, "0")}</span>
+            <span>${String((currentPage - 1) * perPage + index + 1).padStart(2, "0")}</span>
             <div>
               <div class="post-meta">
                 <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
@@ -1395,6 +1398,7 @@ function seriesPage({ name, posts, seriesEntries }) {
         )
         .join("")}
     </section>
+    ${paginationNav(seriesBasePath, currentPage, totalPages)}
     ${
       seriesEntries.length > 1
         ? `<section class="series-related">
@@ -1413,8 +1417,29 @@ function seriesPage({ name, posts, seriesEntries }) {
     description: `${name} 专题下的全部技术笔记。`,
     current: "/series/",
     body,
-    canonical: `/series/${slugify(name)}/`
+    canonical: pageHref(seriesBasePath, currentPage),
+    extraHead: paginationHead(seriesBasePath, currentPage, totalPages)
   });
+}
+
+async function writeSeriesPages({ name, posts, seriesEntries }) {
+  const seriesSlug = slugify(name);
+  const baseRoute = path.join("series", seriesSlug);
+  const basePath = `/series/${seriesSlug}/`;
+  const totalPages = Math.max(1, Math.ceil(posts.length / archivePostsPerPage()));
+
+  for (let page = 1; page <= totalPages; page += 1) {
+    await writePage(
+      pageRoute(baseRoute, page),
+      seriesPage({
+        name,
+        posts,
+        seriesEntries,
+        basePath,
+        page
+      })
+    );
+  }
 }
 
 function seriesPanel(post, posts) {
@@ -1720,8 +1745,8 @@ function sitemap(posts, categories, years, tags, seriesEntries) {
   );
   const yearUrls = years.flatMap(([year, list]) => paginatedSitemapEntries(`/years/${slugify(year)}/`, list, "0.7"));
   const tagUrls = tags.flatMap(([tag, list]) => paginatedSitemapEntries(`/tags/${slugify(tag)}/`, list, "0.6"));
-  const seriesUrls = seriesEntries.map(([seriesName, list]) =>
-    sitemapEntry(`/series/${slugify(seriesName)}/`, latestPostDate(list), "0.7")
+  const seriesUrls = seriesEntries.flatMap(([seriesName, list]) =>
+    paginatedSitemapEntries(`/series/${slugify(seriesName)}/`, list, "0.7")
   );
   const urls = [
     sitemapEntry("/", latest, "1.0"),
@@ -1809,14 +1834,11 @@ for (const [tag, list] of tags) {
 }
 
 for (const [seriesName, list] of seriesEntries) {
-  await writePage(
-    path.join("series", slugify(seriesName)),
-    seriesPage({
-      name: seriesName,
-      posts: list,
-      seriesEntries
-    })
-  );
+  await writeSeriesPages({
+    name: seriesName,
+    posts: list,
+    seriesEntries
+  });
 }
 
 await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((post) => ({
