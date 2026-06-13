@@ -5,9 +5,11 @@ class MockDatabase {
   constructor() {
     this.rows = new Map();
     this.clock = 0;
+    this.statements = [];
   }
 
   prepare(sql) {
+    this.statements.push(sql);
     return new MockStatement(this, sql);
   }
 }
@@ -169,5 +171,6 @@ assert.deepEqual(response.body.ranking, [
   { slug: "game-team-toolchain", views: 3 },
   { slug: "render-optimization-checklist", views: 2 }
 ]);
+assert.ok(db.statements.some((sql) => sql.includes("idx_post_views_ranking")));
 
 console.log("Views API tests passed.");

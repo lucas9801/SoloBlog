@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS post_views (
   views INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 )`;
+const CREATE_RANKING_INDEX_SQL = `
+CREATE INDEX IF NOT EXISTS idx_post_views_ranking
+ON post_views (views DESC, updated_at DESC)`;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -60,6 +63,7 @@ function getDatabase(context) {
 
 async function ensureSchema(db) {
   await db.prepare(CREATE_TABLE_SQL).run();
+  await db.prepare(CREATE_RANKING_INDEX_SQL).run();
 }
 
 export async function onRequestGet(context) {

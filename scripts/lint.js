@@ -46,6 +46,7 @@ const [
   articleScript,
   searchScript,
   viewsFunction,
+  viewsMigration,
   buildScript,
   checkOutputScript,
   headers,
@@ -60,6 +61,7 @@ const [
   readFile(path.join(root, "src/article.js"), "utf8"),
   readFile(path.join(root, "src/search.js"), "utf8"),
   readFile(path.join(root, "functions/api/views.js"), "utf8"),
+  readFile(path.join(root, "migrations/0001_post_views.sql"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
@@ -284,6 +286,9 @@ if (viewsFunction.includes("body.slug ||")) {
 }
 if (!viewsFunction.includes('"X-Content-Type-Options": "nosniff"')) {
   failures.push("Views API JSON responses must set X-Content-Type-Options.");
+}
+if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.includes("idx_post_views_ranking")) {
+  failures.push("Views API and migration must create an index for reading ranking queries.");
 }
 for (const requiredHeader of [
   "Content-Security-Policy",
