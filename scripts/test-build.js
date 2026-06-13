@@ -102,6 +102,11 @@ async function writeFixtureProject(target) {
     `---\ntitle: "Markdown Followup"\nslug: "markdown-followup"\ndate: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 工程]\nsummary: 第二篇同标签文章用于验证标签分页和 sitemap 输出。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 2\nstatus: published\n---\n\n## Followup\n\nParagraph for the second Markdown article.\n`,
     "utf8"
   );
+  await writeFile(
+    path.join(target, "content", "posts", "2026-06-14-markdown-same-day.md"),
+    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
+    "utf8"
+  );
 }
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "solus-build-"));
@@ -110,7 +115,7 @@ try {
   await writeFixtureProject(tempRoot);
   const result = await runBuild(tempRoot);
   assert.equal(result.code, 0, result.stderr || result.stdout);
-  assert.match(result.stdout, /Built 2 posts into dist\//);
+  assert.match(result.stdout, /Built 3 posts into dist\//);
 
   const article = await readFile(path.join(tempRoot, "dist", "posts", "markdown-edge-cases", "index.html"), "utf8");
   assert.match(article, /<h2 id="repeat">Repeat<\/h2>/);
@@ -157,7 +162,7 @@ try {
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
   assert.match(yearPage, /2026 年文章/);
   assert.match(yearPage, /href="\/posts\/markdown-followup\/"/);
-  assert.match(yearPage, /aria-current="page">2026 <b>2<\/b><\/a>/);
+  assert.match(yearPage, /aria-current="page">2026 <b>3<\/b><\/a>/);
   assert.match(yearPage, /href="\/years\/2026\/page\/2\/"/);
   assert.equal(
     jsonLdObjects(yearPage).find((item) => item["@type"] === "CollectionPage").url,
@@ -211,7 +216,9 @@ try {
   );
 
   const searchIndex = JSON.parse(await readFile(path.join(tempRoot, "dist", "search-index.json"), "utf8"));
-  assert.equal(searchIndex.length, 2);
+  assert.equal(searchIndex.length, 3);
+  assert.equal(searchIndex[0].slug, "markdown-followup");
+  assert.equal(searchIndex[1].slug, "markdown-same-day");
   const markdownEdge = searchIndex.find((item) => item.slug === "markdown-edge-cases");
   assert.equal(markdownEdge.year, "2026");
   assert.equal(markdownEdge.cover, "/assets/posts/inline.svg");
@@ -220,14 +227,14 @@ try {
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
   assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
-  assert.equal((rss.match(/<item>/g) || []).length, 2);
+  assert.equal((rss.match(/<item>/g) || []).length, 3);
   assert.ok(rss.indexOf("https://blog.solus.games/posts/markdown-followup/") < rss.indexOf("https://blog.solus.games/posts/markdown-edge-cases/"));
 
   const jsonFeed = JSON.parse(await readFile(path.join(tempRoot, "dist", "feed.json"), "utf8"));
   assert.equal(jsonFeed.version, "https://jsonfeed.org/version/1.1");
   assert.equal(jsonFeed.home_page_url, "https://blog.solus.games/");
   assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
-  assert.equal(jsonFeed.items.length, 2);
+  assert.equal(jsonFeed.items.length, 3);
   assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-followup/");
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);

@@ -195,6 +195,9 @@ if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must sup
 if (!buildScript.includes("resolveAssetVersion") || !buildScript.includes("hashDirectory")) {
   failures.push("Build must version CSS and JS assets from source content when no deploy SHA is available.");
 }
+if (!buildScript.includes("comparePostsNewestFirst")) {
+  failures.push("Build must sort posts with a deterministic newest-first comparator.");
+}
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (!buildScript.includes("404.html") || !buildScript.includes("notFoundPage")) failures.push("Build must generate a custom 404 page.");
 if (!buildScript.includes("noindex,follow")) failures.push("404 page must be marked noindex.");

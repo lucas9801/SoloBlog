@@ -1122,6 +1122,20 @@ function paginationHead(basePath, currentPage, totalPages) {
     .join("\n    ");
 }
 
+function dateValue(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function comparePostsNewestFirst(a, b) {
+  return (
+    dateValue(b.date) - dateValue(a.date) ||
+    dateValue(b.updated) - dateValue(a.updated) ||
+    a.title.localeCompare(b.title, "zh-CN") ||
+    a.slug.localeCompare(b.slug, "zh-CN")
+  );
+}
+
 async function loadPosts() {
   const files = (await readdir(postsDir)).filter((file) => file.endsWith(".md"));
   const posts = [];
@@ -1171,7 +1185,7 @@ async function loadPosts() {
     posts.push(post);
   }
 
-  return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return posts.sort(comparePostsNewestFirst);
 }
 
 function homePage(posts, categories, tags) {
