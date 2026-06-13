@@ -29,7 +29,8 @@ const requiredFiles = [
   ".node-version",
   "docs/cloudflare-pages.md",
   "assets/og/solus-og.svg",
-  "assets/og/solus-og.png"
+  "assets/og/solus-og.png",
+  "migrations/0002_post_view_events.sql"
 ];
 
 for (const file of requiredFiles) {
@@ -47,6 +48,7 @@ const [
   searchScript,
   viewsFunction,
   viewsMigration,
+  viewEventsMigration,
   buildScript,
   checkOutputScript,
   headers,
@@ -62,6 +64,7 @@ const [
   readFile(path.join(root, "src/search.js"), "utf8"),
   readFile(path.join(root, "functions/api/views.js"), "utf8"),
   readFile(path.join(root, "migrations/0001_post_views.sql"), "utf8"),
+  readFile(path.join(root, "migrations/0002_post_view_events.sql"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
@@ -299,6 +302,13 @@ if (!viewsFunction.includes("storageError") || !viewsFunction.includes("View cou
 if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.includes("idx_post_views_ranking")) {
   failures.push("Views API and migration must create an index for reading ranking queries.");
 }
+if (
+  !viewsFunction.includes("post_view_events") ||
+  !viewsFunction.includes("INSERT OR IGNORE INTO post_view_events") ||
+  !viewEventsMigration.includes("post_view_events")
+) {
+  failures.push("Views API must enforce server-side daily view dedupe with a post_view_events migration.");
+}
 for (const requiredHeader of [
   "Content-Security-Policy",
   "Strict-Transport-Security",
@@ -370,6 +380,9 @@ if (site.views?.enabled !== false) {
   });
   await access(path.join(root, "migrations/0001_post_views.sql")).catch(() => {
     failures.push("views are enabled, but migrations/0001_post_views.sql is missing.");
+  });
+  await access(path.join(root, "migrations/0002_post_view_events.sql")).catch(() => {
+    failures.push("views are enabled, but migrations/0002_post_view_events.sql is missing.");
   });
 }
 for (const [category, cover] of Object.entries(site.categoryCovers || {})) {

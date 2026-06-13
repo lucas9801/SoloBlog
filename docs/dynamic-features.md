@@ -13,6 +13,7 @@
 - `src/views.js`
 - `src/article.js`
 - `migrations/0001_post_views.sql`
+- `migrations/0002_post_view_events.sql`
 
 Cloudflare Pages 会自动识别项目根目录下的 `functions/` 目录。阅读量接口使用的 D1 绑定名固定为：
 
@@ -46,6 +47,7 @@ BLOG_DB
 
 ```bash
 npx wrangler d1 execute soloblog --file=migrations/0001_post_views.sql --remote
+npx wrangler d1 execute soloblog --file=migrations/0002_post_view_events.sql --remote
 ```
 
 阅读量写入接口只接受同源 `application/json` POST，请求体格式是：
@@ -57,6 +59,12 @@ npx wrangler d1 execute soloblog --file=migrations/0001_post_views.sql --remote
 ```
 
 不再接受 URL 查询参数里的 `slug` 写入，避免外站用普通表单请求刷阅读数。
+
+服务端会对同一篇文章、同一匿名访问者、同一天的重复写入做去重。D1 只保存匿名哈希，不保存原始 IP。需要让哈希更稳定时，可以在 Cloudflare Pages 环境变量里增加：
+
+```text
+VIEW_SALT=一段只保存在 Cloudflare 后台的随机字符串
+```
 
 ### 本地预览
 

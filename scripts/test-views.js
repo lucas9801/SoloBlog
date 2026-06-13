@@ -4,6 +4,7 @@ import { onRequestGet, onRequestPost } from "../functions/api/views.js";
 class MockDatabase {
   constructor() {
     this.rows = new Map();
+    this.events = new Set();
     this.clock = 0;
     this.statements = [];
   }
@@ -27,6 +28,14 @@ class MockStatement {
   }
 
   async run() {
+    if (this.sql.includes("INSERT OR IGNORE INTO post_view_events")) {
+      const [slug, viewerKey, viewedOn] = this.args;
+      const key = `${slug}:${viewerKey}:${viewedOn}`;
+      if (this.db.events.has(key)) return { success: true, meta: { changes: 0 } };
+      this.db.events.add(key);
+      return { success: true, meta: { changes: 1 } };
+    }
+
     if (!this.sql.includes("INSERT INTO post_views")) return { success: true };
 
     const slug = this.args[0];
@@ -91,6 +100,13 @@ function jsonRequest(method, url, body, headers = {}) {
   });
 }
 
+function viewRequest(slug, ip) {
+  return jsonRequest("POST", "https://blog.solus.games/api/views", { slug }, {
+    "CF-Connecting-IP": ip,
+    "User-Agent": `test-reader-${ip}`
+  });
+}
+
 async function readJson(response) {
   return {
     status: response.status,
@@ -136,7 +152,7 @@ assert.equal(response.status, 400);
 
 response = await readJson(
   await onRequestPost(
-    context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "render-optimization-checklist" }))
+    context(db, viewRequest("render-optimization-checklist", "198.51.100.1"))
   )
 );
 assert.equal(response.status, 200);
@@ -144,7 +160,14 @@ assert.deepEqual(response.body, { slug: "render-optimization-checklist", views: 
 
 response = await readJson(
   await onRequestPost(
-    context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "render-optimization-checklist" }))
+    context(db, viewRequest("render-optimization-checklist", "198.51.100.1"))
+  )
+);
+assert.equal(response.body.views, 1);
+
+response = await readJson(
+  await onRequestPost(
+    context(db, viewRequest("render-optimization-checklist", "198.51.100.2"))
   )
 );
 assert.equal(response.body.views, 2);
@@ -166,10 +189,10 @@ assert.deepEqual(response.body.views, {
   unknown: 0
 });
 
-await onRequestPost(context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "start-here" })));
-await onRequestPost(context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "game-team-toolchain" })));
-await onRequestPost(context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "game-team-toolchain" })));
-await onRequestPost(context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "game-team-toolchain" })));
+await onRequestPost(context(db, viewRequest("start-here", "198.51.100.3")));
+await onRequestPost(context(db, viewRequest("game-team-toolchain", "198.51.100.4")));
+await onRequestPost(context(db, viewRequest("game-team-toolchain", "198.51.100.5")));
+await onRequestPost(context(db, viewRequest("game-team-toolchain", "198.51.100.6")));
 
 response = await readJson(await onRequestGet(context(db, new Request("https://blog.solus.games/api/views?top=2"))));
 assert.equal(response.status, 200);
@@ -178,6 +201,7 @@ assert.deepEqual(response.body.ranking, [
   { slug: "render-optimization-checklist", views: 2 }
 ]);
 assert.ok(db.statements.some((sql) => sql.includes("idx_post_views_ranking")));
+assert.ok(db.statements.some((sql) => sql.includes("idx_post_view_events_date")));
 
 const brokenDb = new BrokenDatabase();
 response = await readJson(

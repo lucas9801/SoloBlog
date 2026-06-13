@@ -13,6 +13,17 @@ CREATE TABLE IF NOT EXISTS post_views (
 const CREATE_RANKING_INDEX_SQL = `
 CREATE INDEX IF NOT EXISTS idx_post_views_ranking
 ON post_views (views DESC, updated_at DESC)`;
+const CREATE_EVENTS_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS post_view_events (
+  slug TEXT NOT NULL,
+  viewer_key TEXT NOT NULL,
+  viewed_on TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (slug, viewer_key, viewed_on)
+)`;
+const CREATE_EVENTS_DATE_INDEX_SQL = `
+CREATE INDEX IF NOT EXISTS idx_post_view_events_date
+ON post_view_events (viewed_on)`;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -68,6 +79,68 @@ function getDatabase(context) {
 async function ensureSchema(db) {
   await db.prepare(CREATE_TABLE_SQL).run();
   await db.prepare(CREATE_RANKING_INDEX_SQL).run();
+  await db.prepare(CREATE_EVENTS_TABLE_SQL).run();
+  await db.prepare(CREATE_EVENTS_DATE_INDEX_SQL).run();
+}
+
+function todayIso() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function clientAddress(request) {
+  return (
+    request.headers.get("CF-Connecting-IP") ||
+    request.headers.get("X-Real-IP") ||
+    request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
+    ""
+  );
+}
+
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function viewerKey(context) {
+  const request = context.request;
+  const host = new URL(request.url).host;
+  const salt = context.env?.VIEW_SALT || host;
+  const userAgent = request.headers.get("User-Agent") || "";
+  const language = request.headers.get("Accept-Language") || "";
+  return sha256Hex([salt, clientAddress(request), userAgent.slice(0, 240), language.slice(0, 120)].join("|"));
+}
+
+function mutationChanged(result) {
+  const changes = result?.meta?.changes ?? result?.changes;
+  return changes === undefined ? true : Number(changes) > 0;
+}
+
+async function recordView(db, context, slug) {
+  const key = await viewerKey(context);
+  const viewedOn = todayIso();
+  const event = await db
+    .prepare(
+      `INSERT OR IGNORE INTO post_view_events (slug, viewer_key, viewed_on)
+       VALUES (?, ?, ?)`
+    )
+    .bind(slug, key, viewedOn)
+    .run();
+
+  if (mutationChanged(event)) {
+    await db
+      .prepare(
+        `INSERT INTO post_views (slug, views, updated_at)
+         VALUES (?, 1, CURRENT_TIMESTAMP)
+         ON CONFLICT(slug) DO UPDATE SET
+           views = views + 1,
+           updated_at = CURRENT_TIMESTAMP`
+      )
+      .bind(slug)
+      .run();
+  }
+
+  const row = await db.prepare("SELECT views FROM post_views WHERE slug = ?").bind(slug).first();
+  return Number(row?.views) || 0;
 }
 
 export async function onRequestGet(context) {
@@ -138,19 +211,8 @@ export async function onRequestPost(context) {
 
   try {
     await ensureSchema(db);
-    await db
-      .prepare(
-        `INSERT INTO post_views (slug, views, updated_at)
-         VALUES (?, 1, CURRENT_TIMESTAMP)
-         ON CONFLICT(slug) DO UPDATE SET
-           views = views + 1,
-           updated_at = CURRENT_TIMESTAMP`
-      )
-      .bind(slug)
-      .run();
-
-    const row = await db.prepare("SELECT views FROM post_views WHERE slug = ?").bind(slug).first();
-    return json({ slug, views: Number(row?.views) || 1 });
+    const views = await recordView(db, context, slug);
+    return json({ slug, views });
   } catch {
     return storageError();
   }
