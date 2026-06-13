@@ -57,6 +57,14 @@ npm run lint
 npm run build
 ```
 
+检查构建产物：
+
+```powershell
+npm run check:output
+```
+
+这一步会扫描 `dist/`，检查自定义 404、关键安全头、本地链接、文章标题锚点、危险 URL 协议和文章页脚本加载策略。需要先运行 `npm run build`。
+
 本地预览：
 
 ```powershell
@@ -583,6 +591,7 @@ status: published
 ```powershell
 npm run lint
 npm run build
+npm run check:output
 ```
 
 提交发布：
