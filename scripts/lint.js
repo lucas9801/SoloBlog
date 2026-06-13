@@ -347,6 +347,7 @@ for (const requiredHeader of [
   "Content-Security-Policy",
   "Strict-Transport-Security",
   "X-Frame-Options: DENY",
+  "connect-src 'self' https://giscus.app https://*.giscus.app",
   "frame-src https://giscus.app",
   "frame-ancestors 'none'"
 ]) {

@@ -749,6 +749,9 @@ async function main() {
   for (const requiredHeader of ["Content-Security-Policy", "Strict-Transport-Security", "X-Frame-Options: DENY"]) {
     if (!headers.includes(requiredHeader)) failures.push(`dist/_headers is missing ${requiredHeader}`);
   }
+  if (!headers.includes("connect-src 'self' https://giscus.app https://*.giscus.app")) {
+    failures.push("dist/_headers connect-src must allow Giscus comment loading.");
+  }
   if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
     failures.push("dist/_headers script-src must not allow unsafe-inline.");
   }
