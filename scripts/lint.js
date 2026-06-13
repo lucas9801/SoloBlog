@@ -151,6 +151,13 @@ if (!buildScript.includes("og:image:width") || !buildScript.includes("og:image:h
   failures.push("Page head must expose Open Graph image dimensions.");
 }
 if (!buildScript.includes("twitter:image:alt")) failures.push("Page head must expose social image alt text.");
+if (!buildScript.includes("article:published_time") || !buildScript.includes("article:tag")) {
+  failures.push("Article pages must expose article-specific Open Graph metadata.");
+}
+if (!buildScript.includes("BreadcrumbList")) failures.push("Article pages must expose breadcrumb structured data.");
+if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
+  failures.push("Paginated archive pages must expose prev/next head links.");
+}
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");

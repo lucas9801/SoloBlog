@@ -487,6 +487,12 @@ function jsonLd(data) {
   return JSON.stringify(data).replaceAll("<", "\\u003c");
 }
 
+function jsonLdScripts(structuredData) {
+  if (!structuredData) return "";
+  const items = Array.isArray(structuredData) ? structuredData : [structuredData];
+  return items.map((item) => `<script type="application/ld+json">${jsonLd(item)}</script>`).join("\n    ");
+}
+
 function siteSchema() {
   return {
     "@context": "https://schema.org",
@@ -501,6 +507,19 @@ function siteSchema() {
       target: `${absoluteUrl("/search/")}?q={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
+  };
+}
+
+function breadcrumbSchema(items) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.url)
+    }))
   };
 }
 
@@ -546,6 +565,18 @@ function articleSchema(post, image = post.cover) {
   return schema;
 }
 
+function articleStructuredData(post, image) {
+  return [
+    articleSchema(post, image),
+    breadcrumbSchema([
+      { name: site.brand || site.title, url: "/" },
+      { name: "文章", url: "/archive/" },
+      { name: post.category, url: `/categories/${post.categorySlug}/` },
+      { name: post.title, url: post.url }
+    ])
+  ];
+}
+
 function categoryCover(category) {
   return site.categoryCovers?.[category] || site.heroCover || "/assets/hero-game-tech.png";
 }
@@ -563,7 +594,8 @@ function pageLayout({
   canonical = "/",
   image = site.socialImage || site.heroCover || "/assets/hero-game-tech.png",
   type = "website",
-  structuredData = null
+  structuredData = null,
+  extraHead = ""
 }) {
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
@@ -612,7 +644,8 @@ function pageLayout({
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
-    ${structuredData ? `<script type="application/ld+json">${jsonLd(structuredData)}</script>` : ""}
+    ${extraHead}
+    ${jsonLdScripts(structuredData)}
     <script>
       (() => {
         try {
@@ -672,6 +705,24 @@ function postMeta(post) {
     <span>${escapeHtml(post.readingTime)}</span>
     ${viewCountMeta(post)}
   </div>`;
+}
+
+function isoDate(date) {
+  const value = new Date(date);
+  return Number.isNaN(value.getTime()) ? "" : value.toISOString();
+}
+
+function articleHeadMeta(post) {
+  const updated = isoDate(post.updated || post.date);
+  const published = isoDate(post.date);
+  return [
+    published ? `<meta property="article:published_time" content="${escapeAttr(published)}" />` : "",
+    updated ? `<meta property="article:modified_time" content="${escapeAttr(updated)}" />` : "",
+    `<meta property="article:section" content="${escapeAttr(post.category)}" />`,
+    ...post.tags.map((tag) => `<meta property="article:tag" content="${escapeAttr(tag)}" />`)
+  ]
+    .filter(Boolean)
+    .join("\n    ");
 }
 
 function giscusComments() {
@@ -887,6 +938,16 @@ function paginationNav(basePath, currentPage, totalPages) {
   return `<nav class="pagination" aria-label="文章分页">${previous}${pages}${next}</nav>`;
 }
 
+function paginationHead(basePath, currentPage, totalPages) {
+  if (totalPages <= 1) return "";
+  return [
+    currentPage > 1 ? `<link rel="prev" href="${escapeAttr(absoluteUrl(pageHref(basePath, currentPage - 1)))}" />` : "",
+    currentPage < totalPages ? `<link rel="next" href="${escapeAttr(absoluteUrl(pageHref(basePath, currentPage + 1)))}" />` : ""
+  ]
+    .filter(Boolean)
+    .join("\n    ");
+}
+
 async function loadPosts() {
   const files = (await readdir(postsDir)).filter((file) => file.endsWith(".md"));
   const posts = [];
@@ -1019,7 +1080,8 @@ function archivePage({ posts, categories, activeCategory = "", basePath = "/arch
       : "按时间、分类和主题浏览所有技术笔记。",
     current: "/archive/",
     body,
-    canonical: pageHref(basePath, currentPage)
+    canonical: pageHref(basePath, currentPage),
+    extraHead: paginationHead(basePath, currentPage, totalPages)
   });
 }
 
@@ -1331,7 +1393,8 @@ function postPage(post, posts) {
     canonical: post.url,
     image: socialImage,
     type: "article",
-    structuredData: articleSchema(post, socialImage)
+    structuredData: articleStructuredData(post, socialImage),
+    extraHead: articleHeadMeta(post)
   });
 }
 
