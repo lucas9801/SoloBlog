@@ -118,6 +118,10 @@ try {
 
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.match(archive, /href="\/years\/2026\/"/);
+  assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
+
+  const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
+  assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
 
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
   assert.match(yearPage, /2026 年文章/);

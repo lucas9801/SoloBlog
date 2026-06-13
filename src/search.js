@@ -198,7 +198,7 @@ function selectedFilters() {
 function renderCard(post, query) {
   return `<article class="search-result-card" role="listitem">
     <a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="${escapeHtml(post.title)}">
-      <img src="${escapeHtml(post.cover || "/assets/posts/start-here.svg")}" alt="" loading="lazy" decoding="async" />
+      <img src="${escapeHtml(post.cover || "/assets/posts/start-here.svg")}" alt="" width="1200" height="675" loading="lazy" decoding="async" />
       <span>${escapeHtml(post.category)}</span>
     </a>
     <div class="search-result-body">

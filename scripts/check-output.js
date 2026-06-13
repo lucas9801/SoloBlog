@@ -229,6 +229,12 @@ function checkImages(file, html) {
     const attrs = tagAttributes(tag);
     const src = attrs.get("src") || "";
     const className = attrs.get("class") || "";
+    const isHero = hasToken(className, "hero-cover");
+    const isCoverImage =
+      isHero ||
+      html.lastIndexOf('class="thumb', match.index) > html.lastIndexOf("</a>", match.index) ||
+      html.lastIndexOf('class="archive-card-thumb', match.index) > html.lastIndexOf("</a>", match.index) ||
+      html.lastIndexOf('class="search-result-thumb', match.index) > html.lastIndexOf("</a>", match.index);
 
     if (!src.trim()) failures.push(`${relative} contains an img without a src.`);
     if (!attrs.has("alt")) {
@@ -241,8 +247,14 @@ function checkImages(file, html) {
       failures.push(`${relative} image must use decoding="async": ${src || tag}`);
     }
 
-    if (!hasToken(className, "hero-cover") && attrs.get("loading") !== "lazy") {
+    if (!isHero && attrs.get("loading") !== "lazy") {
       failures.push(`${relative} non-hero image must use loading="lazy": ${src || tag}`);
+    }
+    if (isHero && attrs.get("fetchpriority") !== "high") {
+      failures.push(`${relative} hero image must use fetchpriority="high": ${src || tag}`);
+    }
+    if (isCoverImage && (attrs.get("width") !== "1200" || attrs.get("height") !== "675")) {
+      failures.push(`${relative} cover images must include 1200x675 dimensions: ${src || tag}`);
     }
   }
 }

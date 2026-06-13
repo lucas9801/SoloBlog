@@ -663,6 +663,13 @@ function resolvePostCover(cover, category) {
   return cover;
 }
 
+function coverImage(src, { className = "", alt = "", loading = "lazy", fetchPriority = "" } = {}) {
+  const classAttr = className ? ` class="${escapeAttr(className)}"` : "";
+  const loadingAttr = loading ? ` loading="${escapeAttr(loading)}"` : "";
+  const fetchPriorityAttr = fetchPriority ? ` fetchpriority="${escapeAttr(fetchPriority)}"` : "";
+  return `<img${classAttr} src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" width="1200" height="675"${loadingAttr} decoding="async"${fetchPriorityAttr} />`;
+}
+
 function pageLayout({
   title,
   description,
@@ -838,7 +845,7 @@ function giscusComments() {
 function postCard(post, variant = "") {
   return `<article class="post-card ${variant}">
     <a class="thumb ${post.categorySlug}" href="${post.url}" aria-label="${escapeAttr(post.title)}">
-      <img src="${escapeAttr(post.cover)}" alt="" loading="lazy" decoding="async" />
+      ${coverImage(post.cover)}
       <span>${escapeHtml(post.category)}</span>
       <i></i>
     </a>
@@ -857,7 +864,7 @@ function postCard(post, variant = "") {
 function archivePostCard(post) {
   return `<article class="archive-card">
     <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="${escapeAttr(post.title)}">
-      <img src="${escapeAttr(post.cover)}" alt="" loading="lazy" decoding="async" />
+      ${coverImage(post.cover)}
       <span>${escapeHtml(post.category)}</span>
     </a>
     <div class="archive-card-body">
@@ -1107,7 +1114,7 @@ function homePage(posts, categories, tags) {
   const body = `<main>
     <section class="hero-section">
       <div class="hero-inner">
-        <img class="hero-cover" src="${escapeAttr(site.heroCover || "/assets/posts/start-here.svg")}" alt="" decoding="async" />
+        ${coverImage(site.heroCover || "/assets/posts/start-here.svg", { className: "hero-cover", loading: "", fetchPriority: "high" })}
         <div class="hero-copy">
           <p class="eyebrow">${escapeHtml(hero.eyebrow)}</p>
           <h1>${escapeHtml(hero.title)}</h1>

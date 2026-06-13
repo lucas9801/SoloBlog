@@ -207,6 +207,9 @@ if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link fa
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("/src/theme-init.js")) failures.push("Page head must load the external theme initializer.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
+if (!buildScript.includes("coverImage") || !buildScript.includes('fetchpriority="${escapeAttr(fetchPriority)}"')) {
+  failures.push("Build must render cover images with stable dimensions and explicit hero priority.");
+}
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!buildScript.includes("includeViewsScript") || !buildScript.includes("viewsScript: false")) {
   failures.push("Views script must load only on pages that need it, with article pages handled by article.js.");
@@ -231,6 +234,9 @@ if (!searchScript.includes("searchFacets") || !searchScript.includes("data-facet
 }
 if (!searchScript.includes("fields.year")) {
   failures.push("Search page must index post years for archive-scale discovery.");
+}
+if (!searchScript.includes('width="1200" height="675"')) {
+  failures.push("Search result cover images must reserve their 1200x675 aspect ratio.");
 }
 if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
   failures.push("Search page must provide clear/reset controls.");
