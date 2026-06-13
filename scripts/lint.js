@@ -169,6 +169,9 @@ if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
 }
+if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMailto")) {
+  failures.push("Markdown links and images must validate URL schemes before rendering.");
+}
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");

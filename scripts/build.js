@@ -271,27 +271,51 @@ async function existingGeneratedCover(slug, preferredExtensions = ["webp", "png"
   return "";
 }
 
+function safeMarkdownUrl(value, { allowMailto = false } = {}) {
+  const url = String(value || "")
+    .trim()
+    .replace(/[\u0000-\u001f\u007f]/g, "");
+  if (!url || url.startsWith("//")) return "";
+
+  const scheme = url.match(/^([a-z][a-z0-9+.-]*):/i)?.[1]?.toLowerCase();
+  if (!scheme) return url;
+  if (scheme === "http" || scheme === "https") return url;
+  if (scheme === "mailto" && allowMailto) return url;
+  return "";
+}
+
+function inlineToken(tokens, html) {
+  const token = `@@INLINE_HTML_${tokens.length}@@`;
+  tokens.push(html);
+  return token;
+}
+
 function inlineMarkdown(text) {
-  let html = escapeHtml(text);
-  const codeTokens = [];
-  html = html.replace(/`([^`]+)`/g, (_, code) => {
-    const token = `@@CODE${codeTokens.length}@@`;
-    codeTokens.push(`<code>${code}</code>`);
-    return token;
+  const tokens = [];
+  let html = String(text || "");
+
+  html = html.replace(/`([^`]+)`/g, (_, code) => inlineToken(tokens, `<code>${escapeHtml(code)}</code>`));
+  html = html.replace(/!\[([^\]]*)]\(([^)]+)\)/g, (_, alt, src) => {
+    const safeSrc = safeMarkdownUrl(src);
+    if (!safeSrc) return alt;
+    return inlineToken(
+      tokens,
+      `<img src="${escapeAttr(safeSrc)}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async" />`
+    );
   });
-  html = html.replace(
-    /!\[([^\]]*)]\(([^)]+)\)/g,
-    (_, alt, src) => `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" />`
-  );
   html = html.replace(/\[([^\]]+)]\(([^)]+)\)/g, (_, label, href) => {
-    const external = /^https?:\/\//i.test(href) && !href.startsWith(site.baseUrl);
+    const safeHref = safeMarkdownUrl(href, { allowMailto: true });
+    if (!safeHref) return label;
+    const external = /^https?:\/\//i.test(safeHref) && !safeHref.startsWith(site.baseUrl);
     const externalAttrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-    return `<a href="${href}"${externalAttrs}>${label}</a>`;
+    return inlineToken(tokens, `<a href="${escapeAttr(safeHref)}"${externalAttrs}>${escapeHtml(label)}</a>`);
   });
+
+  html = escapeHtml(html);
   html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  codeTokens.forEach((code, index) => {
-    html = html.replace(`@@CODE${index}@@`, code);
+  tokens.forEach((tokenHtml, index) => {
+    html = html.replace(`@@INLINE_HTML_${index}@@`, tokenHtml);
   });
   return html;
 }
