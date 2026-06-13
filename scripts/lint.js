@@ -6,6 +6,7 @@ const requiredFiles = [
   "content/site.json",
   "content/about.md",
   "src/styles.css",
+  "src/site.js",
   "src/article.js",
   "src/search.js",
   "src/theme-init.js",
@@ -36,10 +37,24 @@ for (const file of requiredFiles) {
   });
 }
 
-const [site, manifest, css, articleScript, searchScript, viewsFunction, buildScript, headers, packageConfig, wranglerConfig, socialImageStats] = await Promise.all([
+const [
+  site,
+  manifest,
+  css,
+  siteScript,
+  articleScript,
+  searchScript,
+  viewsFunction,
+  buildScript,
+  headers,
+  packageConfig,
+  wranglerConfig,
+  socialImageStats
+] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
+  readFile(path.join(root, "src/site.js"), "utf8"),
   readFile(path.join(root, "src/article.js"), "utf8"),
   readFile(path.join(root, "src/search.js"), "utf8"),
   readFile(path.join(root, "functions/api/views.js"), "utf8"),
@@ -193,8 +208,17 @@ if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comment
 if (!buildScript.includes("includeViewsScript") || !buildScript.includes("viewsScript: false")) {
   failures.push("Views script must load only on pages that need it, with article pages handled by article.js.");
 }
+if (!siteScript.includes("focusin") || !siteScript.includes("revealHeader")) {
+  failures.push("Site script must reveal the sticky header when it receives keyboard focus.");
+}
+if (!siteScript.includes("syncGiscusTheme") || !siteScript.includes("solus-theme")) {
+  failures.push("Site script must keep theme state persistent and synced with comments.");
+}
 if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
   failures.push("Article script must lazy load Giscus comments.");
+}
+if (!articleScript.includes("giscusTheme") || !articleScript.includes("preferred_color_scheme")) {
+  failures.push("Article script must load Giscus with the current site theme.");
 }
 if (!articleScript.includes("readingTarget") || !articleScript.includes(".article-content")) {
   failures.push("Article reading progress must be based on article content, not the whole document.");

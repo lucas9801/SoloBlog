@@ -28,6 +28,14 @@ function applyTheme(theme) {
   syncGiscusTheme(theme);
 }
 
+function revealHeader() {
+  header?.classList.remove("is-hidden");
+}
+
+function headerContainsFocus() {
+  return Boolean(header?.contains(document.activeElement));
+}
+
 applyTheme(currentTheme());
 
 themeToggle?.addEventListener("click", () => {
@@ -48,16 +56,20 @@ function updateHeaderVisibility() {
   const delta = Math.abs(currentY - lastScrollY);
 
   if (currentY < 80) {
-    header.classList.remove("is-hidden");
+    revealHeader();
+  } else if (headerContainsFocus()) {
+    revealHeader();
   } else if (delta > 6 && scrollingDown) {
     header.classList.add("is-hidden");
   } else if (delta > 6 && !scrollingDown) {
-    header.classList.remove("is-hidden");
+    revealHeader();
   }
 
   lastScrollY = currentY;
   ticking = false;
 }
+
+header?.addEventListener("focusin", revealHeader);
 
 window.addEventListener(
   "scroll",

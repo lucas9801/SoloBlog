@@ -319,6 +319,16 @@ async function checkViewport(viewport, page) {
               if (!header.classList.contains("is-hidden")) {
                 failures.push("header did not hide after scrolling down");
               }
+              const focusTarget = header.querySelector("button, a, input");
+              if (focusTarget instanceof HTMLElement) {
+                focusTarget.focus();
+                await wait(120);
+                if (header.classList.contains("is-hidden")) {
+                  failures.push("header did not reveal when it received keyboard focus");
+                }
+              } else {
+                failures.push("header has no focusable target");
+              }
               scrollTo(0, 0);
               await wait(220);
               if (header.classList.contains("is-hidden")) {
@@ -414,6 +424,20 @@ async function checkViewport(viewport, page) {
               if (!articleContent) failures.push("article content is missing");
               if (tocLinks.length < 3) failures.push("article table of contents has fewer than 3 links");
               if (failures.length > 0) return failures;
+
+              const commentsSection = document.querySelector("[data-giscus-comments]");
+              const commentsButton = commentsSection?.querySelector("[data-load-comments]");
+              if (commentsSection && commentsButton instanceof HTMLButtonElement) {
+                document.documentElement.dataset.theme = "dark";
+                commentsButton.click();
+                await wait(120);
+                const commentsScript = commentsSection.querySelector('script[src="https://giscus.app/client.js"]');
+                if (!commentsScript) {
+                  failures.push("comments loader did not append the Giscus script");
+                } else if (commentsScript.getAttribute("data-theme") !== "dark") {
+                  failures.push("comments loader did not use the current site theme");
+                }
+              }
 
               const readPercent = () => Number.parseInt(percentNode.textContent || "0", 10) || 0;
               scrollTo(0, 0);

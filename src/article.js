@@ -167,7 +167,7 @@ function loadComments() {
   script.setAttribute("data-reactions-enabled", commentsSection.dataset.reactionsEnabled || "1");
   script.setAttribute("data-emit-metadata", commentsSection.dataset.emitMetadata || "0");
   script.setAttribute("data-input-position", commentsSection.dataset.inputPosition || "bottom");
-  script.setAttribute("data-theme", commentsSection.dataset.theme || "preferred_color_scheme");
+  script.setAttribute("data-theme", giscusTheme());
   script.setAttribute("data-lang", commentsSection.dataset.lang || document.documentElement.lang || "zh-CN");
   script.setAttribute("data-loading", "lazy");
   script.addEventListener("error", () => {
@@ -182,6 +182,12 @@ function loadComments() {
     }
   });
   frame.append(script);
+}
+
+function giscusTheme() {
+  const configured = commentsSection?.dataset.theme || "preferred_color_scheme";
+  if (configured !== "preferred_color_scheme") return configured;
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
 function prepareComments() {
