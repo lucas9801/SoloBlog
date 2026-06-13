@@ -28,6 +28,12 @@ function runBuild(cwd) {
   });
 }
 
+function jsonLdObjects(html) {
+  return [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((match) =>
+    JSON.parse(match[1])
+  );
+}
+
 async function writeFixtureProject(target) {
   await cp(path.join(root, "src"), path.join(target, "src"), { recursive: true });
   await cp(path.join(root, "public"), path.join(target, "public"), { recursive: true });
@@ -117,6 +123,13 @@ try {
   assert.match(article, /<img src="\/assets\/posts\/inline\.svg" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
   assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<meta name="twitter:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
+  const articleJsonLd = jsonLdObjects(article);
+  const techArticle = articleJsonLd.find((item) => item["@type"] === "TechArticle");
+  const breadcrumb = articleJsonLd.find((item) => item["@type"] === "BreadcrumbList");
+  assert.equal(techArticle.url, "https://blog.solus.games/posts/markdown-edge-cases/");
+  assert.equal(techArticle.mainEntityOfPage, "https://blog.solus.games/posts/markdown-edge-cases/");
+  assert.equal(techArticle.headline, "Markdown Edge Cases");
+  assert.equal(breadcrumb.itemListElement.at(-1).item, "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(article, /<td data-align="left">A \| B<\/td>/);
   assert.match(article, /<pre data-language="js"><button class="code-copy-button"/);
   assert.match(article, /<blockquote>quoted text<\/blockquote>/);
@@ -130,6 +143,10 @@ try {
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
+  const website = jsonLdObjects(home).find((item) => item["@type"] === "WebSite");
+  assert.equal(website.url, "https://blog.solus.games/");
+  assert.equal(website.potentialAction["@type"], "SearchAction");
+  assert.equal(website.potentialAction.target, "https://blog.solus.games/search/?q={search_term_string}");
 
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
   assert.match(yearPage, /2026 年文章/);

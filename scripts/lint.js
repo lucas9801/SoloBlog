@@ -47,6 +47,7 @@ const [
   searchScript,
   viewsFunction,
   buildScript,
+  checkOutputScript,
   headers,
   packageConfig,
   wranglerConfig,
@@ -60,6 +61,7 @@ const [
   readFile(path.join(root, "src/search.js"), "utf8"),
   readFile(path.join(root, "functions/api/views.js"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
+  readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
@@ -208,6 +210,9 @@ if (!buildScript.includes("article:published_time") || !buildScript.includes("ar
   failures.push("Article pages must expose article-specific Open Graph metadata.");
 }
 if (!buildScript.includes("BreadcrumbList")) failures.push("Article pages must expose breadcrumb structured data.");
+if (!checkOutputScript.includes("checkStructuredData") || !checkOutputScript.includes("TechArticle")) {
+  failures.push("Output checks must validate structured data.");
+}
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
 }

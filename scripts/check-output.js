@@ -240,6 +240,103 @@ function checkInlineScripts(file, html) {
   }
 }
 
+function schemaTypes(item) {
+  const type = item?.["@type"];
+  return Array.isArray(type) ? type : [type].filter(Boolean);
+}
+
+async function checkStructuredData(file, html) {
+  const relative = displayPath(file);
+  const expectedUrl = new URL(pagePathFromFile(file), absoluteSiteRoot).toString();
+  const items = [];
+
+  for (const match of html.matchAll(/<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try {
+      items.push(JSON.parse(match[1]));
+    } catch (error) {
+      failures.push(`${relative} contains invalid JSON-LD: ${error.message}`);
+    }
+  }
+
+  for (const item of items) {
+    const text = JSON.stringify(item);
+    if (/pages\.dev/i.test(text)) failures.push(`${relative} JSON-LD must not contain a pages.dev URL.`);
+    await checkStructuredDataUrls(relative, item);
+  }
+
+  if (relative === "dist/index.html") {
+    const website = items.find((item) => schemaTypes(item).includes("WebSite"));
+    if (!website) {
+      failures.push("dist/index.html must include WebSite structured data.");
+    } else {
+      const websiteUrl = checkSiteUrl("dist/index.html WebSite URL", website.url || "");
+      if (websiteUrl?.toString() !== absoluteSiteRoot) {
+        failures.push("dist/index.html WebSite URL must point to the site root.");
+      }
+      const action = website.potentialAction;
+      if (!action || !schemaTypes(action).includes("SearchAction")) {
+        failures.push("dist/index.html WebSite structured data must include SearchAction.");
+      } else {
+        const target = String(action.target || "").replace("{search_term_string}", "unity");
+        const targetUrl = checkSiteUrl("dist/index.html SearchAction target", target);
+        if (targetUrl && (targetUrl.pathname !== "/search/" || targetUrl.searchParams.get("q") !== "unity")) {
+          failures.push("dist/index.html SearchAction target must point to /search/?q={search_term_string}.");
+        }
+      }
+    }
+  }
+
+  if (relative.startsWith("dist/posts/")) {
+    const article = items.find((item) => schemaTypes(item).includes("TechArticle"));
+    const breadcrumb = items.find((item) => schemaTypes(item).includes("BreadcrumbList"));
+    if (!article) {
+      failures.push(`${relative} must include TechArticle structured data.`);
+    } else {
+      const articleUrl = checkSiteUrl(`${relative} TechArticle URL`, article.url || "");
+      if (articleUrl?.toString() !== expectedUrl) {
+        failures.push(`${relative} TechArticle URL must match the canonical output URL.`);
+      }
+      if (!article.headline?.trim()) failures.push(`${relative} TechArticle headline must not be empty.`);
+      if (!article.description?.trim()) failures.push(`${relative} TechArticle description must not be empty.`);
+      if (!isValidDate(article.datePublished)) failures.push(`${relative} TechArticle datePublished must be valid.`);
+      if (!isValidDate(article.dateModified)) failures.push(`${relative} TechArticle dateModified must be valid.`);
+      if (!article.author?.name || !article.publisher?.name) {
+        failures.push(`${relative} TechArticle must include author and publisher names.`);
+      }
+    }
+    if (!breadcrumb) {
+      failures.push(`${relative} must include BreadcrumbList structured data.`);
+    } else {
+      const elements = Array.isArray(breadcrumb.itemListElement) ? breadcrumb.itemListElement : [];
+      if (elements.length < 4) failures.push(`${relative} BreadcrumbList must include the article hierarchy.`);
+      const finalItem = elements[elements.length - 1]?.item || "";
+      const finalUrl = checkSiteUrl(`${relative} BreadcrumbList final item`, finalItem);
+      if (finalUrl?.toString() !== expectedUrl) {
+        failures.push(`${relative} BreadcrumbList final item must match the canonical output URL.`);
+      }
+    }
+  }
+}
+
+async function checkStructuredDataUrls(relative, value) {
+  if (!value || typeof value !== "object") return;
+  if (Array.isArray(value)) {
+    for (const item of value) await checkStructuredDataUrls(relative, item);
+    return;
+  }
+
+  for (const [key, item] of Object.entries(value)) {
+    if (["url", "item", "id", "@id", "mainEntityOfPage", "image", "target"].includes(key) && typeof item === "string") {
+      const probe = item.includes("{search_term_string}") ? item.replace("{search_term_string}", "unity") : item;
+      const url = checkSiteUrl(`${relative} JSON-LD ${key}`, probe);
+      if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
+        failures.push(`${relative} JSON-LD ${key} references missing local target: ${item}`);
+      }
+    }
+    await checkStructuredDataUrls(relative, item);
+  }
+}
+
 function isArticleContentImage(html, index) {
   const articleContent = html.lastIndexOf('<div class="article-content"', index);
   if (articleContent === -1) return false;
@@ -581,6 +678,7 @@ async function main() {
     checkLinks(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
+    await checkStructuredData(file, html);
     checkFeedDiscovery(file, html);
     checkSearchDiscovery(file, html);
     await checkSocialMeta(file, html);
