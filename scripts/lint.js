@@ -214,6 +214,9 @@ if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"
 if (!buildScript.includes("groupByYear") || !buildScript.includes("/years/") || !css.includes(".archive-filter-stack")) {
   failures.push("Archive pages must expose year-based browsing alongside category filters.");
 }
+if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage({ tag, posts, tags, page")) {
+  failures.push("Tag result pages must be paginated.");
+}
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
 }

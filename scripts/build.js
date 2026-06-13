@@ -1267,7 +1267,9 @@ function tagCloud(entries, activeTag = "") {
   </nav>`;
 }
 
-function tagListPage({ tag, posts, tags }) {
+function tagListPage({ tag, posts, tags, page = 1, basePath }) {
+  const perPage = archivePostsPerPage();
+  const { items, currentPage, totalPages } = paginate(posts, page, perPage);
   const body = `<main class="page-shell tags-page">
     ${pageContext({
       title: `${tag} 标签`,
@@ -1282,7 +1284,8 @@ function tagListPage({ tag, posts, tags }) {
         <span class="section-kicker">Articles</span>
         <h2>${escapeHtml(tag)} 相关文章</h2>
       </header>
-      <div class="article-index-grid">${posts.map((post) => archivePostCard(post)).join("")}</div>
+      <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
+      ${paginationNav(basePath, currentPage, totalPages)}
     </section>
   </main>`;
   return pageLayout({
@@ -1290,8 +1293,29 @@ function tagListPage({ tag, posts, tags }) {
     description: `带有 ${tag} 标签的全部文章。`,
     current: "/tags/",
     body,
-    canonical: `/tags/${slugify(tag)}/`
+    canonical: pageHref(basePath, currentPage),
+    extraHead: paginationHead(basePath, currentPage, totalPages)
   });
+}
+
+async function writeTagPages({ tag, posts, tags }) {
+  const tagSlug = slugify(tag);
+  const baseRoute = path.join("tags", tagSlug);
+  const basePath = `/tags/${tagSlug}/`;
+  const totalPages = Math.max(1, Math.ceil(posts.length / archivePostsPerPage()));
+
+  for (let page = 1; page <= totalPages; page += 1) {
+    await writePage(
+      pageRoute(baseRoute, page),
+      tagListPage({
+        tag,
+        posts,
+        tags,
+        basePath,
+        page
+      })
+    );
+  }
 }
 
 function listPage({ title, description, posts, current, canonical }) {
@@ -1695,7 +1719,7 @@ function sitemap(posts, categories, years, tags, seriesEntries) {
     paginatedSitemapEntries(`/categories/${slugify(category)}/`, list, "0.7")
   );
   const yearUrls = years.flatMap(([year, list]) => paginatedSitemapEntries(`/years/${slugify(year)}/`, list, "0.7"));
-  const tagUrls = tags.map(([tag, list]) => sitemapEntry(`/tags/${slugify(tag)}/`, latestPostDate(list), "0.6"));
+  const tagUrls = tags.flatMap(([tag, list]) => paginatedSitemapEntries(`/tags/${slugify(tag)}/`, list, "0.6"));
   const seriesUrls = seriesEntries.map(([seriesName, list]) =>
     sitemapEntry(`/series/${slugify(seriesName)}/`, latestPostDate(list), "0.7")
   );
@@ -1781,14 +1805,7 @@ for (const [year, list] of years) {
 }
 
 for (const [tag, list] of tags) {
-  await writePage(
-    path.join("tags", slugify(tag)),
-    tagListPage({
-      tag,
-      posts: list,
-      tags
-    })
-  );
+  await writeTagPages({ tag, posts: list, tags });
 }
 
 for (const [seriesName, list] of seriesEntries) {

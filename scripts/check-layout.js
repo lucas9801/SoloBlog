@@ -26,7 +26,7 @@ function pageName(pathname) {
     pathname
       .replace(/^\/+|\/+$/g, "")
       .replace(/\.html$/i, "")
-      .replace(/[^a-z0-9]+/gi, "-")
+      .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 80) || "page"
   );
@@ -42,8 +42,22 @@ async function defaultPaths() {
   if (firstPost) paths.splice(1, 0, firstPost);
   const firstYear = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.year)?.year : "";
   if (firstYear) paths.splice(3, 0, `/years/${firstYear}/`);
+  const firstTag = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.tags?.length)?.tags[0] : "";
+  if (firstTag) paths.splice(5, 0, `/tags/${slugifyForPath(firstTag)}/`);
 
   return [...new Set(paths)];
+}
+
+function slugifyForPath(value = "") {
+  const slug = String(value)
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || encodeURIComponent(String(value));
 }
 
 async function pagesToCheck() {

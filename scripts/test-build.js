@@ -56,7 +56,7 @@ async function writeFixtureProject(target) {
         baseUrl: "https://blog.solus.games/",
         language: "zh-CN",
         postsPerPage: 9,
-        archivePostsPerPage: 9,
+        archivePostsPerPage: 1,
         socialImage: "/assets/og/solus-og.png",
         heroCover: "/assets/posts/inline.svg",
         views: { enabled: false },
@@ -91,6 +91,11 @@ async function writeFixtureProject(target) {
     `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), and [bad](javascript:alert(1)).\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
     "utf8"
   );
+  await writeFile(
+    path.join(target, "content", "posts", "2026-06-14-markdown-followup.md"),
+    `---\ntitle: "Markdown Followup"\nslug: "markdown-followup"\ndate: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 工程]\nsummary: 第二篇同标签文章用于验证标签分页和 sitemap 输出。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Followup\n\nParagraph for the second Markdown article.\n`,
+    "utf8"
+  );
 }
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "solus-build-"));
@@ -99,7 +104,7 @@ try {
   await writeFixtureProject(tempRoot);
   const result = await runBuild(tempRoot);
   assert.equal(result.code, 0, result.stderr || result.stdout);
-  assert.match(result.stdout, /Built 1 posts into dist\//);
+  assert.match(result.stdout, /Built 2 posts into dist\//);
 
   const article = await readFile(path.join(tempRoot, "dist", "posts", "markdown-edge-cases", "index.html"), "utf8");
   assert.match(article, /<h2 id="repeat">Repeat<\/h2>/);
@@ -119,6 +124,7 @@ try {
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
+  assert.match(archive, /href="\/archive\/page\/2\/"/);
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
@@ -127,14 +133,25 @@ try {
 
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
   assert.match(yearPage, /2026 年文章/);
-  assert.match(yearPage, /href="\/posts\/markdown-edge-cases\/"/);
-  assert.match(yearPage, /aria-current="page">2026 <b>1<\/b><\/a>/);
+  assert.match(yearPage, /href="\/posts\/markdown-followup\/"/);
+  assert.match(yearPage, /aria-current="page">2026 <b>2<\/b><\/a>/);
+  assert.match(yearPage, /href="\/years\/2026\/page\/2\/"/);
+
+  const tagPage = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "index.html"), "utf8");
+  assert.match(tagPage, /Markdown 标签/);
+  assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
+  assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
+  assert.match(tagPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\/" \/>/);
+
+  const tagPage2 = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "page", "2", "index.html"), "utf8");
+  assert.match(tagPage2, /href="\/posts\/markdown-edge-cases\/"/);
+  assert.match(tagPage2, /<link rel="prev" href="https:\/\/blog\.solus\.games\/tags\/markdown\/" \/>/);
 
   const searchIndex = JSON.parse(await readFile(path.join(tempRoot, "dist", "search-index.json"), "utf8"));
-  assert.equal(searchIndex.length, 1);
-  assert.equal(searchIndex[0].slug, "markdown-edge-cases");
-  assert.equal(searchIndex[0].year, "2026");
-  assert.equal(searchIndex[0].cover, "/assets/posts/inline.svg");
+  assert.equal(searchIndex.length, 2);
+  const markdownEdge = searchIndex.find((item) => item.slug === "markdown-edge-cases");
+  assert.equal(markdownEdge.year, "2026");
+  assert.equal(markdownEdge.cover, "/assets/posts/inline.svg");
 
   const rss = await readFile(path.join(tempRoot, "dist", "rss.xml"), "utf8");
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
@@ -145,10 +162,10 @@ try {
   assert.equal(jsonFeed.version, "https://jsonfeed.org/version/1.1");
   assert.equal(jsonFeed.home_page_url, "https://blog.solus.games/");
   assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
-  assert.equal(jsonFeed.items.length, 1);
-  assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-edge-cases/");
-  assert.match(jsonFeed.items[0].content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
-  assert.doesNotMatch(jsonFeed.items[0].content_html, /\s(?:href|src)="\//);
+  assert.equal(jsonFeed.items.length, 2);
+  const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
+  assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
+  assert.doesNotMatch(feedMarkdownEdge.content_html, /\s(?:href|src)="\//);
 
   const openSearch = await readFile(path.join(tempRoot, "dist", "opensearch.xml"), "utf8");
   assert.match(openSearch, /<OpenSearchDescription xmlns="http:\/\/a9\.com\/-\/spec\/opensearch\/1\.1\/">/);
@@ -159,6 +176,7 @@ try {
   const sitemap = await readFile(path.join(tempRoot, "dist", "sitemap.xml"), "utf8");
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/years\/2026\//);
+  assert.match(sitemap, /https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\//);
 
   const robots = await readFile(path.join(tempRoot, "dist", "robots.txt"), "utf8");
   assert.match(robots, /Sitemap: https:\/\/blog\.solus\.games\/sitemap\.xml/);
