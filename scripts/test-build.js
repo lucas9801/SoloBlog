@@ -109,7 +109,9 @@ try {
   assert.match(article, /<code>inline code<\/code>/);
   assert.match(article, /target="_blank" rel="noopener noreferrer"/);
   assert.doesNotMatch(article, /javascript:alert/);
-  assert.match(article, /<img src="\/assets\/posts\/inline\.svg" alt="Inline Asset"/);
+  assert.match(article, /<img src="\/assets\/posts\/inline\.svg" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
+  assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
+  assert.match(article, /<meta name="twitter:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<td data-align="left">A \| B<\/td>/);
   assert.match(article, /<pre data-language="js"><button class="code-copy-button"/);
   assert.match(article, /<blockquote>quoted text<\/blockquote>/);

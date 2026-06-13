@@ -36,6 +36,18 @@ function displayPath(file) {
   return path.relative(root, file).replaceAll("\\", "/");
 }
 
+function tagAttributes(tag) {
+  const attributes = new Map();
+  for (const match of tag.matchAll(/\s([^\s"'<>/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g)) {
+    attributes.set(match[1].toLowerCase(), match[2] ?? match[3] ?? match[4] ?? "");
+  }
+  return attributes;
+}
+
+function hasToken(value = "", token) {
+  return String(value).split(/\s+/).includes(token);
+}
+
 function localPathFromUrl(value) {
   if (!value || value.startsWith("#") || value.startsWith("mailto:")) return "";
   if (value.startsWith("/api/")) return "";
@@ -85,6 +97,35 @@ function checkHeadingIds(file, html) {
   }
 }
 
+function checkDocumentBasics(file, html) {
+  const relative = displayPath(file);
+  const htmlTag = html.match(/<html\b[^>]*>/i)?.[0];
+  if (!htmlTag) {
+    failures.push(`${relative} is missing an html element.`);
+  } else if (!tagAttributes(htmlTag).get("lang")?.trim()) {
+    failures.push(`${relative} html element must include a lang attribute.`);
+  }
+
+  const titles = [...html.matchAll(/<title>([\s\S]*?)<\/title>/gi)].map((match) => match[1].trim());
+  if (titles.length !== 1) {
+    failures.push(`${relative} must contain exactly one title element.`);
+  } else if (!titles[0]) {
+    failures.push(`${relative} title element must not be empty.`);
+  }
+
+  const descriptions = [...html.matchAll(/<meta\s+name="description"\s+content="([^"]*)"/gi)].map((match) =>
+    match[1].trim()
+  );
+  if (descriptions.length !== 1) {
+    failures.push(`${relative} must contain exactly one meta description.`);
+  } else if (!descriptions[0]) {
+    failures.push(`${relative} meta description must not be empty.`);
+  }
+
+  const h1Count = [...html.matchAll(/<h1\b[^>]*>/gi)].length;
+  if (h1Count !== 1) failures.push(`${relative} must contain exactly one h1 element.`);
+}
+
 function pagePathFromFile(file) {
   const relative = path.relative(dist, file).replaceAll("\\", "/");
   if (relative === "index.html") return "/";
@@ -130,7 +171,7 @@ function checkCanonical(file, html) {
   }
 }
 
-function checkSocialMeta(file, html) {
+async function checkSocialMeta(file, html) {
   const relative = displayPath(file);
   for (const property of ["og:image", "og:image:secure_url", "twitter:image"]) {
     const value = html.match(new RegExp(`<meta\\s+(?:property|name)="${property}"\\s+content="([^"]+)"`))?.[1];
@@ -138,7 +179,15 @@ function checkSocialMeta(file, html) {
       failures.push(`${relative} is missing ${property}.`);
       continue;
     }
-    checkSiteUrl(`${relative} ${property}`, value);
+    const url = checkSiteUrl(`${relative} ${property}`, value);
+    if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
+      failures.push(`${relative} ${property} references missing local target: ${value}`);
+    }
+  }
+
+  for (const property of ["og:image:alt", "twitter:image:alt"]) {
+    const value = html.match(new RegExp(`<meta\\s+(?:property|name)="${property}"\\s+content="([^"]*)"`))?.[1];
+    if (!value?.trim()) failures.push(`${relative} is missing ${property}.`);
   }
 }
 
@@ -161,6 +210,72 @@ function checkInlineScripts(file, html) {
     if (/\bsrc\s*=/i.test(attrs)) continue;
     if (/\btype\s*=\s*"application\/ld\+json"/i.test(attrs)) continue;
     failures.push(`${relative} contains an inline executable script.`);
+  }
+}
+
+function isArticleContentImage(html, index) {
+  const articleContent = html.lastIndexOf('<div class="article-content"', index);
+  if (articleContent === -1) return false;
+
+  const articleFooter = html.lastIndexOf('<footer class="article-footer"', index);
+  const articleEnd = html.lastIndexOf("</article>", index);
+  return articleContent > Math.max(articleFooter, articleEnd);
+}
+
+function checkImages(file, html) {
+  const relative = displayPath(file);
+  for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
+    const tag = match[0];
+    const attrs = tagAttributes(tag);
+    const src = attrs.get("src") || "";
+    const className = attrs.get("class") || "";
+
+    if (!src.trim()) failures.push(`${relative} contains an img without a src.`);
+    if (!attrs.has("alt")) {
+      failures.push(`${relative} contains an img without an alt attribute: ${src || tag}`);
+    } else if (isArticleContentImage(html, match.index) && !attrs.get("alt")?.trim()) {
+      failures.push(`${relative} article content image must have descriptive alt text: ${src || tag}`);
+    }
+
+    if (attrs.get("decoding") !== "async") {
+      failures.push(`${relative} image must use decoding="async": ${src || tag}`);
+    }
+
+    if (!hasToken(className, "hero-cover") && attrs.get("loading") !== "lazy") {
+      failures.push(`${relative} non-hero image must use loading="lazy": ${src || tag}`);
+    }
+  }
+}
+
+function checkLinks(file, html) {
+  const relative = displayPath(file);
+  for (const match of html.matchAll(/<a\b[^>]*>/gi)) {
+    const tag = match[0];
+    const attrs = tagAttributes(tag);
+    const href = attrs.get("href");
+    if (!href) {
+      failures.push(`${relative} contains an anchor without href: ${tag}`);
+      continue;
+    }
+
+    const target = attrs.get("target") || "";
+    const rel = attrs.get("rel") || "";
+    if (target === "_blank" && (!hasToken(rel, "noopener") || !hasToken(rel, "noreferrer"))) {
+      failures.push(`${relative} target="_blank" link must include rel="noopener noreferrer": ${href}`);
+    }
+
+    try {
+      const url = new URL(href, absoluteSiteRoot);
+      const external = (url.protocol === "http:" || url.protocol === "https:") && url.origin !== siteOrigin;
+      if (external && target !== "_blank") {
+        failures.push(`${relative} external link should open in a new tab: ${href}`);
+      }
+      if (external && (!hasToken(rel, "noopener") || !hasToken(rel, "noreferrer"))) {
+        failures.push(`${relative} external link must include rel="noopener noreferrer": ${href}`);
+      }
+    } catch {
+      failures.push(`${relative} contains an invalid anchor href: ${href}`);
+    }
   }
 }
 
@@ -250,6 +365,9 @@ async function checkSearchIndex(searchIndex) {
     if (!(await localTargetExists(item.url))) {
       failures.push(`dist/search-index.json references missing post URL: ${item.url}`);
     }
+    if (item.cover && !(await localTargetExists(item.cover))) {
+      failures.push(`dist/search-index.json references missing post cover: ${item.cover}`);
+    }
   }
 }
 
@@ -309,10 +427,13 @@ async function main() {
     }
     if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 
+    checkDocumentBasics(file, html);
     checkInlineScripts(file, html);
+    checkImages(file, html);
+    checkLinks(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
-    checkSocialMeta(file, html);
+    await checkSocialMeta(file, html);
     checkHeadingIds(file, html);
     await checkLocalReferences(file, html);
   }
