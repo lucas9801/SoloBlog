@@ -732,6 +732,7 @@ function pageLayout({
     <meta name="twitter:image:alt" content="${escapeAttr(fullTitle)}" />
     <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
+    <link rel="alternate" type="application/feed+json" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl("/feed.json"))}" />
     <link rel="search" type="application/opensearchdescription+xml" title="${escapeAttr(site.title)}" href="/opensearch.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -1621,6 +1622,41 @@ function openSearch() {
 </OpenSearchDescription>`;
 }
 
+function jsonFeed(posts) {
+  const items = posts.slice(0, 20).map((post) => {
+    const tags = Array.from(new Set([post.category, post.series, ...post.tags].filter(Boolean)));
+    return {
+      id: absoluteUrl(post.url),
+      url: absoluteUrl(post.url),
+      title: post.title,
+      content_html: absolutizeFeedHtml(post.html),
+      summary: post.summary,
+      date_published: new Date(post.date).toISOString(),
+      date_modified: new Date(post.updated || post.date).toISOString(),
+      authors: [{ name: site.brand || site.title }],
+      tags,
+      image: absoluteUrl(post.cover)
+    };
+  });
+
+  return JSON.stringify(
+    {
+      version: "https://jsonfeed.org/version/1.1",
+      title: site.title,
+      home_page_url: absoluteUrl("/"),
+      feed_url: absoluteUrl("/feed.json"),
+      description: site.description,
+      language: site.language || "zh-CN",
+      favicon: absoluteUrl("/favicon.svg"),
+      icon: absoluteUrl(site.socialImage || "/favicon.svg"),
+      authors: [{ name: site.brand || site.title }],
+      items
+    },
+    null,
+    2
+  );
+}
+
 function latestPostDate(list) {
   return (list || [])
     .map((post) => post.updated || post.date)
@@ -1781,6 +1817,7 @@ await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((
   text: post.text
 })), null, 2), "utf8");
 await writeFile(path.join(dist, "rss.xml"), rss(posts), "utf8");
+await writeFile(path.join(dist, "feed.json"), jsonFeed(posts), "utf8");
 await writeFile(path.join(dist, "opensearch.xml"), openSearch(), "utf8");
 await writeFile(path.join(dist, "sitemap.xml"), sitemap(posts, categories, years, tags, seriesEntries), "utf8");
 await writeFile(

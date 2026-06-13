@@ -104,6 +104,11 @@ try {
   assert.match(response.headers.get("content-type") || "", /application\/xml/);
   assert.match(await response.text(), /<rss\b/);
 
+  response = await request(baseUrl, "/feed.json");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") || "", /application\/json/);
+  assert.equal((await response.json()).version, "https://jsonfeed.org/version/1.1");
+
   response = await request(baseUrl, "/sitemap.xml");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") || "", /application\/xml/);

@@ -122,6 +122,7 @@ try {
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
+  assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
 
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
@@ -139,6 +140,15 @@ try {
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
   assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
+
+  const jsonFeed = JSON.parse(await readFile(path.join(tempRoot, "dist", "feed.json"), "utf8"));
+  assert.equal(jsonFeed.version, "https://jsonfeed.org/version/1.1");
+  assert.equal(jsonFeed.home_page_url, "https://blog.solus.games/");
+  assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
+  assert.equal(jsonFeed.items.length, 1);
+  assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-edge-cases/");
+  assert.match(jsonFeed.items[0].content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
+  assert.doesNotMatch(jsonFeed.items[0].content_html, /\s(?:href|src)="\//);
 
   const openSearch = await readFile(path.join(tempRoot, "dist", "opensearch.xml"), "utf8");
   assert.match(openSearch, /<OpenSearchDescription xmlns="http:\/\/a9\.com\/-\/spec\/opensearch\/1\.1\/">/);

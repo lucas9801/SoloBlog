@@ -183,6 +183,21 @@ function checkSearchDiscovery(file, html) {
   if (href !== "/opensearch.xml") failures.push(`${relative} OpenSearch discovery link must point to /opensearch.xml.`);
 }
 
+function checkFeedDiscovery(file, html) {
+  const relative = displayPath(file);
+  const links = [...html.matchAll(/<link\s+rel="alternate"\s+type="application\/feed\+json"\s+title="([^"]+)"\s+href="([^"]+)"/g)];
+  if (links.length !== 1) {
+    failures.push(`${relative} must contain exactly one JSON Feed discovery link.`);
+    return;
+  }
+
+  const feedUrl = checkSiteUrl(`${relative} JSON Feed discovery link`, links[0][2]);
+  const expected = new URL("/feed.json", absoluteSiteRoot).toString();
+  if (feedUrl?.toString() !== expected) {
+    failures.push(`${relative} JSON Feed discovery link must be ${expected}.`);
+  }
+}
+
 async function checkSocialMeta(file, html) {
   const relative = displayPath(file);
   for (const property of ["og:image", "og:image:secure_url", "twitter:image"]) {
@@ -406,6 +421,60 @@ async function checkOpenSearch(openSearch) {
   if (/pages\.dev/i.test(openSearch)) failures.push("dist/opensearch.xml must not contain a pages.dev URL.");
 }
 
+async function checkJsonFeed(feed) {
+  if (!feed || typeof feed !== "object" || Array.isArray(feed)) {
+    failures.push("dist/feed.json must be a JSON Feed object.");
+    return;
+  }
+
+  if (feed.version !== "https://jsonfeed.org/version/1.1") {
+    failures.push("dist/feed.json must use JSON Feed 1.1.");
+  }
+
+  const home = checkSiteUrl("dist/feed.json home_page_url", feed.home_page_url || "");
+  if (home?.pathname !== "/") failures.push("dist/feed.json home_page_url must point to the site root.");
+
+  const self = checkSiteUrl("dist/feed.json feed_url", feed.feed_url || "");
+  const expectedSelf = new URL("/feed.json", absoluteSiteRoot).toString();
+  if (self?.toString() !== expectedSelf) failures.push(`dist/feed.json feed_url must be ${expectedSelf}.`);
+
+  if (!Array.isArray(feed.items) || feed.items.length === 0) {
+    failures.push("dist/feed.json must contain at least one item.");
+    return;
+  }
+
+  const seen = new Set();
+  for (const item of feed.items) {
+    if (!item.id || !item.url || !item.title || !item.content_html || !item.date_published) {
+      failures.push("dist/feed.json items must include id, url, title, content_html, and date_published.");
+      continue;
+    }
+    if (seen.has(item.id)) failures.push(`dist/feed.json contains duplicate item id: ${item.id}`);
+    seen.add(item.id);
+
+    const url = checkSiteUrl("dist/feed.json item URL", item.url);
+    if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
+      failures.push(`dist/feed.json item references missing local target: ${item.url}`);
+    }
+    if (!isValidDate(item.date_published)) failures.push(`dist/feed.json item has invalid published date: ${item.id}`);
+    if (item.date_modified && !isValidDate(item.date_modified)) {
+      failures.push(`dist/feed.json item has invalid modified date: ${item.id}`);
+    }
+    if (/\s(?:href|src)="\//.test(item.content_html)) {
+      failures.push(`dist/feed.json item content must not contain relative local href/src URLs: ${item.id}`);
+    }
+    for (const match of String(item.content_html).matchAll(/\s(?:href|src)="(https?:\/\/[^"]+)"/g)) {
+      const contentUrl = new URL(match[1]);
+      if (/pages\.dev/i.test(contentUrl.hostname)) {
+        failures.push(`dist/feed.json item content must not contain a pages.dev URL: ${match[1]}`);
+      }
+      if (contentUrl.origin === siteOrigin && !(await localTargetExists(contentUrl.pathname))) {
+        failures.push(`dist/feed.json item content references missing local target: ${match[1]}`);
+      }
+    }
+  }
+}
+
 async function checkSearchIndex(searchIndex) {
   if (!Array.isArray(searchIndex)) {
     failures.push("dist/search-index.json must be a JSON array.");
@@ -447,7 +516,7 @@ async function main() {
     throw new Error("dist/ does not exist. Run npm run build first.");
   }
 
-  const requiredFiles = ["404.html", "_headers", "robots.txt", "rss.xml", "sitemap.xml", "opensearch.xml", "search-index.json"];
+  const requiredFiles = ["404.html", "_headers", "robots.txt", "rss.xml", "feed.json", "sitemap.xml", "opensearch.xml", "search-index.json"];
   for (const file of requiredFiles) {
     if (!(await exists(path.join(dist, file)))) failures.push(`Missing dist/${file}`);
   }
@@ -478,6 +547,11 @@ async function main() {
   const rss = await readFile(path.join(dist, "rss.xml"), "utf8").catch(() => "");
   await checkRss(rss);
 
+  const jsonFeed = await readFile(path.join(dist, "feed.json"), "utf8")
+    .then(JSON.parse)
+    .catch(() => null);
+  await checkJsonFeed(jsonFeed);
+
   const openSearch = await readFile(path.join(dist, "opensearch.xml"), "utf8").catch(() => "");
   await checkOpenSearch(openSearch);
 
@@ -507,6 +581,7 @@ async function main() {
     checkLinks(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
+    checkFeedDiscovery(file, html);
     checkSearchDiscovery(file, html);
     await checkSocialMeta(file, html);
     checkHeadingIds(file, html);

@@ -157,6 +157,9 @@ if (!css.includes(".article-content")) failures.push("CSS must define article co
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
 if (!buildScript.includes("search-index.json")) failures.push("Build must generate search index.");
 if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
+if (!buildScript.includes("feed.json") || !buildScript.includes("jsonFeed")) {
+  failures.push("Build must generate JSON Feed.");
+}
 if (!buildScript.includes("sitemap.xml")) failures.push("Build must generate sitemap.");
 if (!buildScript.includes("opensearch.xml") || !buildScript.includes("openSearch")) {
   failures.push("Build must generate an OpenSearch descriptor.");
@@ -191,6 +194,9 @@ if (!buildScript.includes("noindex,follow")) failures.push("404 page must be mar
 if (!buildScript.includes("content:encoded") || !buildScript.includes("absolutizeFeedHtml")) {
   failures.push("RSS feed must include full post content with absolute local URLs.");
 }
+if (!buildScript.includes("https://jsonfeed.org/version/1.1") || !buildScript.includes("content_html")) {
+  failures.push("JSON Feed must include full HTML content using JSON Feed 1.1.");
+}
 if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
 if (!buildScript.includes('name="robots"')) failures.push("Page head must define robots indexing policy.");
 if (!buildScript.includes('name="color-scheme"')) failures.push("Page head must declare supported color schemes.");
@@ -216,6 +222,7 @@ if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMail
 }
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (!buildScript.includes("application/feed+json")) failures.push("Page head must expose JSON Feed discovery.");
 if (!buildScript.includes('rel="search"') || !buildScript.includes("application/opensearchdescription+xml")) {
   failures.push("Page head must expose OpenSearch discovery.");
 }
@@ -275,6 +282,7 @@ for (const requiredHeader of [
 }
 if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
+if (!headers.includes("/feed.json")) failures.push("Cloudflare headers must cache feed.json.");
 if (!headers.includes("/opensearch.xml")) failures.push("Cloudflare headers must cache opensearch.xml.");
 if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
   failures.push("Cloudflare script-src must not allow unsafe-inline.");
