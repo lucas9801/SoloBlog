@@ -123,6 +123,11 @@ function isDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(value || "")) && !Number.isNaN(Date.parse(value));
 }
 
+function localDateString(date = new Date()) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
 async function existsLocalPath(urlPath) {
   if (!urlPath.startsWith("/") || /^\/(posts|archive|categories|tags|search|about)\//.test(urlPath)) return true;
   const pathname = urlPath.split(/[?#]/)[0].replace(/^\/+/, "");
@@ -394,6 +399,7 @@ const knownCategories = new Set(Object.keys(site.categoryCovers || {}));
 
 const slugs = new Map();
 const seriesOrders = new Map();
+const today = localDateString();
 for (const post of posts) {
   const { file, data, body, hasFrontMatter } = post;
   const slug = data.slug || slugify(data.title || path.basename(file, ".md"));
@@ -464,6 +470,12 @@ for (const post of posts) {
   }
 
   if (status === "published") {
+    if (isDate(data.date) && data.date > today) {
+      failures.push(`${file} published date cannot be in the future.`);
+    }
+    if (isDate(data.updated) && data.updated > today) {
+      failures.push(`${file} published updated date cannot be in the future.`);
+    }
     if (!data.category || data.category === "未分类") failures.push(`${file} published posts need a real category.`);
     if (data.category && !knownCategories.has(data.category)) {
       failures.push(`${file} category "${data.category}" must be declared in content/site.json categoryCovers.`);
