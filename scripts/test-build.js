@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -107,6 +107,11 @@ async function writeFixtureProject(target) {
     `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
     "utf8"
   );
+  await writeFile(
+    path.join(target, "content", "posts", "2026-06-15-draft-only.md"),
+    `---\ntitle: "Draft Only"\nslug: "draft-only"\ndate: 2026-06-15\ncategory: Unity\ntags: [草稿]\nsummary: 这篇草稿用于验证未发布内容不会进入公开输出。\ncover: /assets/posts/inline.svg\nstatus: draft\n---\n\n## Draft\n\nThis draft must never be published by the build.\n`,
+    "utf8"
+  );
 }
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "solus-build-"));
@@ -138,6 +143,7 @@ try {
   assert.match(article, /<td data-align="left">A \| B<\/td>/);
   assert.match(article, /<pre data-language="js"><button class="code-copy-button"/);
   assert.match(article, /<blockquote>quoted text<\/blockquote>/);
+  await assert.rejects(access(path.join(tempRoot, "dist", "posts", "draft-only", "index.html")));
 
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.match(archive, /href="\/years\/2026\/"/);
@@ -154,6 +160,7 @@ try {
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
   assert.match(home, /\/src\/styles\.css\?v=[0-9a-f]{12}/);
   assert.doesNotMatch(home, /[?&]v=local/);
+  assert.doesNotMatch(home, /draft-only|Draft Only/);
   const website = jsonLdObjects(home).find((item) => item["@type"] === "WebSite");
   assert.equal(website.url, "https://blog.solus.games/");
   assert.equal(website.potentialAction["@type"], "SearchAction");
@@ -219,6 +226,7 @@ try {
   assert.equal(searchIndex.length, 3);
   assert.equal(searchIndex[0].slug, "markdown-followup");
   assert.equal(searchIndex[1].slug, "markdown-same-day");
+  assert.equal(searchIndex.some((item) => item.slug === "draft-only"), false);
   const markdownEdge = searchIndex.find((item) => item.slug === "markdown-edge-cases");
   assert.equal(markdownEdge.year, "2026");
   assert.equal(markdownEdge.cover, "/assets/posts/inline.svg");
@@ -229,6 +237,7 @@ try {
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
   assert.equal((rss.match(/<item>/g) || []).length, 3);
   assert.ok(rss.indexOf("https://blog.solus.games/posts/markdown-followup/") < rss.indexOf("https://blog.solus.games/posts/markdown-edge-cases/"));
+  assert.doesNotMatch(rss, /draft-only|Draft Only/);
 
   const jsonFeed = JSON.parse(await readFile(path.join(tempRoot, "dist", "feed.json"), "utf8"));
   assert.equal(jsonFeed.version, "https://jsonfeed.org/version/1.1");
@@ -236,6 +245,7 @@ try {
   assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
   assert.equal(jsonFeed.items.length, 3);
   assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-followup/");
+  assert.equal(jsonFeed.items.some((item) => item.url.includes("/draft-only/")), false);
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
   assert.doesNotMatch(feedMarkdownEdge.content_html, /\s(?:href|src)="\//);
@@ -251,6 +261,7 @@ try {
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/years\/2026\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\//);
+  assert.doesNotMatch(sitemap, /draft-only/);
 
   const robots = await readFile(path.join(tempRoot, "dist", "robots.txt"), "utf8");
   assert.match(robots, /Sitemap: https:\/\/blog\.solus\.games\/sitemap\.xml/);
