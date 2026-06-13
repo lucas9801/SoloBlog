@@ -155,6 +155,9 @@ if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must sup
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (!buildScript.includes("404.html") || !buildScript.includes("notFoundPage")) failures.push("Build must generate a custom 404 page.");
 if (!buildScript.includes("noindex,follow")) failures.push("404 page must be marked noindex.");
+if (!buildScript.includes("content:encoded") || !buildScript.includes("absolutizeFeedHtml")) {
+  failures.push("RSS feed must include full post content with absolute local URLs.");
+}
 if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
 if (!buildScript.includes('name="robots"')) failures.push("Page head must define robots indexing policy.");
 if (!buildScript.includes('name="color-scheme"')) failures.push("Page head must declare supported color schemes.");

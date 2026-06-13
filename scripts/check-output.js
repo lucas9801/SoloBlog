@@ -95,6 +95,17 @@ async function main() {
     .catch(() => null);
   if (!Array.isArray(searchIndex)) failures.push("dist/search-index.json must be a JSON array.");
 
+  const rss = await readFile(path.join(dist, "rss.xml"), "utf8").catch(() => "");
+  if (!rss.includes('xmlns:content="http://purl.org/rss/1.0/modules/content/"')) {
+    failures.push("dist/rss.xml must declare the content namespace.");
+  }
+  if (!rss.includes("<content:encoded><![CDATA[")) {
+    failures.push("dist/rss.xml must include full post content.");
+  }
+  if (/\s(?:href|src)="\//.test(rss)) {
+    failures.push("dist/rss.xml must not contain relative local href/src URLs.");
+  }
+
   for (const file of await htmlFiles()) {
     const html = await readFile(file, "utf8");
     const relative = displayPath(file);

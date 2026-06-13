@@ -1517,13 +1517,14 @@ function rss(posts) {
   <pubDate>${new Date(post.date).toUTCString()}</pubDate>
   ${categories.map((category) => `<category>${escapeHtml(category)}</category>`).join("\n  ")}
   <description>${escapeHtml(post.summary)}</description>
+  <content:encoded>${cdata(absolutizeFeedHtml(post.html))}</content:encoded>
 </item>`;
       }
     )
     .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
   <title>${escapeHtml(site.title)}</title>
   <link>${absoluteUrl("/")}</link>
@@ -1541,6 +1542,16 @@ function latestPostDate(list) {
     .map((post) => post.updated || post.date)
     .filter(Boolean)
     .sort((a, b) => new Date(b) - new Date(a))[0];
+}
+
+function cdata(value = "") {
+  return `<![CDATA[${String(value).replaceAll("]]>", "]]]]><![CDATA[>")}]]>`;
+}
+
+function absolutizeFeedHtml(html) {
+  return String(html || "").replace(/\s(href|src)="(\/[^"]*)"/g, (_, attr, value) => {
+    return ` ${attr}="${escapeAttr(absoluteUrl(value))}"`;
+  });
 }
 
 function sitemapEntry(loc, lastmod, priority = "0.7") {
