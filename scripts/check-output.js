@@ -171,6 +171,18 @@ function checkCanonical(file, html) {
   }
 }
 
+function checkSearchDiscovery(file, html) {
+  const relative = displayPath(file);
+  const links = [...html.matchAll(/<link\s+rel="search"\s+type="application\/opensearchdescription\+xml"\s+title="([^"]+)"\s+href="([^"]+)"/g)];
+  if (links.length !== 1) {
+    failures.push(`${relative} must contain exactly one OpenSearch discovery link.`);
+    return;
+  }
+
+  const href = links[0][2];
+  if (href !== "/opensearch.xml") failures.push(`${relative} OpenSearch discovery link must point to /opensearch.xml.`);
+}
+
 async function checkSocialMeta(file, html) {
   const relative = displayPath(file);
   for (const property of ["og:image", "og:image:secure_url", "twitter:image"]) {
@@ -360,6 +372,40 @@ async function checkRss(rss) {
   }
 }
 
+async function checkOpenSearch(openSearch) {
+  if (!openSearch.includes('<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">')) {
+    failures.push("dist/opensearch.xml must declare the OpenSearch namespace.");
+  }
+
+  const shortName = openSearch.match(/<ShortName>([^<]+)<\/ShortName>/)?.[1];
+  if (!shortName?.trim()) failures.push("dist/opensearch.xml must include a ShortName.");
+
+  const template = openSearch.match(/<Url\b[^>]*\stemplate="([^"]+)"/)?.[1];
+  if (!template) {
+    failures.push("dist/opensearch.xml must include a search URL template.");
+  } else {
+    const url = checkSiteUrl("dist/opensearch.xml search template", template.replace("{searchTerms}", "solus"));
+    if (url && (url.pathname !== "/search/" || url.searchParams.get("q") !== "solus")) {
+      failures.push("dist/opensearch.xml search template must target /search/?q={searchTerms}.");
+    }
+    if (!template.includes("{searchTerms}")) {
+      failures.push("dist/opensearch.xml search template must include {searchTerms}.");
+    }
+  }
+
+  const image = openSearch.match(/<Image\b[^>]*>([^<]+)<\/Image>/)?.[1];
+  if (!image) {
+    failures.push("dist/opensearch.xml must include an Image.");
+  } else {
+    const url = checkSiteUrl("dist/opensearch.xml image", image);
+    if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
+      failures.push(`dist/opensearch.xml image references missing local target: ${image}`);
+    }
+  }
+
+  if (/pages\.dev/i.test(openSearch)) failures.push("dist/opensearch.xml must not contain a pages.dev URL.");
+}
+
 async function checkSearchIndex(searchIndex) {
   if (!Array.isArray(searchIndex)) {
     failures.push("dist/search-index.json must be a JSON array.");
@@ -401,7 +447,7 @@ async function main() {
     throw new Error("dist/ does not exist. Run npm run build first.");
   }
 
-  const requiredFiles = ["404.html", "_headers", "robots.txt", "rss.xml", "sitemap.xml", "search-index.json"];
+  const requiredFiles = ["404.html", "_headers", "robots.txt", "rss.xml", "sitemap.xml", "opensearch.xml", "search-index.json"];
   for (const file of requiredFiles) {
     if (!(await exists(path.join(dist, file)))) failures.push(`Missing dist/${file}`);
   }
@@ -432,6 +478,9 @@ async function main() {
   const rss = await readFile(path.join(dist, "rss.xml"), "utf8").catch(() => "");
   await checkRss(rss);
 
+  const openSearch = await readFile(path.join(dist, "opensearch.xml"), "utf8").catch(() => "");
+  await checkOpenSearch(openSearch);
+
   const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8").catch(() => "");
   await checkSitemap(sitemap);
 
@@ -458,6 +507,7 @@ async function main() {
     checkLinks(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
+    checkSearchDiscovery(file, html);
     await checkSocialMeta(file, html);
     checkHeadingIds(file, html);
     await checkLocalReferences(file, html);

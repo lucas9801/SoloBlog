@@ -150,6 +150,9 @@ if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include 
 if (!buildScript.includes("search-index.json")) failures.push("Build must generate search index.");
 if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
 if (!buildScript.includes("sitemap.xml")) failures.push("Build must generate sitemap.");
+if (!buildScript.includes("opensearch.xml") || !buildScript.includes("openSearch")) {
+  failures.push("Build must generate an OpenSearch descriptor.");
+}
 if (site.baseUrl !== "https://blog.solus.games/") failures.push("site baseUrl must use the production domain.");
 if (!site.socialImage) failures.push("site config must define a default socialImage.");
 if (!site.heroCover) failures.push("site config must define a heroCover.");
@@ -205,6 +208,9 @@ if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMail
 }
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (!buildScript.includes('rel="search"') || !buildScript.includes("application/opensearchdescription+xml")) {
+  failures.push("Page head must expose OpenSearch discovery.");
+}
 if (!buildScript.includes("/src/theme-init.js")) failures.push("Page head must load the external theme initializer.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!buildScript.includes("coverImage") || !buildScript.includes('fetchpriority="${escapeAttr(fetchPriority)}"')) {
@@ -261,6 +267,7 @@ for (const requiredHeader of [
 }
 if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
+if (!headers.includes("/opensearch.xml")) failures.push("Cloudflare headers must cache opensearch.xml.");
 if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
   failures.push("Cloudflare script-src must not allow unsafe-inline.");
 }

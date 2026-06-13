@@ -24,5 +24,8 @@
 /sitemap.xml
   Cache-Control: public, max-age=300
 
+/opensearch.xml
+  Cache-Control: public, max-age=300
+
 /search-index.json
   Cache-Control: public, max-age=300

@@ -732,6 +732,7 @@ function pageLayout({
     <meta name="twitter:image:alt" content="${escapeAttr(fullTitle)}" />
     <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
+    <link rel="search" type="application/opensearchdescription+xml" title="${escapeAttr(site.title)}" href="/opensearch.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
     ${extraHead}
@@ -1609,6 +1610,17 @@ function rss(posts) {
 </rss>`;
 }
 
+function openSearch() {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>${escapeHtml(site.brand || site.title)}</ShortName>
+  <Description>${escapeHtml(`搜索 ${site.title} 的技术笔记`)}</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image height="64" width="64" type="image/svg+xml">${escapeHtml(absoluteUrl("/favicon.svg"))}</Image>
+  <Url type="text/html" method="get" template="${escapeHtml(`${absoluteUrl("/search/")}?q={searchTerms}`)}" />
+</OpenSearchDescription>`;
+}
+
 function latestPostDate(list) {
   return (list || [])
     .map((post) => post.updated || post.date)
@@ -1769,6 +1781,7 @@ await writeFile(path.join(dist, "search-index.json"), JSON.stringify(posts.map((
   text: post.text
 })), null, 2), "utf8");
 await writeFile(path.join(dist, "rss.xml"), rss(posts), "utf8");
+await writeFile(path.join(dist, "opensearch.xml"), openSearch(), "utf8");
 await writeFile(path.join(dist, "sitemap.xml"), sitemap(posts, categories, years, tags, seriesEntries), "utf8");
 await writeFile(
   path.join(dist, "robots.txt"),

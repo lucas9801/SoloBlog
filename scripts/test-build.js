@@ -122,6 +122,7 @@ try {
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
+  assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
 
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
   assert.match(yearPage, /2026 年文章/);
@@ -138,6 +139,12 @@ try {
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
   assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
+
+  const openSearch = await readFile(path.join(tempRoot, "dist", "opensearch.xml"), "utf8");
+  assert.match(openSearch, /<OpenSearchDescription xmlns="http:\/\/a9\.com\/-\/spec\/opensearch\/1\.1\/">/);
+  assert.match(openSearch, /<ShortName>SOLUS<\/ShortName>/);
+  assert.match(openSearch, /template="https:\/\/blog\.solus\.games\/search\/\?q=\{searchTerms\}"/);
+  assert.match(openSearch, /https:\/\/blog\.solus\.games\/favicon\.svg/);
 
   const sitemap = await readFile(path.join(tempRoot, "dist", "sitemap.xml"), "utf8");
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\//);
