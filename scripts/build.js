@@ -587,6 +587,8 @@ function pageLayout({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${escapeAttr(pageDescription)}" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="application-name" content="${escapeAttr(site.title)}" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f8fb" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d12" />
@@ -597,10 +599,15 @@ function pageLayout({
     <meta property="og:site_name" content="${escapeAttr(site.title)}" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="${escapeAttr(socialImage)}" />
+    <meta property="og:image:secure_url" content="${escapeAttr(socialImage)}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${escapeAttr(fullTitle)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeAttr(fullTitle)}" />
     <meta name="twitter:description" content="${escapeAttr(pageDescription)}" />
     <meta name="twitter:image" content="${escapeAttr(socialImage)}" />
+    <meta name="twitter:image:alt" content="${escapeAttr(fullTitle)}" />
     <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
     <link rel="alternate" type="application/rss+xml" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl(site.subscribe?.rss || "/rss.xml"))}" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -1353,11 +1360,15 @@ function searchPage() {
       <p>输入关键词，按标题、摘要、正文、分类和标签搜索。</p>
     </header>
     <section class="search-page-card">
-      <label>
-        <span class="sr-only">搜索关键词</span>
-        <input id="searchInputPage" type="search" placeholder="例如 Unity、渲染、工具链" autofocus />
-      </label>
-      <div id="searchResults" class="search-results"></div>
+      <div class="search-controls">
+        <label>
+          <span class="sr-only">搜索关键词</span>
+          <input id="searchInputPage" type="search" placeholder="例如 Unity、渲染、工具链" autofocus />
+        </label>
+        <button class="secondary-button search-clear" type="button" data-search-clear hidden>清空</button>
+      </div>
+      <div id="searchFacets" class="search-facets" aria-label="搜索筛选"></div>
+      <div id="searchResults" class="search-results" role="list" aria-live="polite"></div>
     </section>
   </main>
   <script type="module" src="${assetUrl("/src/search.js")}"></script>`;

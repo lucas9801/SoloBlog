@@ -29,11 +29,12 @@ for (const file of requiredFiles) {
   });
 }
 
-const [site, manifest, css, articleScript, buildScript, headers, packageConfig, wranglerConfig, heroStats, socialImageStats] = await Promise.all([
+const [site, manifest, css, articleScript, searchScript, buildScript, headers, packageConfig, wranglerConfig, heroStats, socialImageStats] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
   readFile(path.join(root, "src/article.js"), "utf8"),
+  readFile(path.join(root, "src/search.js"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
@@ -144,12 +145,24 @@ if (socialImageStats.size < 50000 || socialImageStats.size > 400000) {
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
+if (!buildScript.includes('name="robots"')) failures.push("Page head must define robots indexing policy.");
+if (!buildScript.includes('name="color-scheme"')) failures.push("Page head must declare supported color schemes.");
+if (!buildScript.includes("og:image:width") || !buildScript.includes("og:image:height")) {
+  failures.push("Page head must expose Open Graph image dimensions.");
+}
+if (!buildScript.includes("twitter:image:alt")) failures.push("Page head must expose social image alt text.");
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
   failures.push("Article script must lazy load Giscus comments.");
+}
+if (!searchScript.includes("searchFacets") || !searchScript.includes("data-facet-type")) {
+  failures.push("Search page must support category and tag facets.");
+}
+if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
+  failures.push("Search page must provide clear/reset controls.");
 }
 if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
