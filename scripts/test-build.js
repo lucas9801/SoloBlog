@@ -147,6 +147,8 @@ try {
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
+  assert.match(home, /\/src\/styles\.css\?v=[0-9a-f]{12}/);
+  assert.doesNotMatch(home, /[?&]v=local/);
   const website = jsonLdObjects(home).find((item) => item["@type"] === "WebSite");
   assert.equal(website.url, "https://blog.solus.games/");
   assert.equal(website.potentialAction["@type"], "SearchAction");

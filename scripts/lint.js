@@ -192,6 +192,9 @@ if (css.includes("/assets/hero-game-tech.png") || searchScript.includes("/assets
   failures.push("Runtime fallbacks should not reference the retired large hero PNG.");
 }
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
+if (!buildScript.includes("resolveAssetVersion") || !buildScript.includes("hashDirectory")) {
+  failures.push("Build must version CSS and JS assets from source content when no deploy SHA is available.");
+}
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (!buildScript.includes("404.html") || !buildScript.includes("notFoundPage")) failures.push("Build must generate a custom 404 page.");
 if (!buildScript.includes("noindex,follow")) failures.push("404 page must be marked noindex.");
@@ -303,6 +306,9 @@ if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must ca
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
 if (!headers.includes("/feed.json")) failures.push("Cloudflare headers must cache feed.json.");
 if (!headers.includes("/opensearch.xml")) failures.push("Cloudflare headers must cache opensearch.xml.");
+if (!/\/src\/\*\s+Cache-Control: public, max-age=31536000, immutable/s.test(headers)) {
+  failures.push("Cloudflare headers must cache versioned src assets as immutable.");
+}
 if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
   failures.push("Cloudflare script-src must not allow unsafe-inline.");
 }

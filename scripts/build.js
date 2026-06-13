@@ -20,9 +20,31 @@ const site = {
   ...siteConfig,
   baseUrl: normalizeBaseUrl(process.env.SITE_URL || siteConfig.baseUrl)
 };
-const assetVersion = encodeURIComponent(
-  (process.env.CF_PAGES_COMMIT_SHA || siteConfig.assetVersion || "local").slice(0, 12)
-);
+
+async function hashDirectory(dir) {
+  const hash = crypto.createHash("sha1");
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+    const target = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      hash.update(`dir:${entry.name}\n`);
+      hash.update(await hashDirectory(target));
+    } else if (entry.isFile()) {
+      hash.update(`file:${entry.name}\n`);
+      hash.update(await readFile(target));
+      hash.update("\n");
+    }
+  }
+  return hash.digest("hex");
+}
+
+async function resolveAssetVersion() {
+  const explicit = process.env.CF_PAGES_COMMIT_SHA || siteConfig.assetVersion;
+  if (explicit) return String(explicit).slice(0, 12);
+  return (await hashDirectory(path.join(root, "src"))).slice(0, 12);
+}
+
+const assetVersion = encodeURIComponent(await resolveAssetVersion());
 
 function assetUrl(pathname) {
   const separator = pathname.includes("?") ? "&" : "?";

@@ -709,6 +709,7 @@ async function main() {
     if (/\son(?:click|error|load|mouseover)=/i.test(html)) failures.push(`${relative} contains an inline event handler.`);
     if (/\sstyle="/i.test(html)) failures.push(`${relative} contains an inline style attribute.`);
     if (html.includes("@@INLINE_HTML_")) failures.push(`${relative} contains an unreplaced inline token.`);
+    if (/[?&]v=local\b/.test(html)) failures.push(`${relative} contains an unversioned local asset URL.`);
     if (html.includes("/assets/hero-game-tech.png")) failures.push(`${relative} references the retired hero PNG.`);
     if (/<a\b[^>]*\saria-hidden="true"/i.test(html)) failures.push(`${relative} contains an aria-hidden link.`);
     if (relative.startsWith("dist/posts/") && html.includes("/src/views.js")) {
