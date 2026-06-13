@@ -1,6 +1,7 @@
 const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
-  "Cache-Control": "no-store"
+  "Cache-Control": "no-store",
+  "X-Content-Type-Options": "nosniff"
 };
 
 const CREATE_TABLE_SQL = `
@@ -35,6 +36,22 @@ function parseTop(request) {
   const url = new URL(request.url);
   const top = Number.parseInt(url.searchParams.get("top") || "0", 10);
   return Number.isFinite(top) ? Math.min(Math.max(top, 0), 20) : 0;
+}
+
+function isSameOriginRequest(request) {
+  const origin = request.headers.get("Origin");
+  if (!origin) return true;
+
+  try {
+    return new URL(origin).host === new URL(request.url).host;
+  } catch {
+    return false;
+  }
+}
+
+function isJsonRequest(request) {
+  const contentType = request.headers.get("Content-Type") || "";
+  return contentType.toLowerCase().split(";")[0].trim() === "application/json";
 }
 
 function getDatabase(context) {
@@ -89,12 +106,18 @@ export async function onRequestGet(context) {
 }
 
 export async function onRequestPost(context) {
+  if (!isSameOriginRequest(context.request)) {
+    return json({ error: "Cross-origin view updates are not allowed." }, 403);
+  }
+  if (!isJsonRequest(context.request)) {
+    return json({ error: "Expected application/json request body." }, 415);
+  }
+
   const db = getDatabase(context);
   if (!db) return json({ error: "BLOG_DB binding is not configured." }, 503);
 
-  const url = new URL(context.request.url);
   const body = await context.request.json().catch(() => ({}));
-  const slug = sanitizeSlug(body.slug || url.searchParams.get("slug"));
+  const slug = sanitizeSlug(body.slug);
   if (!slug) return json({ error: "Invalid post slug." }, 400);
 
   await ensureSchema(db);

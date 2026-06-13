@@ -48,6 +48,16 @@ BLOG_DB
 npx wrangler d1 execute soloblog --file=migrations/0001_post_views.sql --remote
 ```
 
+阅读量写入接口只接受同源 `application/json` POST，请求体格式是：
+
+```json
+{
+  "slug": "render-optimization-checklist"
+}
+```
+
+不再接受 URL 查询参数里的 `slug` 写入，避免外站用普通表单请求刷阅读数。
+
 ### 本地预览
 
 `npm run preview` 只是静态预览，不会运行 Cloudflare Functions，所以本地看不到真实阅读量。

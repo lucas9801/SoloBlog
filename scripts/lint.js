@@ -28,12 +28,13 @@ for (const file of requiredFiles) {
   });
 }
 
-const [site, manifest, css, articleScript, searchScript, buildScript, headers, packageConfig, wranglerConfig, socialImageStats] = await Promise.all([
+const [site, manifest, css, articleScript, searchScript, viewsFunction, buildScript, headers, packageConfig, wranglerConfig, socialImageStats] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
   readFile(path.join(root, "src/article.js"), "utf8"),
   readFile(path.join(root, "src/search.js"), "utf8"),
+  readFile(path.join(root, "functions/api/views.js"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
@@ -186,6 +187,24 @@ if (!searchScript.includes("searchFacets") || !searchScript.includes("data-facet
 }
 if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
   failures.push("Search page must provide clear/reset controls.");
+}
+if (!viewsFunction.includes("isSameOriginRequest") || !viewsFunction.includes("isJsonRequest")) {
+  failures.push("Views API must reject cross-origin and non-JSON write requests.");
+}
+if (viewsFunction.includes("body.slug ||")) {
+  failures.push("Views API POST must not accept slug from query parameters.");
+}
+if (!viewsFunction.includes('"X-Content-Type-Options": "nosniff"')) {
+  failures.push("Views API JSON responses must set X-Content-Type-Options.");
+}
+for (const requiredHeader of [
+  "Content-Security-Policy",
+  "Strict-Transport-Security",
+  "X-Frame-Options: DENY",
+  "frame-src https://giscus.app",
+  "frame-ancestors 'none'"
+]) {
+  if (!headers.includes(requiredHeader)) failures.push(`Cloudflare headers must include ${requiredHeader}.`);
 }
 if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
