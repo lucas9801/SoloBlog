@@ -258,7 +258,7 @@ async function main() {
     throw new Error("dist/ does not exist. Run npm run build first.");
   }
 
-  const requiredFiles = ["404.html", "_headers", "rss.xml", "sitemap.xml", "search-index.json"];
+  const requiredFiles = ["404.html", "_headers", "robots.txt", "rss.xml", "sitemap.xml", "search-index.json"];
   for (const file of requiredFiles) {
     if (!(await exists(path.join(dist, file)))) failures.push(`Missing dist/${file}`);
   }
@@ -278,6 +278,13 @@ async function main() {
     .then(JSON.parse)
     .catch(() => null);
   await checkSearchIndex(searchIndex);
+
+  const robots = await readFile(path.join(dist, "robots.txt"), "utf8").catch(() => "");
+  const expectedSitemap = `Sitemap: ${new URL("/sitemap.xml", absoluteSiteRoot).toString()}`;
+  if (!robots.includes("User-agent: *")) failures.push("dist/robots.txt must include a default user-agent rule.");
+  if (!robots.includes("Allow: /")) failures.push("dist/robots.txt must allow the site root.");
+  if (!robots.includes(expectedSitemap)) failures.push(`dist/robots.txt must include ${expectedSitemap}.`);
+  if (/pages\.dev/i.test(robots)) failures.push("dist/robots.txt must not contain a pages.dev URL.");
 
   const rss = await readFile(path.join(dist, "rss.xml"), "utf8").catch(() => "");
   await checkRss(rss);

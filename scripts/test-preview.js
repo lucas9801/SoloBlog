@@ -99,6 +99,21 @@ try {
   assert.equal(response.status, 200);
   assert.match(await response.text(), /全部文章|文章索引/);
 
+  response = await request(baseUrl, "/rss.xml");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") || "", /application\/xml/);
+  assert.match(await response.text(), /<rss\b/);
+
+  response = await request(baseUrl, "/sitemap.xml");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") || "", /application\/xml/);
+  assert.match(await response.text(), /<urlset\b/);
+
+  response = await request(baseUrl, "/robots.txt");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") || "", /text\/plain/);
+  assert.match(await response.text(), /Sitemap: https:\/\/blog\.solus\.games\/sitemap\.xml/);
+
   response = await request(baseUrl, "/", { method: "HEAD" });
   assert.equal(response.status, 200);
   assert.equal(await response.text(), "");
