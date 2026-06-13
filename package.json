@@ -12,6 +12,7 @@
     "check:all": "node scripts/check-all.js",
     "check:output": "node scripts/check-output.js",
     "check:layout": "node scripts/check-layout.js",
+    "test:build": "node scripts/test-build.js",
     "test:new-post": "node scripts/test-new-post.js",
     "test:preview": "node scripts/test-preview.js",
     "test:views": "node scripts/test-views.js",

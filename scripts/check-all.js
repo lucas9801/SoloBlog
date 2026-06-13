@@ -99,7 +99,7 @@ async function runLayoutCheck() {
 }
 
 try {
-  for (const script of ["lint", "test:new-post", "test:views", "build", "test:preview", "check:output"]) {
+  for (const script of ["lint", "test:new-post", "test:build", "test:views", "build", "test:preview", "check:output"]) {
     const command = npmCommand(["run", script]);
     await run(command.command, command.args);
   }
