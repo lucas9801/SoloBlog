@@ -59,7 +59,8 @@ try {
   const brokenPost = (await readFile(postPath, "utf8"))
     .replace(/^date: .+$/m, `date: ${tomorrow}`)
     .replace(/^category: .+$/m, "category: 模板分类")
-    .replace(/^tags: .+$/m, "tags: [Unity, Unity, #Profiler]");
+    .replace(/^tags: .+$/m, "tags: [Unity, Unity, #Profiler]")
+    .replace(/\s*$/, "\n\n[bad](javascript:alert(1)) and [relative](notes/relative-path).\n");
   await writeFile(postPath, brokenPost, "utf8");
 
   result = await runLint(tempRoot);
@@ -68,6 +69,8 @@ try {
   assert.match(result.stderr, /category "模板分类" must be declared/);
   assert.match(result.stderr, /duplicates tag "Unity"/);
   assert.match(result.stderr, /tag "#Profiler" must not start with #/);
+  assert.match(result.stderr, /markdown link uses unsupported URL scheme "javascript"/);
+  assert.match(result.stderr, /markdown link uses a rootless relative URL/);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

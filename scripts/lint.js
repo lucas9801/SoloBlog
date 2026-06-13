@@ -135,10 +135,33 @@ async function existsLocalPath(urlPath) {
   return true;
 }
 
-function markdownAssetPaths(markdown) {
-  const paths = [];
-  for (const match of markdown.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)) paths.push(match[1]);
-  return paths.filter((item) => item.startsWith("/"));
+function markdownUrlReferences(markdown) {
+  return [...String(markdown || "").matchAll(/(!?)\[[^\]]*]\(([^)]+)\)/g)].map((match) => {
+    const raw = match[2].trim();
+    const url = raw.replace(/^<(.+)>$/, "$1").split(/\s+/)[0] || "";
+    return {
+      raw,
+      url,
+      isImage: match[1] === "!"
+    };
+  });
+}
+
+function markdownUrlIssue(ref) {
+  const url = String(ref.url || "").trim().replace(/[\u0000-\u001f\u007f]/g, "");
+  if (!url) return "has an empty URL.";
+  if (url.startsWith("//")) return `uses a protocol-relative URL: ${ref.raw}`;
+  if (url.startsWith("#")) return "";
+
+  const scheme = url.match(/^([a-z][a-z0-9+.-]*):/i)?.[1]?.toLowerCase();
+  if (scheme) {
+    if (scheme === "http" || scheme === "https") return "";
+    if (!ref.isImage && scheme === "mailto") return "";
+    return `uses unsupported URL scheme "${scheme}": ${ref.raw}`;
+  }
+
+  if (!url.startsWith("/")) return `uses a rootless relative URL: ${ref.raw}`;
+  return "";
 }
 
 function normalizedLabel(value) {
@@ -463,10 +486,18 @@ for (const post of posts) {
     seriesOrders.set(seriesOrderKey, file);
   }
 
-  for (const asset of markdownAssetPaths(body)) {
-    await existsLocalPath(asset).catch(() => {
-      failures.push(`${file} references missing asset: ${asset}`);
-    });
+  for (const ref of markdownUrlReferences(body)) {
+    const issue = markdownUrlIssue(ref);
+    if (issue) {
+      failures.push(`${file} markdown ${ref.isImage ? "image" : "link"} ${issue}`);
+      continue;
+    }
+
+    if (ref.url.startsWith("/")) {
+      await existsLocalPath(ref.url).catch(() => {
+        failures.push(`${file} references missing local target: ${ref.url}`);
+      });
+    }
   }
 
   if (status === "published") {

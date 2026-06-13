@@ -307,9 +307,10 @@ function safeMarkdownUrl(value, { allowMailto = false } = {}) {
     .trim()
     .replace(/[\u0000-\u001f\u007f]/g, "");
   if (!url || url.startsWith("//")) return "";
+  if (url.startsWith("#")) return url;
 
   const scheme = url.match(/^([a-z][a-z0-9+.-]*):/i)?.[1]?.toLowerCase();
-  if (!scheme) return url;
+  if (!scheme) return url.startsWith("/") ? url : "";
   if (scheme === "http" || scheme === "https") return url;
   if (scheme === "mailto" && allowMailto) return url;
   return "";
