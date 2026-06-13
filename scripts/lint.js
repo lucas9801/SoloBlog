@@ -17,6 +17,7 @@ const requiredFiles = [
   "scripts/check-output.js",
   "scripts/new-post.js",
   "scripts/test-build.js",
+  "scripts/test-lint.js",
   "scripts/test-new-post.js",
   "scripts/test-preview.js",
   "scripts/test-views.js",
@@ -126,6 +127,13 @@ function markdownAssetPaths(markdown) {
   const paths = [];
   for (const match of markdown.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)) paths.push(match[1]);
   return paths.filter((item) => item.startsWith("/"));
+}
+
+function normalizedLabel(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .trim()
+    .toLowerCase();
 }
 
 if (postFiles.length === 0) {
@@ -291,6 +299,9 @@ if (packageConfig.scripts?.["check:output"] !== "node scripts/check-output.js") 
 if (packageConfig.scripts?.["check:layout"] !== "node scripts/check-layout.js") {
   failures.push("package scripts must expose check:layout.");
 }
+if (packageConfig.scripts?.["test:lint"] !== "node scripts/test-lint.js") {
+  failures.push("package scripts must expose test:lint.");
+}
 if (packageConfig.scripts?.["test:build"] !== "node scripts/test-build.js") {
   failures.push("package scripts must expose test:build.");
 }
@@ -327,6 +338,7 @@ for (const [category, cover] of Object.entries(site.categoryCovers || {})) {
     failures.push(`category cover for ${category} does not exist: ${cover}`);
   });
 }
+const knownCategories = new Set(Object.keys(site.categoryCovers || {}));
 
 const slugs = new Map();
 const seriesOrders = new Map();
@@ -345,6 +357,27 @@ for (const post of posts) {
   }
   if (!["published", "draft"].includes(status)) failures.push(`${file} status must be published or draft.`);
   if (body.trim().length <= 20) failures.push(`${file} body is too short.`);
+
+  if (data.category && String(data.category).trim() !== data.category) {
+    failures.push(`${file} category must not have leading or trailing whitespace.`);
+  }
+  if (data.series && String(data.series).trim() !== data.series) {
+    failures.push(`${file} series must not have leading or trailing whitespace.`);
+  }
+  if (Array.isArray(data.tags)) {
+    const seenTags = new Map();
+    data.tags.forEach((tag, index) => {
+      const value = String(tag || "");
+      const normalized = normalizedLabel(value);
+      if (!normalized) failures.push(`${file} tag #${index + 1} must not be empty.`);
+      if (value.trim() !== value) failures.push(`${file} tag "${value}" must not have leading or trailing whitespace.`);
+      if (value.trim().startsWith("#")) failures.push(`${file} tag "${value}" must not start with #.`);
+      if (seenTags.has(normalized)) {
+        failures.push(`${file} duplicates tag "${value}" from tag #${seenTags.get(normalized)}.`);
+      }
+      seenTags.set(normalized, index + 1);
+    });
+  }
 
   if (slugs.has(slug)) failures.push(`${file} duplicates slug "${slug}" from ${slugs.get(slug)}.`);
   slugs.set(slug, file);
@@ -380,6 +413,9 @@ for (const post of posts) {
 
   if (status === "published") {
     if (!data.category || data.category === "未分类") failures.push(`${file} published posts need a real category.`);
+    if (data.category && !knownCategories.has(data.category)) {
+      failures.push(`${file} category "${data.category}" must be declared in content/site.json categoryCovers.`);
+    }
     if (!Array.isArray(data.tags) || data.tags.length === 0) failures.push(`${file} published posts need at least one tag.`);
     if (!data.summary || data.summary === "这里写一句文章摘要。" || data.summary.length < 12) {
       failures.push(`${file} published posts need a useful summary.`);
