@@ -1,6 +1,7 @@
-const viewNodes = Array.from(document.querySelectorAll("[data-view-slug]"));
-const rankingList = document.querySelector("[data-ranking-posts]");
-const rankingTitle = document.querySelector("[data-ranking-title]");
+const documentRef = typeof document === "undefined" ? null : document;
+const viewNodes = Array.from(documentRef?.querySelectorAll("[data-view-slug]") || []);
+const rankingList = documentRef?.querySelector("[data-ranking-posts]") || null;
+const rankingTitle = documentRef?.querySelector("[data-ranking-title]") || null;
 
 function uniqueSlugs(nodes) {
   return Array.from(new Set(nodes.map((node) => node.dataset.viewSlug).filter(Boolean)));
@@ -23,6 +24,16 @@ function escapeHtml(value = "") {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function formatDate(date) {
+  const value = new Date(date);
+  if (Number.isNaN(value.getTime())) return "";
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(value);
 }
 
 async function loadViews() {
@@ -50,16 +61,37 @@ function parseRankingPosts() {
   }
 }
 
+export function rankingItems(ranking, posts, limit = 5) {
+  const bySlug = new Map(posts.map((post) => [post.slug, post]));
+  const seenSlugs = new Set();
+  const ranked = ranking
+    .map((entry) => {
+      const post = bySlug.get(entry.slug);
+      if (!post || seenSlugs.has(entry.slug)) return null;
+      seenSlugs.add(entry.slug);
+      return {
+        ...post,
+        ranked: true,
+        views: Math.max(0, Number.parseInt(entry.views, 10) || 0)
+      };
+    })
+    .filter(Boolean);
+  const fallback = posts
+    .filter((post) => post.slug && !seenSlugs.has(post.slug))
+    .map((post) => ({
+      ...post,
+      ranked: false,
+      views: 0
+    }));
+
+  return [...ranked, ...fallback]
+    .filter((item) => item.slug && item.title && item.url)
+    .slice(0, limit);
+}
+
 function renderRanking(ranking, posts) {
   if (!rankingList) return;
-  const bySlug = new Map(posts.map((post) => [post.slug, post]));
-  const items = ranking
-    .map((entry) => ({
-      ...bySlug.get(entry.slug),
-      views: Math.max(0, Number.parseInt(entry.views, 10) || 0)
-    }))
-    .filter((item) => item.slug && item.title && item.url)
-    .slice(0, 5);
+  const items = rankingItems(ranking, posts, 5);
 
   if (items.length === 0) return;
 
@@ -67,8 +99,12 @@ function renderRanking(ranking, posts) {
   if (rankingTitle) rankingTitle.textContent = "阅读排行";
   rankingList.innerHTML = items
     .map(
-      (item, index) =>
-        `<a class="ranking-link" href="${escapeHtml(item.url)}"><b>${index + 1}</b><span>${escapeHtml(item.title)}</span><small>阅读 ${formatter.format(item.views)}</small></a>`
+      (item, index) => {
+        const meta = item.ranked
+          ? `阅读 ${formatter.format(item.views)}`
+          : [formatDate(item.date), escapeHtml(item.category || "近期文章")].filter(Boolean).join(" · ");
+        return `<a class="ranking-link" href="${escapeHtml(item.url)}"><b>${index + 1}</b><span>${escapeHtml(item.title)}</span><small>${meta}</small></a>`;
+      }
     )
     .join("");
 }
@@ -86,8 +122,10 @@ async function loadRanking() {
   renderRanking(data.ranking || [], posts);
 }
 
-loadViews().catch(() => {
-  for (const node of viewNodes) node.hidden = true;
-});
+if (documentRef) {
+  loadViews().catch(() => {
+    for (const node of viewNodes) node.hidden = true;
+  });
 
-loadRanking().catch(() => {});
+  loadRanking().catch(() => {});
+}

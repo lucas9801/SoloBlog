@@ -522,6 +522,15 @@ if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.include
 if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("rankingTitle.textContent = \"阅读排行\"")) {
   failures.push("Reading ranking must clearly distinguish fallback recent posts from loaded view rankings.");
 }
+if (
+  !viewsClientScript.includes("function rankingItems") ||
+  !viewsClientScript.includes("seenSlugs") ||
+  !viewsClientScript.includes("ranked: false") ||
+  !buildScript.includes("category: post.category") ||
+  !buildScript.includes("date: post.date")
+) {
+  failures.push("Reading ranking must backfill sparse view rankings with recent posts.");
+}
 if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
   failures.push("Home page must not keep template-like English kicker labels.");
 }

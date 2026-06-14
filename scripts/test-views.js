@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { onRequestGet, onRequestPost } from "../functions/api/views.js";
+import { rankingItems } from "../src/views.js";
 
 class MockDatabase {
   constructor() {
@@ -126,6 +127,30 @@ async function readJson(response) {
     body: await response.json()
   };
 }
+
+const rankingPosts = [
+  { slug: "start-here", title: "Start", url: "/posts/start-here/", date: "2026-06-04", category: "随笔" },
+  { slug: "render-optimization-checklist", title: "Render", url: "/posts/render/", date: "2026-06-03", category: "图形渲染" },
+  { slug: "game-team-toolchain", title: "Tools", url: "/posts/tools/", date: "2026-06-02", category: "工具链" },
+  { slug: "unity-performance-start", title: "Unity", url: "/posts/unity/", date: "2026-06-01", category: "Unity" }
+];
+const sparseRanking = rankingItems(
+  [
+    { slug: "render-optimization-checklist", views: "7" },
+    { slug: "unknown-post", views: 99 },
+    { slug: "render-optimization-checklist", views: 9 }
+  ],
+  rankingPosts,
+  3
+);
+assert.deepEqual(
+  sparseRanking.map(({ slug, ranked, views, category }) => ({ slug, ranked, views, category })),
+  [
+    { slug: "render-optimization-checklist", ranked: true, views: 7, category: "图形渲染" },
+    { slug: "start-here", ranked: false, views: 0, category: "随笔" },
+    { slug: "game-team-toolchain", ranked: false, views: 0, category: "工具链" }
+  ]
+);
 
 const db = new MockDatabase();
 db.events.add("old-post:test-key:2000-01-01");

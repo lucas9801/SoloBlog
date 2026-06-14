@@ -933,7 +933,9 @@ function rankingPayload(posts) {
       posts.map((post) => ({
         slug: post.slug,
         title: post.title,
-        url: post.url
+        url: post.url,
+        date: post.date,
+        category: post.category
       }))
     )
   );
