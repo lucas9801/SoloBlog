@@ -428,7 +428,7 @@ content/site.json
 {
   "title": "SOLUS Dev Notes",
   "brand": "SOLUS",
-  "tagline": "Game Development Archive",
+  "tagline": "技术档案",
   "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
   "baseUrl": "https://blog.solus.games/",
   "socialImage": "/assets/og/solus-og.png"

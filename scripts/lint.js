@@ -58,7 +58,9 @@ const [
   packageConfig,
   wranglerConfig,
   socialImageStats,
-  readme
+  readme,
+  blogOperationsDocs,
+  cloudflareDocs
 ] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
@@ -77,7 +79,9 @@ const [
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
   stat(path.join(root, "assets/og/solus-og.png")),
-  readFile(path.join(root, "README.md"), "utf8")
+  readFile(path.join(root, "README.md"), "utf8"),
+  readFile(path.join(root, "docs/blog-operations.md"), "utf8"),
+  readFile(path.join(root, "docs/cloudflare-pages.md"), "utf8")
 ]);
 
 const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file) =>
@@ -401,6 +405,12 @@ if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?
 }
 if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog")) {
   failures.push("Project identity must not keep initial template naming.");
+}
+if (buildScript.includes("SOLUS ARCHIVE") || buildScript.includes('placeholder="搜索文章、标签"')) {
+  failures.push("Visible generated surfaces must use current SOLUS wording.");
+}
+if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
+  failures.push("Project docs must not keep initial English template wording.");
 }
 if (buildScript.includes('<span class="section-kicker">About</span>')) {
   failures.push("About page must not expose an English template kicker.");

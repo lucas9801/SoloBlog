@@ -280,7 +280,7 @@ async function generatedPostCover(post) {
   <g>
     <rect x="64" y="54" width="${Math.max(118, Array.from(post.category).length * 18 + 52)}" height="38" rx="6" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
     <text x="84" y="79" fill="${colors[4]}" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)}</text>
-    <text x="64" y="618" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
+    <text x="64" y="618" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
     <text x="1136" y="618" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">${escapeHtml(dateLabel)}</text>
   </g>
 </svg>`;
@@ -821,7 +821,7 @@ function pageLayout({
       <form class="site-search" action="/search/" method="get">
         <label>
           <span class="sr-only">搜索文章</span>
-          <input name="q" type="search" placeholder="搜索文章、标签" />
+          <input name="q" type="search" placeholder="搜索文章、分类、标签" />
         </label>
         <button type="submit" aria-label="搜索">⌕</button>
       </form>
