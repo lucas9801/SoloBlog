@@ -1130,8 +1130,13 @@ function archiveFilters(
       ${archiveFilterSelect("分类", "category", categoryOptions)}
       <button class="secondary-button" type="submit">应用筛选</button>
     </form>
-    ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
-    ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
+    <details class="archive-filter-links">
+      <summary>快捷筛选</summary>
+      <div class="archive-filter-link-panel">
+        ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
+        ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
+      </div>
+    </details>
   </div>`;
 }
 
