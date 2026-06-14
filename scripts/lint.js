@@ -396,6 +396,12 @@ if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("
 if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
   failures.push("Home page must not keep template-like English kicker labels.");
 }
+if (!buildScript.includes("data-copy-rss-status") || !siteScript.includes("RSS 链接已复制")) {
+  failures.push("RSS copy action must expose a clear copied state.");
+}
+if (buildScript.includes(">Sitemap<")) {
+  failures.push("Visible footer sitemap link should be localized.");
+}
 if (
   !viewsFunction.includes("post_view_events") ||
   !viewsFunction.includes("INSERT OR IGNORE INTO post_view_events") ||

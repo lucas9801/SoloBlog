@@ -91,9 +91,19 @@ document.addEventListener("click", async (event) => {
   try {
     await navigator.clipboard.writeText(url);
     const previous = button.textContent;
+    const previousLabel = button.getAttribute("aria-label");
+    const status = button.parentElement?.querySelector("[data-copy-rss-status]");
     button.textContent = "已复制";
+    button.setAttribute("aria-label", "RSS 链接已复制");
+    if (status) status.textContent = "RSS 链接已复制";
     window.setTimeout(() => {
       button.textContent = previous;
+      if (previousLabel) {
+        button.setAttribute("aria-label", previousLabel);
+      } else {
+        button.removeAttribute("aria-label");
+      }
+      if (status) status.textContent = "";
     }, 1600);
   } catch {
     window.location.href = url;

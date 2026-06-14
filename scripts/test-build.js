@@ -160,6 +160,8 @@ try {
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<h2 data-ranking-title>近期文章<\/h2>/);
   assert.match(home, /data-ranking-posts=/);
+  assert.match(home, /data-copy-rss-status/);
+  assert.match(home, /站点地图/);
   assert.doesNotMatch(home, /Recommended|Latest Posts|Technical Archive/);
   assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);

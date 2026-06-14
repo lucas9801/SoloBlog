@@ -831,7 +831,7 @@ function pageLayout({
     </header>
     ${bodyWithContentTarget}
     <footer class="site-footer">
-      <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">Sitemap</a></p>
+      <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">站点地图</a></p>
     </footer>
     <script type="module" src="${assetUrl("/src/site.js")}"></script>
     ${includeViewsScript ? `<script type="module" src="${assetUrl("/src/views.js")}"></script>` : ""}
@@ -976,6 +976,7 @@ function sidebar(posts, categories, tags) {
       <div class="subscribe-actions">
         <a class="button-link" href="${site.subscribe.rss}">打开 RSS</a>
         <button class="secondary-button" type="button" data-copy-rss="${escapeAttr(absoluteUrl(site.subscribe.rss))}">复制链接</button>
+        <span class="sr-only" aria-live="polite" data-copy-rss-status></span>
       </div>
     </section>
   </aside>`;
