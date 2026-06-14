@@ -14,6 +14,7 @@
     "check:layout": "node scripts/check-layout.js",
     "test:lint": "node scripts/test-lint.js",
     "test:build": "node scripts/test-build.js",
+    "test:theme": "node scripts/test-theme-init.js",
     "test:new-post": "node scripts/test-new-post.js",
     "test:preview": "node scripts/test-preview.js",
     "test:views": "node scripts/test-views.js",

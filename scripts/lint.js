@@ -19,6 +19,7 @@ const requiredFiles = [
   "scripts/new-post.js",
   "scripts/preview.js",
   "scripts/test-build.js",
+  "scripts/test-theme-init.js",
   "scripts/test-lint.js",
   "scripts/test-new-post.js",
   "scripts/test-preview.js",
@@ -46,6 +47,7 @@ const [
   site,
   manifest,
   css,
+  themeInitScript,
   siteScript,
   articleScript,
   searchScript,
@@ -57,6 +59,7 @@ const [
   newPostScript,
   previewScript,
   testPreviewScript,
+  checkAllScript,
   checkLayoutScript,
   checkOutputScript,
   headers,
@@ -73,6 +76,7 @@ const [
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
   readFile(path.join(root, "src/styles.css"), "utf8"),
+  readFile(path.join(root, "src/theme-init.js"), "utf8"),
   readFile(path.join(root, "src/site.js"), "utf8"),
   readFile(path.join(root, "src/article.js"), "utf8"),
   readFile(path.join(root, "src/search.js"), "utf8"),
@@ -84,6 +88,7 @@ const [
   readFile(path.join(root, "scripts/new-post.js"), "utf8"),
   readFile(path.join(root, "scripts/preview.js"), "utf8"),
   readFile(path.join(root, "scripts/test-preview.js"), "utf8"),
+  readFile(path.join(root, "scripts/check-all.js"), "utf8"),
   readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
@@ -340,6 +345,9 @@ if (!checkLayoutScript.includes("startPreviewIfNeeded") || !checkLayoutScript.in
 if (!checkLayoutScript.includes("footer is floating above the viewport bottom")) {
   failures.push("Layout checks must prevent short-page footers from floating mid-viewport.");
 }
+if (!checkAllScript.includes("scripts/test-theme-init.js")) {
+  failures.push("check:all must run theme initializer tests.");
+}
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
 }
@@ -395,6 +403,9 @@ if (!buildScript.includes('rel="search"') || !buildScript.includes("application/
   failures.push("Page head must expose OpenSearch discovery.");
 }
 if (!buildScript.includes("/src/theme-init.js")) failures.push("Page head must load the external theme initializer.");
+if (!themeInitScript.includes("function storedTheme") || !themeInitScript.includes("function prefersDarkTheme") || !themeInitScript.includes("window.matchMedia?.")) {
+  failures.push("Theme initializer must still honor system color scheme when localStorage is unavailable.");
+}
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
 if (!/function postPage[\s\S]*current:\s*"\/archive\/"/.test(buildScript)) {
   failures.push("Article pages must keep the archive navigation item active.");
@@ -584,6 +595,9 @@ if (packageConfig.scripts?.["test:lint"] !== "node scripts/test-lint.js") {
 }
 if (packageConfig.scripts?.["test:build"] !== "node scripts/test-build.js") {
   failures.push("package scripts must expose test:build.");
+}
+if (packageConfig.scripts?.["test:theme"] !== "node scripts/test-theme-init.js") {
+  failures.push("package scripts must expose test:theme.");
 }
 if (packageConfig.scripts?.["test:new-post"] !== "node scripts/test-new-post.js") {
   failures.push("package scripts must expose test:new-post.");

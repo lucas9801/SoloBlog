@@ -94,6 +94,7 @@ try {
   for (const script of [
     "scripts/lint.js",
     "scripts/test-lint.js",
+    "scripts/test-theme-init.js",
     "scripts/test-new-post.js",
     "scripts/test-build.js",
     "scripts/test-views.js",
