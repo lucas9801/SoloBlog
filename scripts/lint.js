@@ -393,6 +393,9 @@ if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.include
 if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("rankingTitle.textContent = \"阅读排行\"")) {
   failures.push("Reading ranking must clearly distinguish fallback recent posts from loaded view rankings.");
 }
+if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
+  failures.push("Home page must not keep template-like English kicker labels.");
+}
 if (
   !viewsFunction.includes("post_view_events") ||
   !viewsFunction.includes("INSERT OR IGNORE INTO post_view_events") ||

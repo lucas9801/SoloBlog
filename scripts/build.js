@@ -1209,7 +1209,6 @@ function homePage(posts, categories, tags) {
         ${recommended.length ? `<section class="section-block recommended-section">
           <div class="section-head">
             <div>
-              <span class="section-kicker">Recommended</span>
               <h2>推荐阅读</h2>
             </div>
           </div>
@@ -1220,7 +1219,6 @@ function homePage(posts, categories, tags) {
         ${latest.length ? `<section id="latest-posts" class="section-block">
           <div class="section-head">
             <div>
-              <span class="section-kicker">Latest Posts</span>
               <h2>最新文章</h2>
             </div>
             <a href="/archive/">全部文章 →</a>
