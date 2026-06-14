@@ -32,7 +32,7 @@ async function copyFixtureProject(target) {
   for (const dir of ["content", "src", "scripts", "public", "assets", "docs", "functions", "migrations"]) {
     await cp(path.join(root, dir), path.join(target, dir), { recursive: true });
   }
-  for (const file of ["package.json", "wrangler.toml", ".node-version", "README.md"]) {
+  for (const file of ["package.json", "wrangler.toml", ".node-version", "README.md", "index.html"]) {
     await cp(path.join(root, file), path.join(target, file));
   }
 }
@@ -49,6 +49,25 @@ try {
 
   let result = await runLint(tempRoot);
   assert.equal(result.code, 0, result.stderr || result.stdout);
+
+  const rootIndexPath = path.join(tempRoot, "index.html");
+  const rootIndex = await readFile(rootIndexPath, "utf8");
+  await writeFile(rootIndexPath, rootIndex.replace("SOLUS Dev Notes", "My Game Dev Blog"), "utf8");
+  result = await runLint(tempRoot);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /initial template naming/);
+  await writeFile(rootIndexPath, rootIndex, "utf8");
+
+  const coversDir = path.join(tempRoot, "assets", "posts");
+  const firstCover = (await readdir(coversDir)).find((file) => file.endsWith(".svg"));
+  assert.ok(firstCover, "fixture should include at least one post cover");
+  const coverPath = path.join(coversDir, firstCover);
+  const cover = await readFile(coverPath, "utf8");
+  await writeFile(coverPath, cover.replace("SOLUS DEV NOTES", "SOLUS ARCHIVE"), "utf8");
+  result = await runLint(tempRoot);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /current SOLUS wording/);
+  await writeFile(coverPath, cover, "utf8");
 
   const postsDir = path.join(tempRoot, "content", "posts");
   const firstPost = (await readdir(postsDir)).find((file) => file.endsWith(".md"));

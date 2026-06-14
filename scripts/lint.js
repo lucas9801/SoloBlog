@@ -5,6 +5,7 @@ const root = process.cwd();
 const requiredFiles = [
   "content/site.json",
   "content/about.md",
+  "index.html",
   "src/styles.css",
   "src/site.js",
   "src/article.js",
@@ -60,6 +61,7 @@ const [
   wranglerConfig,
   socialImageSvg,
   socialImageStats,
+  rootIndex,
   readme,
   blogOperationsDocs,
   cloudflareDocs
@@ -83,6 +85,7 @@ const [
   readFile(path.join(root, "wrangler.toml"), "utf8"),
   readFile(path.join(root, "assets/og/solus-og.svg"), "utf8"),
   stat(path.join(root, "assets/og/solus-og.png")),
+  readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "README.md"), "utf8"),
   readFile(path.join(root, "docs/blog-operations.md"), "utf8"),
   readFile(path.join(root, "docs/cloudflare-pages.md"), "utf8")
@@ -90,6 +93,12 @@ const [
 
 const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file) =>
   file.endsWith(".md")
+);
+const postCoverSvgFiles = (await readdir(path.join(root, "assets/posts"))).filter((file) =>
+  file.endsWith(".svg")
+);
+const postCoverSvgs = await Promise.all(
+  postCoverSvgFiles.map((file) => readFile(path.join(root, "assets/posts", file), "utf8"))
 );
 
 const failures = [];
@@ -453,7 +462,7 @@ if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("
 if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
   failures.push("Home page must not keep template-like English kicker labels.");
 }
-if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog")) {
+if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog") || rootIndex.includes("My Game Dev Blog")) {
   failures.push("Project identity must not keep initial template naming.");
 }
 if (/Game Development Archive|Technical Archive/i.test(socialImageSvg)) {
@@ -462,7 +471,11 @@ if (/Game Development Archive|Technical Archive/i.test(socialImageSvg)) {
 if (!socialImageSvg.includes("SOLUS Dev Notes") || !socialImageSvg.includes("游戏开发 / 图形渲染 / 工程实践")) {
   failures.push("Open Graph source image must carry the current SOLUS technical archive identity.");
 }
-if (buildScript.includes("SOLUS ARCHIVE") || buildScript.includes('placeholder="搜索文章、标签"')) {
+if (
+  buildScript.includes("SOLUS ARCHIVE") ||
+  postCoverSvgs.some((source) => source.includes("SOLUS ARCHIVE")) ||
+  buildScript.includes('placeholder="搜索文章、标签"')
+) {
   failures.push("Visible generated surfaces must use current SOLUS wording.");
 }
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {

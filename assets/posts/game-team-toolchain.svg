@@ -51,7 +51,7 @@
   <g>
     <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#2dd4bf" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#eefcff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">工具链</text>
-    <text x="64" y="618" fill="#eefcff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS ARCHIVE</text>
+    <text x="64" y="618" fill="#eefcff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
     <text x="1136" y="618" text-anchor="end" fill="#eefcff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
   </g>
 </svg>
