@@ -685,6 +685,17 @@ function checkSitemapCoverage(sitemap, searchIndex) {
   }
 }
 
+function checkSitemapHtmlCoverage(sitemap, files) {
+  const locs = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
+  for (const file of files) {
+    const relative = displayPath(file);
+    if (relative === "dist/404.html") continue;
+
+    const url = new URL(pagePathFromFile(file), absoluteSiteRoot).toString();
+    if (!locs.has(url)) failures.push(`dist/sitemap.xml does not include public HTML page: ${relative}`);
+  }
+}
+
 async function checkRss(rss) {
   if (!rss.includes('xmlns:content="http://purl.org/rss/1.0/modules/content/"')) {
     failures.push("dist/rss.xml must declare the content namespace.");
@@ -979,6 +990,7 @@ async function main() {
   checkSitemapCoverage(sitemap, searchIndex);
 
   const files = await htmlFiles();
+  checkSitemapHtmlCoverage(sitemap, files);
   for (const file of files) {
     const html = await readFile(file, "utf8");
     const relative = displayPath(file);

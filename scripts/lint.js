@@ -356,6 +356,13 @@ if (
   failures.push("Output checks must ensure sitemap covers generated public indexes.");
 }
 if (
+  !checkOutputScript.includes("function checkSitemapHtmlCoverage") ||
+  !checkOutputScript.includes("does not include public HTML page") ||
+  !checkOutputScript.includes('relative === "dist/404.html"')
+) {
+  failures.push("Output checks must ensure sitemap covers all public HTML output.");
+}
+if (
   !checkOutputScript.includes("references missing category archive") ||
   !checkOutputScript.includes("references missing tag archive") ||
   !checkOutputScript.includes("references missing series archive")
