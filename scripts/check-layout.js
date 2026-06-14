@@ -481,6 +481,21 @@ async function checkViewport(viewport, page) {
             expression: `(async () => {
               const failures = [];
               const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+              const waitFor = async (predicate, timeoutMs = 4000) => {
+                const started = Date.now();
+                while (Date.now() - started < timeoutMs) {
+                  if (predicate()) return true;
+                  await wait(80);
+                }
+                return false;
+              };
+              const instantScrollTo = async (top) => {
+                const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+                document.documentElement.style.scrollBehavior = "auto";
+                scrollTo(0, top);
+                await waitFor(() => Math.abs(window.scrollY - top) < 3, 2500);
+                document.documentElement.style.scrollBehavior = previousScrollBehavior;
+              };
               const percentNode = document.querySelector("#readingPercent");
               const remainingNode = document.querySelector("#readingRemaining");
               const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
@@ -506,16 +521,17 @@ async function checkViewport(viewport, page) {
               }
 
               const readPercent = () => Number.parseInt(percentNode.textContent || "0", 10) || 0;
-              scrollTo(0, 0);
+              await instantScrollTo(0);
               await wait(180);
               const topPercent = readPercent();
               const topActive = document.querySelector("[data-toc-target].active")?.dataset.tocTarget || "";
               if (topPercent > 20) failures.push("reading progress starts too high");
+              if (window.scrollY > 2) failures.push("article page did not settle at the top before the top progress check");
               if (tocLinks.length > 0 && topActive !== tocLinks[0].dataset.tocTarget) {
                 failures.push("first toc entry is not active near the top");
               }
 
-              scrollTo(0, document.documentElement.scrollHeight);
+              await instantScrollTo(Math.max(0, document.documentElement.scrollHeight - window.innerHeight));
               await wait(260);
               const bottomPercent = readPercent();
               const bottomActive = document.querySelector("[data-toc-target].active")?.dataset.tocTarget || "";
@@ -525,8 +541,9 @@ async function checkViewport(viewport, page) {
               if (!remainingNode.textContent) failures.push("reading remaining text is empty");
               if (lastToc && bottomActive !== lastToc) failures.push("last toc entry is not active near the bottom");
 
-              scrollTo(0, 0);
-              await wait(100);
+              await instantScrollTo(0);
+              await wait(140);
+              if (window.scrollY > 2) failures.push("article page did not return to the top before screenshot capture");
               return failures;
             })()`
           })

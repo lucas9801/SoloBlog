@@ -190,6 +190,12 @@ if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
+if (!css.includes("scroll-padding-top") || !css.includes("scroll-margin-top")) {
+  failures.push("Article anchors must account for the sticky header on desktop and mobile.");
+}
+if (!/\.article-content h2\s*\{[\s\S]*?font-weight:\s*750;/.test(css)) {
+  failures.push("Article h2 headings should use a restrained 750 weight for long-form reading.");
+}
 if (!buildScript.includes("search-index.json")) failures.push("Build must generate search index.");
 if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
 if (!buildScript.includes("feed.json") || !buildScript.includes("jsonFeed")) {
