@@ -635,6 +635,63 @@ async function checkViewport(viewport, page) {
         archiveNavigationFailures.push("archive page was not restored before screenshot capture");
       }
     }
+    const headerSearchFailures = [];
+    if (page.pathname === "/" && viewport.name === "desktop") {
+      const submitHeaderSearch = async (query) => {
+        const submitted = await send("Runtime.evaluate", {
+          returnByValue: true,
+          expression: `(() => {
+            const form = document.querySelector(".site-search");
+            const input = form?.querySelector('input[name="q"]');
+            if (!(form instanceof HTMLFormElement) || !(input instanceof HTMLInputElement)) return false;
+            input.value = ${JSON.stringify(query)};
+            form.requestSubmit();
+            return true;
+          })()`
+        });
+        return Boolean(submitted.result.value);
+      };
+
+      if (!(await submitHeaderSearch("   "))) {
+        headerSearchFailures.push("header search form is missing");
+      } else {
+        if (!(await waitForPathname("/search/"))) {
+          headerSearchFailures.push("blank header search did not navigate to /search/");
+        } else {
+          const blankSearch = await send("Runtime.evaluate", {
+            returnByValue: true,
+            expression: "location.search"
+          });
+          if (blankSearch.result.value) {
+            headerSearchFailures.push("blank header search kept an empty query string");
+          }
+        }
+        await send("Page.navigate", { url: page.url });
+        if (!(await waitForPathname(page.pathname))) {
+          headerSearchFailures.push("home page was not restored after blank header search");
+        }
+        await wait(500);
+
+        if (await submitHeaderSearch("  Unity  ")) {
+          if (!(await waitForPathname("/search/"))) {
+            headerSearchFailures.push("trimmed header search did not navigate to /search/");
+          } else {
+            const submittedQuery = await send("Runtime.evaluate", {
+              returnByValue: true,
+              expression: "new URL(location.href).searchParams.get('q') || ''"
+            });
+            if (submittedQuery.result.value !== "Unity") {
+              headerSearchFailures.push("header search did not trim the submitted query");
+            }
+          }
+          await send("Page.navigate", { url: page.url });
+          if (!(await waitForPathname(page.pathname))) {
+            headerSearchFailures.push("home page was not restored after trimmed header search");
+          }
+          await wait(500);
+        }
+      }
+    }
     const articleRuntime =
       page.pathname.startsWith("/posts/")
         ? await send("Runtime.evaluate", {
@@ -715,6 +772,7 @@ async function checkViewport(viewport, page) {
       ...(searchRuntime.result.value || []),
       ...(archiveRuntime.result.value?.failures || archiveRuntime.result.value || []),
       ...archiveNavigationFailures,
+      ...headerSearchFailures,
       ...(articleRuntime.result.value || [])
     ];
 

@@ -128,6 +128,24 @@ window.addEventListener(
   { passive: true }
 );
 
+function siteSearchTarget(form) {
+  const input = form.querySelector('input[name="q"]');
+  const query = input instanceof HTMLInputElement ? input.value.trim() : "";
+  const target = new URL(form.getAttribute("action") || "/search/", window.location.origin);
+
+  target.search = "";
+  if (query) target.searchParams.set("q", query);
+  return `${target.pathname}${target.search}${target.hash}`;
+}
+
+for (const form of document.querySelectorAll(".site-search")) {
+  form.addEventListener("submit", (event) => {
+    if (!(form instanceof HTMLFormElement)) return;
+    event.preventDefault();
+    window.location.href = siteSearchTarget(form);
+  });
+}
+
 document.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-copy-rss]");
   if (!button) return;

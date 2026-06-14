@@ -540,6 +540,15 @@ if (
 ) {
   failures.push("Search page must separate live status text from the result list semantics.");
 }
+if (
+  !siteScript.includes("function siteSearchTarget") ||
+  !siteScript.includes("input[name=\"q\"]") ||
+  !siteScript.includes("target.searchParams.set(\"q\", query)") ||
+  !checkLayoutScript.includes("blank header search") ||
+  !checkLayoutScript.includes("header search did not trim the submitted query")
+) {
+  failures.push("Header search must normalize blank and whitespace-padded submissions.");
+}
 if (!viewsFunction.includes("isSameOriginRequest") || !viewsFunction.includes("isJsonRequest")) {
   failures.push("Views API must reject cross-origin and non-JSON write requests.");
 }
