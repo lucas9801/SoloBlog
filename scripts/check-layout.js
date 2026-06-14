@@ -315,10 +315,18 @@ async function checkViewport(viewport, page) {
               const failures = [];
               const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
               const header = document.querySelector(".site-header");
+              const hero = document.querySelector(".hero-inner");
               const toggle = document.querySelector("[data-theme-toggle]");
               if (!header) failures.push("site header is missing");
               if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
               if (failures.length > 0) return failures;
+
+              if (innerWidth <= 720 && hero) {
+                const heroHeight = Math.round(hero.getBoundingClientRect().height);
+                if (heroHeight > 286) {
+                  failures.push("mobile hero is too tall for an index-first home page");
+                }
+              }
 
               const originalTheme = document.documentElement.dataset.theme || "light";
               const expectedNext = originalTheme === "dark" ? "light" : "dark";

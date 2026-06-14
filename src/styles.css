@@ -2050,12 +2050,12 @@ pre {
   }
 
   .hero-section {
-    padding: 12px 12px 8px;
+    padding: 10px 12px 6px;
   }
 
   .hero-inner {
-    min-height: 300px;
-    padding: 22px 24px;
+    min-height: 268px;
+    padding: 18px 24px;
     grid-template-columns: 1fr;
     align-items: end;
   }
@@ -2068,16 +2068,23 @@ pre {
     top: auto;
     bottom: 0;
     width: 100%;
-    height: 72%;
+    height: 64%;
   }
 
   .hero-copy h1 {
-    font-size: 32px;
-    line-height: 1.08;
+    font-size: 30px;
+    line-height: 1.07;
   }
 
   .hero-copy > p:not(.eyebrow) {
-    font-size: 15px;
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.68;
+  }
+
+  .hero-actions {
+    margin-top: 16px;
+    gap: 8px;
   }
 
   .content-shell,
@@ -2245,6 +2252,7 @@ pre {
 @media (max-width: 420px) {
   .hero-actions {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .button-link,
