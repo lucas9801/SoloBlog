@@ -248,8 +248,12 @@ if (site.socialImage !== "/assets/og/solus-og.png") failures.push("site socialIm
 if (socialImageStats.size < 50000 || socialImageStats.size > 400000) {
   failures.push("Open Graph PNG should be a complete but reasonably small social card.");
 }
-if (css.includes("/assets/hero-game-tech.png") || searchScript.includes("/assets/hero-game-tech.png")) {
-  failures.push("Runtime fallbacks should not reference the retired large hero PNG.");
+if (
+  [css, searchScript, buildScript, readme, blogOperationsDocs, cloudflareDocs].some((source) =>
+    source.includes("/assets/hero-game-tech.png")
+  )
+) {
+  failures.push("Project sources should not reference the retired large hero PNG.");
 }
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
 if (!buildScript.includes("resolveAssetVersion") || !buildScript.includes("hashDirectory")) {
@@ -463,6 +467,9 @@ if (buildScript.includes("SOLUS ARCHIVE") || buildScript.includes('placeholder="
 }
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");
+}
+if (blogOperationsDocs.includes("分类页和默认封面会保持一致")) {
+  failures.push("Project docs must not claim category covers drive generated article covers.");
 }
 if (buildScript.includes('<span class="section-kicker">About</span>')) {
   failures.push("About page must not expose an English template kicker.");

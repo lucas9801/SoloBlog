@@ -257,7 +257,7 @@ Cocos
 随笔
 ```
 
-发布文章的分类必须在 `content/site.json` 的 `categoryCovers` 里声明。这样分类页和默认封面会保持一致；如果要新增分类，先在 `categoryCovers` 里加上分类名和对应封面。
+发布文章的分类必须在 `content/site.json` 的 `categoryCovers` 里声明。这里同时作为分类白名单和分类视觉资产登记；如果要新增分类，先在 `categoryCovers` 里加上分类名和对应封面。文章自己的封面优先使用 front matter 的 `cover`，没有设置时会按文章内容自动生成。
 
 ## 设置标签
 

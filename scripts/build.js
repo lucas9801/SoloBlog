@@ -728,15 +728,6 @@ function articleStructuredData(post, image) {
   ];
 }
 
-function categoryCover(category) {
-  return site.categoryCovers?.[category] || site.heroCover || "/assets/posts/start-here.svg";
-}
-
-function resolvePostCover(cover, category) {
-  if (!cover || cover === "/assets/hero-game-tech.png") return categoryCover(category);
-  return cover;
-}
-
 function coverImage(src, { className = "", alt = "", loading = "lazy", fetchPriority = "" } = {}) {
   const classAttr = className ? ` class="${escapeAttr(className)}"` : "";
   const loadingAttr = loading ? ` loading="${escapeAttr(loading)}"` : "";
@@ -1205,10 +1196,7 @@ async function loadPosts() {
     };
 
     const generatedCover = await existingGeneratedCover(slug, ["svg"]);
-    post.cover =
-      data.cover && data.cover !== "/assets/hero-game-tech.png"
-        ? resolvePostCover(data.cover, category)
-        : generatedCover || (await generatedPostCover(post));
+    post.cover = data.cover || generatedCover || (await generatedPostCover(post));
 
     posts.push(post);
   }
