@@ -509,7 +509,7 @@ async function checkViewport(viewport, page) {
 
               input.value = "Unity";
               input.dispatchEvent(new Event("input", { bubbles: true }));
-              await wait(120);
+              await waitFor(() => new URL(location.href).searchParams.get("q"));
               const queryCards = document.querySelectorAll(".search-result-card").length;
               const queryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
               if (queryCards === 0) failures.push("search query did not render result cards");

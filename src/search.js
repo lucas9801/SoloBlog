@@ -6,6 +6,8 @@ const clearButton = document.querySelector("[data-search-clear]");
 const yearSelect = document.querySelector("#searchYearFilter");
 const categorySelect = document.querySelector("#searchCategoryFilter");
 const params = new URLSearchParams(window.location.search);
+const searchRenderDelay = 160;
+let searchRenderTimer = 0;
 
 const state = {
   query: params.get("q") || "",
@@ -383,6 +385,21 @@ function render(posts) {
   results.innerHTML = visible.map((post) => renderCard(post, state.query)).join("");
 }
 
+function cancelScheduledSearchRender() {
+  if (!searchRenderTimer) return;
+  window.clearTimeout(searchRenderTimer);
+  searchRenderTimer = 0;
+}
+
+function scheduleSearchRender(posts) {
+  cancelScheduledSearchRender();
+  searchRenderTimer = window.setTimeout(() => {
+    searchRenderTimer = 0;
+    updateUrl();
+    render(posts);
+  }, searchRenderDelay);
+}
+
 async function boot() {
   if (!input || !results) return;
 
@@ -397,12 +414,12 @@ async function boot() {
 
   input.addEventListener("input", () => {
     state.query = input.value;
-    updateUrl();
-    render(posts);
+    scheduleSearchRender(posts);
   });
 
   input.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
+    cancelScheduledSearchRender();
     state.query = "";
     input.value = "";
     updateUrl();
@@ -412,6 +429,7 @@ async function boot() {
   facets?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-facet-type]");
     if (!button) return;
+    cancelScheduledSearchRender();
     const type = button.dataset.facetType;
     const value = button.dataset.facetValue || "";
     state[type] = state[type] === value ? "" : value;
@@ -420,18 +438,21 @@ async function boot() {
   });
 
   yearSelect?.addEventListener("change", () => {
+    cancelScheduledSearchRender();
     state.year = yearSelect.value;
     updateUrl();
     render(posts);
   });
 
   categorySelect?.addEventListener("change", () => {
+    cancelScheduledSearchRender();
     state.category = categorySelect.value;
     updateUrl();
     render(posts);
   });
 
   clearButton?.addEventListener("click", () => {
+    cancelScheduledSearchRender();
     state.query = "";
     state.year = "";
     state.category = "";

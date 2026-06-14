@@ -524,6 +524,13 @@ if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escap
   failures.push("Search page must provide clear/reset controls.");
 }
 if (
+  !searchScript.includes("scheduleSearchRender") ||
+  !searchScript.includes("cancelScheduledSearchRender") ||
+  !searchScript.includes("window.setTimeout")
+) {
+  failures.push("Search page must debounce keyword input while keeping filter actions immediate.");
+}
+if (
   !buildScript.includes('id="searchStatus"') ||
   !buildScript.includes('aria-describedby="searchStatus"') ||
   !buildScript.includes('aria-controls="searchResults searchFacets"') ||
