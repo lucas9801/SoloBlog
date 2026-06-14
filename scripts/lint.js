@@ -369,7 +369,9 @@ if (
   !buildScript.includes("archiveSelectionRoute") ||
   !buildScript.includes("filterArchivePosts") ||
   !buildScript.includes("archive-filter-form") ||
-  !siteScript.includes("data-archive-filter-form")
+  !siteScript.includes("data-archive-filter-form") ||
+  !siteScript.includes("archiveFilterTarget") ||
+  !siteScript.includes('select.addEventListener("change"')
 ) {
   failures.push("Archive pages must support combined year and category filtering.");
 }

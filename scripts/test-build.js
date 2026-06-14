@@ -150,7 +150,10 @@ try {
 
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.doesNotMatch(archive, /class="page-context"/);
+  assert.doesNotMatch(archive, /class="page-title"/);
+  assert.doesNotMatch(archive, /class="section-kicker"/);
   assert.match(archive, /class="archive-filter-form"/);
+  assert.match(archive, /aria-label="文章联合筛选"/);
   assert.match(archive, /data-archive-year/);
   assert.match(archive, /data-category-slug="图形渲染"/);
   assert.match(archive, /href="\/years\/2026\/"/);
@@ -245,10 +248,13 @@ try {
 
   const tagIndex = await readFile(path.join(tempRoot, "dist", "tags", "index.html"), "utf8");
   assert.doesNotMatch(tagIndex, /class="page-context"/);
+  assert.doesNotMatch(tagIndex, /class="page-title"/);
+  assert.doesNotMatch(tagIndex, /class="section-kicker"/);
   assert.equal(jsonLdObjects(tagIndex).find((item) => item["@type"] === "CollectionPage").url, "https://blog.solus.games/tags/");
 
   const seriesIndex = await readFile(path.join(tempRoot, "dist", "series", "index.html"), "utf8");
   assert.doesNotMatch(seriesIndex, /class="page-context"/);
+  assert.doesNotMatch(seriesIndex, /class="page-title"/);
   assert.doesNotMatch(seriesIndex, /class="section-kicker"/);
   assert.doesNotMatch(seriesIndex, />专题<\/span>/);
   assert.match(seriesIndex, /class="series-card-head"/);

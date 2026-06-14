@@ -110,19 +110,30 @@ document.addEventListener("click", async (event) => {
   }
 });
 
+function archiveFilterTarget(form) {
+  const year = form.querySelector("[data-archive-year]")?.value || "";
+  const category = form.querySelector("[data-archive-category]");
+  const categorySlug = category?.selectedOptions?.[0]?.dataset.categorySlug || "";
+
+  if (year && categorySlug) return `/archive/${year}/${categorySlug}/`;
+  if (year) return `/years/${year}/`;
+  if (categorySlug) return `/categories/${categorySlug}/`;
+  return "/archive/";
+}
+
+function applyArchiveFilter(form) {
+  const target = archiveFilterTarget(form);
+  if (target === window.location.pathname) return;
+  window.location.href = target;
+}
+
 for (const form of document.querySelectorAll("[data-archive-filter-form]")) {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const year = form.querySelector("[data-archive-year]")?.value || "";
-    const category = form.querySelector("[data-archive-category]");
-    const categorySlug = category?.selectedOptions?.[0]?.dataset.categorySlug || "";
-    const target = year && categorySlug
-      ? `/archive/${year}/${categorySlug}/`
-      : year
-        ? `/years/${year}/`
-        : categorySlug
-          ? `/categories/${categorySlug}/`
-          : "/archive/";
-    window.location.href = target;
+    applyArchiveFilter(form);
   });
+
+  for (const select of form.querySelectorAll("[data-archive-year], [data-archive-category]")) {
+    select.addEventListener("change", () => applyArchiveFilter(form));
+  }
 }
