@@ -615,6 +615,12 @@ for (const post of posts) {
     failures.push(`${file} slug must use lowercase English letters, numbers, and single hyphens.`);
   }
   if (!isDate(data.date)) failures.push(`${file} is missing YYYY-MM-DD date.`);
+  if (isDate(data.date) && slug && isCanonicalSlug(slug)) {
+    const expectedFile = `${data.date}-${slug}.md`;
+    if (file !== expectedFile) {
+      failures.push(`${file} filename must match its date and slug: ${expectedFile}.`);
+    }
+  }
   if (data.updated && !isDate(data.updated)) failures.push(`${file} has invalid updated date.`);
   if (isDate(data.date) && isDate(data.updated) && new Date(data.updated) < new Date(data.date)) {
     failures.push(`${file} updated date cannot be earlier than date.`);

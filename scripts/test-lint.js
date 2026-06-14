@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { cp, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -74,6 +74,13 @@ try {
   assert.ok(firstPost, "fixture should include at least one post");
 
   const postPath = path.join(postsDir, firstPost);
+  const wrongPostPath = path.join(postsDir, `wrong-name-${firstPost}`);
+  await rename(postPath, wrongPostPath);
+  result = await runLint(tempRoot);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /filename must match its date and slug/);
+  await rename(wrongPostPath, postPath);
+
   const tomorrow = localDateString(new Date(Date.now() + 24 * 60 * 60 * 1000));
   const brokenPost = (await readFile(postPath, "utf8"))
     .replace(/^date: .+$/m, `date: ${tomorrow}`)
