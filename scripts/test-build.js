@@ -123,8 +123,8 @@ try {
   assert.match(result.stdout, /Built 3 posts into dist\//);
 
   const article = await readFile(path.join(tempRoot, "dist", "posts", "markdown-edge-cases", "index.html"), "utf8");
-  assert.match(article, /<h2 id="repeat">Repeat<\/h2>/);
-  assert.match(article, /<h2 id="repeat-2">Repeat<\/h2>/);
+  assert.match(article, /<h2 id="repeat">Repeat <a class="heading-anchor" href="#repeat" aria-label="章节链接：Repeat">#<\/a><\/h2>/);
+  assert.match(article, /<h2 id="repeat-2">Repeat <a class="heading-anchor" href="#repeat-2" aria-label="章节链接：Repeat">#<\/a><\/h2>/);
   assert.match(article, /<strong>strong text<\/strong>/);
   assert.match(article, /<em>emphasis<\/em>/);
   assert.match(article, /<code>inline code<\/code>/);

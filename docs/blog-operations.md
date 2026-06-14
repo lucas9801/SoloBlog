@@ -355,6 +355,8 @@ slug: renderdoc-frame-debugging
 ### 三级标题
 ```
 
+二级到四级标题会自动生成章节链接，方便把文章里的某一节单独分享出去。
+
 列表：
 
 ```markdown

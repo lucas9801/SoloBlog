@@ -332,6 +332,9 @@ if (!buildScript.includes("series-card-list") || !css.includes(".series-card-lis
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
 }
+if (!buildScript.includes("heading-anchor") || !buildScript.includes("章节链接：") || !css.includes(".heading-anchor")) {
+  failures.push("Article headings must expose subtle, accessible section permalinks.");
+}
 if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMailto")) {
   failures.push("Markdown links and images must validate URL schemes before rendering.");
 }

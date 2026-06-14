@@ -518,8 +518,11 @@ function markdownToHtml(markdown) {
       const level = heading[1].length;
       const text = heading[2].trim();
       const id = uniqueHeadingId(text);
+      const anchorLabel = `章节链接：${text}`;
       headings.push({ level, text, id });
-      html.push(`<h${level} id="${escapeAttr(id)}">${inlineMarkdown(text)}</h${level}>`);
+      html.push(
+        `<h${level} id="${escapeAttr(id)}">${inlineMarkdown(text)} <a class="heading-anchor" href="#${escapeAttr(id)}" aria-label="${escapeAttr(anchorLabel)}">#</a></h${level}>`
+      );
       continue;
     }
 
