@@ -140,6 +140,27 @@ function checkDocumentBasics(file, html) {
   if (h1Count !== 1) failures.push(`${relative} must contain exactly one h1 element.`);
 }
 
+function checkContentLandmarks(file, html) {
+  const relative = displayPath(file);
+  const mainTags = [...html.matchAll(/<main\b[^>]*>/gi)].map((match) => match[0]);
+  if (mainTags.length !== 1) {
+    failures.push(`${relative} must contain exactly one main landmark.`);
+  } else {
+    const attrs = tagAttributes(mainTags[0]);
+    if (attrs.get("id") !== "content") failures.push(`${relative} main landmark must use id="content".`);
+    if (attrs.get("tabindex") !== "-1") failures.push(`${relative} main landmark must be focusable for skip links.`);
+  }
+
+  const skipLinks = [...html.matchAll(/<a\b[^>]*class="[^"]*\bskip-link\b[^"]*"[^>]*>/gi)].map((match) => match[0]);
+  if (skipLinks.length !== 1) {
+    failures.push(`${relative} must contain exactly one skip link.`);
+    return;
+  }
+
+  const attrs = tagAttributes(skipLinks[0]);
+  if (attrs.get("href") !== "#content") failures.push(`${relative} skip link must point to #content.`);
+}
+
 function pagePathFromFile(file) {
   const relative = path.relative(dist, file).replaceAll("\\", "/");
   if (relative === "index.html") return "/";
@@ -910,6 +931,7 @@ async function main() {
     checkLinks(file, html);
     checkInteractiveNames(file, html);
     checkAriaReferences(file, html);
+    checkContentLandmarks(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
     await checkStructuredData(file, html);

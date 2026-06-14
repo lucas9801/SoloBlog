@@ -330,6 +330,13 @@ if (!checkOutputScript.includes("checkAriaReferences") || !checkOutputScript.inc
 if (!checkOutputScript.includes("function checkDuplicateIds") || !checkOutputScript.includes("contains duplicate id")) {
   failures.push("Output checks must reject duplicate HTML ids.");
 }
+if (
+  !checkOutputScript.includes("function checkContentLandmarks") ||
+  !checkOutputScript.includes('main landmark must use id="content"') ||
+  !checkOutputScript.includes("skip link must point to #content")
+) {
+  failures.push("Output checks must validate skip links and the main content landmark.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
