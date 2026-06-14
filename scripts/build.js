@@ -1785,22 +1785,22 @@ async function aboutPage() {
 function searchPage() {
   const title = "搜索文章";
   const description = "搜索博客文章。";
-  const body = `<main class="page-shell narrow">
-    <header class="page-title">
-      <span class="section-kicker">Search</span>
-      <h1>搜索文章</h1>
-      <p>输入关键词，按标题、摘要、正文、分类和标签搜索。</p>
-    </header>
+  const body = `<main class="page-shell search-page">
+    <h1 class="sr-only">搜索文章</h1>
     <section class="search-page-card">
       <div class="search-controls">
         <label>
           <span class="sr-only">搜索关键词</span>
-          <input id="searchInputPage" type="search" placeholder="例如 Unity、渲染、工具链" autofocus />
+          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、分类或标签" autofocus />
         </label>
         <button class="secondary-button search-clear" type="button" data-search-clear hidden>清空</button>
       </div>
-      <div id="searchFacets" class="search-facets" aria-label="搜索筛选"></div>
-      <div id="searchResults" class="search-results" role="list" aria-live="polite"></div>
+      <div class="search-layout">
+        <aside class="search-filter-panel" aria-label="筛选条件">
+          <div id="searchFacets" class="search-facets" aria-label="搜索筛选"></div>
+        </aside>
+        <div id="searchResults" class="search-results" role="list" aria-live="polite"></div>
+      </div>
     </section>
   </main>
   <script type="module" src="${assetUrl("/src/search.js")}"></script>`;

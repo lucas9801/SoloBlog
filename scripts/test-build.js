@@ -237,6 +237,8 @@ try {
   assert.equal(jsonLdObjects(about).find((item) => item["@type"] === "AboutPage").url, "https://blog.solus.games/about/");
 
   const search = await readFile(path.join(tempRoot, "dist", "search", "index.html"), "utf8");
+  assert.doesNotMatch(search, /class="page-title"/);
+  assert.match(search, /class="page-shell search-page"/);
   assert.equal(
     jsonLdObjects(search).find((item) => item["@type"] === "SearchResultsPage").url,
     "https://blog.solus.games/search/"

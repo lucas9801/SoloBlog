@@ -804,6 +804,9 @@ async function main() {
     if (/^dist\/(?:archive|categories|years|tags|series)\//.test(relative) && html.includes('class="page-context"')) {
       failures.push(`${relative} must not render the page context title block.`);
     }
+    if (relative === "dist/search/index.html" && html.includes('class="page-title"')) {
+      failures.push("dist/search/index.html must not render a large visible title block.");
+    }
     if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 
     checkDocumentBasics(file, html);
