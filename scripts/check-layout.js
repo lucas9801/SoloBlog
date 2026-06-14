@@ -52,7 +52,7 @@ async function defaultPaths() {
     paths.splice(seriesIndex === -1 ? paths.length : seriesIndex + 1, 0, `/series/${slugifyForPath(firstSeries)}/`);
   }
   const searchIndexPath = paths.indexOf("/search/");
-  paths.splice(searchIndexPath === -1 ? paths.length : searchIndexPath + 1, 0, "/search/?category=__missing__&tag=__missing__");
+  paths.splice(searchIndexPath === -1 ? paths.length : searchIndexPath + 1, 0, "/search/?year=__missing__&category=__missing__&tag=__missing__");
 
   return [...new Set(paths)];
 }
@@ -414,12 +414,29 @@ async function checkViewport(viewport, page) {
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
               if (clearButton.hidden) failures.push("clear button stayed hidden after search input");
 
+              const yearFacet = document.querySelector('[data-facet-type="year"]');
+              if (yearFacet instanceof HTMLButtonElement) {
+                yearFacet.click();
+                await wait(120);
+                if (yearFacet.getAttribute("aria-pressed") !== "true") {
+                  failures.push("year facet did not become active after click");
+                }
+                if (!new URL(location.href).searchParams.get("year")) {
+                  failures.push("year facet did not update the URL");
+                }
+              } else {
+                failures.push("year facet button is missing");
+              }
+
               const categoryFacet = document.querySelector('[data-facet-type="category"]');
               if (categoryFacet instanceof HTMLButtonElement) {
                 categoryFacet.click();
                 await wait(120);
                 if (categoryFacet.getAttribute("aria-pressed") !== "true") {
                   failures.push("category facet did not become active after click");
+                }
+                if (!new URL(location.href).searchParams.get("category")) {
+                  failures.push("category facet did not update the URL");
                 }
               } else {
                 failures.push("category facet button is missing");

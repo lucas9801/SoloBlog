@@ -6,6 +6,7 @@ const params = new URLSearchParams(window.location.search);
 
 const state = {
   query: params.get("q") || "",
+  year: params.get("year") || "",
   category: params.get("category") || "",
   tag: params.get("tag") || ""
 };
@@ -144,9 +145,14 @@ function availableValues(posts, getter) {
 
 function sanitizeState(posts) {
   let changed = false;
+  const years = availableValues(posts, (post) => post.year || String(post.date || "").slice(0, 4));
   const categories = availableValues(posts, (post) => post.category);
   const tags = availableValues(posts, (post) => post.tags);
 
+  if (state.year && !years.has(state.year)) {
+    state.year = "";
+    changed = true;
+  }
   if (state.category && !categories.has(state.category)) {
     state.category = "";
     changed = true;
@@ -168,10 +174,19 @@ function facetButton(type, value, count) {
 
 function renderFacets(posts) {
   if (!facets) return;
+  const years = countEntries(posts, (post) => post.year || String(post.date || "").slice(0, 4)).sort(
+    (a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN")
+  );
   const categories = countEntries(posts, (post) => post.category);
   const tags = countEntries(posts, (post) => post.tags).slice(0, 24);
 
   facets.innerHTML = `
+    <div class="facet-group">
+      <span>年份</span>
+      <div class="facet-list">
+        ${years.map(([year, count]) => facetButton("year", year, count)).join("")}
+      </div>
+    </div>
     <div class="facet-group">
       <span>分类</span>
       <div class="facet-list">
@@ -187,9 +202,11 @@ function renderFacets(posts) {
 }
 
 function matchesFilters(post) {
+  const year = post.year || String(post.date || "").slice(0, 4);
+  const yearMatches = !state.year || year === state.year;
   const categoryMatches = !state.category || post.category === state.category;
   const tagMatches = !state.tag || (post.tags || []).includes(state.tag);
-  return categoryMatches && tagMatches;
+  return yearMatches && categoryMatches && tagMatches;
 }
 
 function truncate(value, maxLength = 118) {
@@ -216,7 +233,11 @@ function resultLabel(query, count, showingRecent) {
 }
 
 function selectedFilters() {
-  return [state.category ? `分类：${state.category}` : "", state.tag ? `标签：${state.tag}` : ""]
+  return [
+    state.year ? `年份：${state.year}` : "",
+    state.category ? `分类：${state.category}` : "",
+    state.tag ? `标签：${state.tag}` : ""
+  ]
     .filter(Boolean)
     .join(" · ");
 }
@@ -262,6 +283,7 @@ function updateUrl() {
   const url = new URL(window.location.href);
   const next = new URLSearchParams();
   if (normalize(state.query)) next.set("q", state.query.trim());
+  if (state.year) next.set("year", state.year);
   if (state.category) next.set("category", state.category);
   if (state.tag) next.set("tag", state.tag);
   url.search = next.toString();
@@ -270,7 +292,7 @@ function updateUrl() {
 
 function syncControls() {
   if (input && input.value !== state.query) input.value = state.query;
-  const hasState = Boolean(normalize(state.query) || state.category || state.tag);
+  const hasState = Boolean(normalize(state.query) || state.year || state.category || state.tag);
   if (clearButton) clearButton.hidden = !hasState;
   for (const button of facets?.querySelectorAll("[data-facet-type]") || []) {
     const type = button.dataset.facetType;
@@ -281,7 +303,7 @@ function syncControls() {
 }
 
 function render(posts) {
-  const showingRecent = !normalize(state.query) && !state.category && !state.tag;
+  const showingRecent = !normalize(state.query) && !state.year && !state.category && !state.tag;
   const matched = rankedPosts(posts);
   const visible = showingRecent ? matched.slice(0, 6) : matched;
   const filters = selectedFilters();
@@ -341,6 +363,7 @@ async function boot() {
 
   clearButton?.addEventListener("click", () => {
     state.query = "";
+    state.year = "";
     state.category = "";
     state.tag = "";
     updateUrl();
