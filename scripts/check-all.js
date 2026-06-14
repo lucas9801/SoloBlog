@@ -3,17 +3,6 @@ import net from "node:net";
 
 const node = process.execPath;
 
-function npmCommand(args) {
-  if (process.platform !== "win32") {
-    return { command: "npm", args };
-  }
-
-  return {
-    command: process.env.ComSpec || "cmd.exe",
-    args: ["/d", "/s", "/c", "npm", ...args]
-  };
-}
-
 function run(command, args, options = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
@@ -31,6 +20,10 @@ function run(command, args, options = {}) {
       }
     });
   });
+}
+
+function runScript(script, options = {}) {
+  return run(node, [script], options);
 }
 
 function getFreePort() {
@@ -86,8 +79,7 @@ async function runLayoutCheck() {
 
   try {
     await waitForPreview(previewUrl);
-    const checkLayout = npmCommand(["run", "check:layout"]);
-    await run(checkLayout.command, checkLayout.args, {
+    await runScript("scripts/check-layout.js", {
       env: {
         ...process.env,
         CHECK_URL: previewUrl
@@ -99,9 +91,17 @@ async function runLayoutCheck() {
 }
 
 try {
-  for (const script of ["lint", "test:lint", "test:new-post", "test:build", "test:views", "build", "test:preview", "check:output"]) {
-    const command = npmCommand(["run", script]);
-    await run(command.command, command.args);
+  for (const script of [
+    "scripts/lint.js",
+    "scripts/test-lint.js",
+    "scripts/test-new-post.js",
+    "scripts/test-build.js",
+    "scripts/test-views.js",
+    "scripts/build.js",
+    "scripts/test-preview.js",
+    "scripts/check-output.js"
+  ]) {
+    await runScript(script);
   }
   await runLayoutCheck();
   console.log("All checks passed.");
