@@ -39,7 +39,7 @@ function storageError() {
 
 function sanitizeSlug(value) {
   const slug = String(value || "").trim();
-  if (!/^[\p{Letter}\p{Number}_-]{1,180}$/u.test(slug)) return "";
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return "";
   return slug;
 }
 

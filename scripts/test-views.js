@@ -165,6 +165,11 @@ response = await readJson(
 assert.equal(response.status, 400);
 
 response = await readJson(
+  await onRequestPost(context(db, jsonRequest("POST", "https://blog.solus.games/api/views", { slug: "Bad_Slug" })))
+);
+assert.equal(response.status, 400);
+
+response = await readJson(
   await onRequestPost(
     context(db, viewRequest("render-optimization-checklist", "198.51.100.1"))
   )
@@ -195,7 +200,7 @@ assert.deepEqual(response.body, { slug: "render-optimization-checklist", views: 
 
 response = await readJson(
   await onRequestGet(
-    context(db, new Request("https://blog.solus.games/api/views?slugs=render-optimization-checklist,unknown,../bad,render-optimization-checklist"))
+    context(db, new Request("https://blog.solus.games/api/views?slugs=render-optimization-checklist,unknown,../bad,Bad_Slug,中文,render-optimization-checklist"))
   )
 );
 assert.equal(response.status, 200);

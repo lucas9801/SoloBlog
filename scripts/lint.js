@@ -447,6 +447,9 @@ if (!viewsFunction.includes("isSameOriginRequest") || !viewsFunction.includes("i
 if (viewsFunction.includes("body.slug ||")) {
   failures.push("Views API POST must not accept slug from query parameters.");
 }
+if (!viewsFunction.includes("^[a-z0-9]+(?:-[a-z0-9]+)*$")) {
+  failures.push("Views API must only accept canonical post slugs.");
+}
 if (!viewsFunction.includes('"X-Content-Type-Options": "nosniff"')) {
   failures.push("Views API JSON responses must set X-Content-Type-Options.");
 }
