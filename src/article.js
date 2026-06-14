@@ -18,6 +18,53 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+async function copyText(value) {
+  const text = String(value || "");
+  if (!text) return false;
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall back to a temporary selection below.
+  }
+
+  const textarea = document.createElement("textarea");
+  const activeElement = document.activeElement;
+  const selection = document.getSelection();
+  const previousRange = selection?.rangeCount ? selection.getRangeAt(0) : null;
+
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "0";
+  textarea.style.left = "0";
+  textarea.style.width = "1px";
+  textarea.style.height = "1px";
+  textarea.style.opacity = "0";
+  textarea.style.pointerEvents = "none";
+  document.body.append(textarea);
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  let copied = false;
+  try {
+    copied = typeof document.execCommand === "function" && document.execCommand("copy");
+  } catch {
+    copied = false;
+  }
+
+  textarea.remove();
+  if (previousRange && selection) {
+    selection.removeAllRanges();
+    selection.addRange(previousRange);
+  }
+  if (activeElement instanceof HTMLElement) activeElement.focus();
+  return copied;
+}
+
 function updateReadingProgress() {
   if (!readingTarget || !percent || !remaining) return;
 
@@ -223,8 +270,7 @@ article?.addEventListener("click", async (event) => {
   const status = block?.querySelector("[data-copy-code-status]");
   if (!code) return;
 
-  try {
-    await navigator.clipboard.writeText(code);
+  if (await copyText(code)) {
     button.classList.add("is-copied");
     button.textContent = "已复制";
     button.setAttribute("aria-label", "代码已复制");
@@ -235,16 +281,17 @@ article?.addEventListener("click", async (event) => {
       button.setAttribute("aria-label", "复制代码");
       if (status) status.textContent = "";
     }, 1400);
-  } catch {
-    button.textContent = "复制失败";
-    button.setAttribute("aria-label", "代码复制失败");
-    if (status) status.textContent = "代码复制失败";
-    window.setTimeout(() => {
-      button.textContent = "复制";
-      button.setAttribute("aria-label", "复制代码");
-      if (status) status.textContent = "";
-    }, 1400);
+    return;
   }
+
+  button.textContent = "复制失败";
+  button.setAttribute("aria-label", "代码复制失败");
+  if (status) status.textContent = "代码复制失败";
+  window.setTimeout(() => {
+    button.textContent = "复制";
+    button.setAttribute("aria-label", "复制代码");
+    if (status) status.textContent = "";
+  }, 1400);
 });
 
 window.addEventListener("scroll", updateReadingProgress, { passive: true });

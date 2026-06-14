@@ -441,7 +441,9 @@ if (
   !buildScript.includes("data-copy-code-status") ||
   !buildScript.includes('aria-label="复制代码"') ||
   !buildScript.includes('tabindex="0" aria-label="${escapeAttr(scrollLabel)}"') ||
-  !articleScript.includes("代码已复制")
+  !articleScript.includes("代码已复制") ||
+  !articleScript.includes("async function copyText") ||
+  !articleScript.includes('document.execCommand("copy")')
 ) {
   failures.push("Article code blocks must expose keyboard scroll and accessible copy feedback.");
 }
@@ -531,7 +533,12 @@ if (blogOperationsDocs.includes("分类页和默认封面会保持一致")) {
 if (buildScript.includes('<span class="section-kicker">About</span>')) {
   failures.push("About page must not expose an English template kicker.");
 }
-if (!buildScript.includes("data-copy-rss-status") || !siteScript.includes("RSS 链接已复制")) {
+if (
+  !buildScript.includes("data-copy-rss-status") ||
+  !siteScript.includes("RSS 链接已复制") ||
+  !siteScript.includes("async function copyText") ||
+  !siteScript.includes('document.execCommand("copy")')
+) {
   failures.push("RSS copy action must expose a clear copied state.");
 }
 if (buildScript.includes(">Sitemap<")) {

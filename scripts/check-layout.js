@@ -579,6 +579,48 @@ async function checkViewport(viewport, page) {
             })()`
           })
         : { result: { value: [] } };
+    const archiveRuntime =
+      page.pathname === "/archive/"
+        ? await send("Runtime.evaluate", {
+            returnByValue: true,
+            expression: `(() => {
+              const failures = [];
+              const form = document.querySelector("[data-archive-filter-form]");
+              const yearSelect = form?.querySelector("[data-archive-year]");
+              const categorySelect = form?.querySelector("[data-archive-category]");
+              if (!(form instanceof HTMLFormElement)) failures.push("archive filter form is missing");
+              if (!(yearSelect instanceof HTMLSelectElement)) failures.push("archive year select is missing");
+              if (!(categorySelect instanceof HTMLSelectElement)) failures.push("archive category select is missing");
+              if (failures.length > 0) return failures;
+
+              const yearOption = Array.from(yearSelect.options).find((option) => option.value);
+              const categoryOption = Array.from(categorySelect.options).find(
+                (option) => option.value && option.dataset.categorySlug
+              );
+              if (!yearOption) failures.push("archive year select has no selectable year");
+              if (!categoryOption) failures.push("archive category select has no selectable category");
+              if (failures.length > 0) return failures;
+
+              yearSelect.value = yearOption.value;
+              categorySelect.value = categoryOption.value;
+              const targetPath = "/archive/" + yearOption.value + "/" + categoryOption.dataset.categorySlug + "/";
+              categorySelect.dispatchEvent(new Event("change", { bubbles: true }));
+              return { failures, targetPath };
+            })()`
+          })
+        : { result: { value: [] } };
+    const archiveNavigationFailures = [];
+    const archiveTargetPath = archiveRuntime.result.value?.targetPath || "";
+    if (archiveTargetPath) {
+      await wait(900);
+      const archiveLocation = await send("Runtime.evaluate", {
+        returnByValue: true,
+        expression: "decodeURIComponent(location.pathname)"
+      });
+      if (archiveLocation.result.value !== archiveTargetPath) {
+        archiveNavigationFailures.push("archive combined year/category filter did not navigate to " + archiveTargetPath);
+      }
+    }
     const articleRuntime =
       page.pathname.startsWith("/posts/")
         ? await send("Runtime.evaluate", {
@@ -657,6 +699,8 @@ async function checkViewport(viewport, page) {
     result.result.value.runtimeFailures = [
       ...(siteRuntime.result.value || []),
       ...(searchRuntime.result.value || []),
+      ...(archiveRuntime.result.value?.failures || archiveRuntime.result.value || []),
+      ...archiveNavigationFailures,
       ...(articleRuntime.result.value || [])
     ];
 

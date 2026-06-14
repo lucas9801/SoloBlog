@@ -36,6 +36,53 @@ function headerContainsFocus() {
   return Boolean(header?.contains(document.activeElement));
 }
 
+async function copyText(value) {
+  const text = String(value || "");
+  if (!text) return false;
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall back to a temporary selection below.
+  }
+
+  const textarea = document.createElement("textarea");
+  const activeElement = document.activeElement;
+  const selection = document.getSelection();
+  const previousRange = selection?.rangeCount ? selection.getRangeAt(0) : null;
+
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "0";
+  textarea.style.left = "0";
+  textarea.style.width = "1px";
+  textarea.style.height = "1px";
+  textarea.style.opacity = "0";
+  textarea.style.pointerEvents = "none";
+  document.body.append(textarea);
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  let copied = false;
+  try {
+    copied = typeof document.execCommand === "function" && document.execCommand("copy");
+  } catch {
+    copied = false;
+  }
+
+  textarea.remove();
+  if (previousRange && selection) {
+    selection.removeAllRanges();
+    selection.addRange(previousRange);
+  }
+  if (activeElement instanceof HTMLElement) activeElement.focus();
+  return copied;
+}
+
 applyTheme(currentTheme());
 
 themeToggle?.addEventListener("click", () => {
@@ -88,8 +135,7 @@ document.addEventListener("click", async (event) => {
   const url = button.dataset.copyRss;
   if (!url) return;
 
-  try {
-    await navigator.clipboard.writeText(url);
+  if (await copyText(url)) {
     const previous = button.textContent;
     const previousLabel = button.getAttribute("aria-label");
     const status = button.parentElement?.querySelector("[data-copy-rss-status]");
@@ -105,9 +151,10 @@ document.addEventListener("click", async (event) => {
       }
       if (status) status.textContent = "";
     }, 1600);
-  } catch {
-    window.location.href = url;
+    return;
   }
+
+  window.location.href = url;
 });
 
 function archiveFilterTarget(form) {
