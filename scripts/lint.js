@@ -340,7 +340,9 @@ if (!buildScript.includes("groupByYear") || !buildScript.includes("/years/") || 
 if (
   !buildScript.includes("archiveSelectionPath") ||
   !buildScript.includes("archiveSelectionRoute") ||
-  !buildScript.includes("filterArchivePosts")
+  !buildScript.includes("filterArchivePosts") ||
+  !buildScript.includes("archive-filter-form") ||
+  !siteScript.includes("data-archive-filter-form")
 ) {
   failures.push("Archive pages must support combined year and category filtering.");
 }
@@ -371,6 +373,7 @@ if (
 }
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (!buildScript.includes("application/rss+xml")) failures.push("Page head must expose RSS discovery.");
 if (!buildScript.includes("application/feed+json")) failures.push("Page head must expose JSON Feed discovery.");
 if (!buildScript.includes('rel="search"') || !buildScript.includes("application/opensearchdescription+xml")) {
   failures.push("Page head must expose OpenSearch discovery.");
@@ -409,11 +412,13 @@ if (
 }
 if (
   !searchScript.includes("searchFacets") ||
-  !searchScript.includes('facetButton("year"') ||
-  !searchScript.includes('facetButton("category"') ||
-  !searchScript.includes('facetButton("tag"')
+  !searchScript.includes("searchYearFilter") ||
+  !searchScript.includes("searchCategoryFilter") ||
+  !searchScript.includes("renderFilterSelects") ||
+  !searchScript.includes('facetButton("tag"') ||
+  !buildScript.includes("search-filter-selects")
 ) {
-  failures.push("Search page must support year, category, and tag facets.");
+  failures.push("Search page must support combined year/category filters and tag facets.");
 }
 if (!searchScript.includes("fields.year") || !searchScript.includes("state.year")) {
   failures.push("Search page must index and filter post years for archive-scale discovery.");

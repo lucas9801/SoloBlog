@@ -185,13 +185,24 @@ function checkSearchDiscovery(file, html) {
 
 function checkFeedDiscovery(file, html) {
   const relative = displayPath(file);
-  const links = [...html.matchAll(/<link\s+rel="alternate"\s+type="application\/feed\+json"\s+title="([^"]+)"\s+href="([^"]+)"/g)];
-  if (links.length !== 1) {
+  const rssLinks = [...html.matchAll(/<link\s+rel="alternate"\s+type="application\/rss\+xml"\s+title="([^"]+)"\s+href="([^"]+)"/g)];
+  if (rssLinks.length !== 1) {
+    failures.push(`${relative} must contain exactly one RSS discovery link.`);
+  } else {
+    const rssUrl = checkSiteUrl(`${relative} RSS discovery link`, rssLinks[0][2]);
+    const expected = new URL("/rss.xml", absoluteSiteRoot).toString();
+    if (rssUrl?.toString() !== expected) {
+      failures.push(`${relative} RSS discovery link must be ${expected}.`);
+    }
+  }
+
+  const jsonLinks = [...html.matchAll(/<link\s+rel="alternate"\s+type="application\/feed\+json"\s+title="([^"]+)"\s+href="([^"]+)"/g)];
+  if (jsonLinks.length !== 1) {
     failures.push(`${relative} must contain exactly one JSON Feed discovery link.`);
     return;
   }
 
-  const feedUrl = checkSiteUrl(`${relative} JSON Feed discovery link`, links[0][2]);
+  const feedUrl = checkSiteUrl(`${relative} JSON Feed discovery link`, jsonLinks[0][2]);
   const expected = new URL("/feed.json", absoluteSiteRoot).toString();
   if (feedUrl?.toString() !== expected) {
     failures.push(`${relative} JSON Feed discovery link must be ${expected}.`);
@@ -819,6 +830,12 @@ async function main() {
     }
     if (relative === "dist/search/index.html" && html.includes('class="page-title"')) {
       failures.push("dist/search/index.html must not render a large visible title block.");
+    }
+    if (relative === "dist/search/index.html" && html.includes('class="page-context"')) {
+      failures.push("dist/search/index.html must not render a page context title block.");
+    }
+    if (relative === "dist/search/index.html" && html.includes('class="section-kicker"')) {
+      failures.push("dist/search/index.html must not render a visible section kicker.");
     }
     if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 

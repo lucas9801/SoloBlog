@@ -532,6 +532,48 @@ pre {
   gap: 8px;
 }
 
+.archive-filter-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr)) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.archive-filter-form label,
+.search-filter-selects label {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.archive-filter-form label > span,
+.search-filter-selects label > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.archive-filter-form select,
+.search-filter-selects select {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 0 34px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  outline: 0;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.archive-filter-form select:focus,
+.search-filter-selects select:focus,
+.search-page-card input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+}
+
 .archive-filter-row {
   display: flex;
   gap: 10px;
@@ -1756,13 +1798,20 @@ pre {
 
 .search-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(260px, 1fr) minmax(300px, auto) auto;
   gap: 10px;
-  align-items: center;
+  align-items: end;
 }
 
 .search-controls label {
   min-width: 0;
+}
+
+.search-filter-selects {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(136px, 1fr));
+  gap: 8px;
 }
 
 .search-page-card input {
@@ -2114,6 +2163,11 @@ pre {
 
   .archive-filter-stack {
     padding-bottom: 0;
+  }
+
+  .archive-filter-form,
+  .search-filter-selects {
+    grid-template-columns: 1fr;
   }
 
   .archive-filter-row {

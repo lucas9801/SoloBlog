@@ -109,3 +109,20 @@ document.addEventListener("click", async (event) => {
     window.location.href = url;
   }
 });
+
+for (const form of document.querySelectorAll("[data-archive-filter-form]")) {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const year = form.querySelector("[data-archive-year]")?.value || "";
+    const category = form.querySelector("[data-archive-category]");
+    const categorySlug = category?.selectedOptions?.[0]?.dataset.categorySlug || "";
+    const target = year && categorySlug
+      ? `/archive/${year}/${categorySlug}/`
+      : year
+        ? `/years/${year}/`
+        : categorySlug
+          ? `/categories/${categorySlug}/`
+          : "/archive/";
+    window.location.href = target;
+  });
+}

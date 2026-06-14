@@ -3,6 +3,8 @@ const results = document.querySelector("#searchResults");
 const status = document.querySelector("#searchStatus");
 const facets = document.querySelector("#searchFacets");
 const clearButton = document.querySelector("[data-search-clear]");
+const yearSelect = document.querySelector("#searchYearFilter");
+const categorySelect = document.querySelector("#searchCategoryFilter");
 const params = new URLSearchParams(window.location.search);
 
 const state = {
@@ -177,8 +179,21 @@ function facetButton(type, value, count) {
   </button>`;
 }
 
-function renderFacets(posts) {
-  if (!facets) return;
+function selectOption(value, count, active) {
+  return `<option value="${escapeHtml(value)}"${active ? " selected" : ""}>${escapeHtml(value)} (${count})</option>`;
+}
+
+function renderFilterSelect(select, type, label, entries) {
+  if (!select) return;
+  const active = state[type] || "";
+  select.innerHTML = [
+    `<option value=""${!active ? " selected" : ""}>${label}</option>`,
+    ...entries.map(([value, count]) => selectOption(value, count, value === active))
+  ].join("");
+  select.value = active;
+}
+
+function renderFilterSelects(posts) {
   const years = includeActiveFacet(
     countEntries(facetScope(posts, "year"), postYear).sort(
       (a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN")
@@ -186,6 +201,13 @@ function renderFacets(posts) {
     "year"
   );
   const categories = includeActiveFacet(countEntries(facetScope(posts, "category"), (post) => post.category), "category");
+
+  renderFilterSelect(yearSelect, "year", "全部年份", years);
+  renderFilterSelect(categorySelect, "category", "全部分类", categories);
+}
+
+function renderFacets(posts) {
+  if (!facets) return;
   const tags = limitFacetEntries(
     includeActiveFacet(countEntries(facetScope(posts, "tag"), (post) => post.tags), "tag"),
     "tag",
@@ -193,18 +215,6 @@ function renderFacets(posts) {
   );
 
   facets.innerHTML = `
-    <div class="facet-group">
-      <span>年份</span>
-      <div class="facet-list">
-        ${years.map(([year, count]) => facetButton("year", year, count)).join("")}
-      </div>
-    </div>
-    <div class="facet-group">
-      <span>分类</span>
-      <div class="facet-list">
-        ${categories.map(([category, count]) => facetButton("category", category, count)).join("")}
-      </div>
-    </div>
     <div class="facet-group">
       <span>标签</span>
       <div class="facet-list">
@@ -326,6 +336,8 @@ function updateUrl() {
 
 function syncControls() {
   if (input && input.value !== state.query) input.value = state.query;
+  if (yearSelect && yearSelect.value !== state.year) yearSelect.value = state.year;
+  if (categorySelect && categorySelect.value !== state.category) categorySelect.value = state.category;
   const hasState = Boolean(normalize(state.query) || state.year || state.category || state.tag);
   if (clearButton) clearButton.hidden = !hasState;
   for (const button of facets?.querySelectorAll("[data-facet-type]") || []) {
@@ -342,6 +354,7 @@ function render(posts) {
   const visible = showingRecent ? matched.slice(0, 6) : matched;
   const filters = selectedFilters();
 
+  renderFilterSelects(posts);
   renderFacets(posts);
   syncControls();
 
@@ -402,6 +415,18 @@ async function boot() {
     const type = button.dataset.facetType;
     const value = button.dataset.facetValue || "";
     state[type] = state[type] === value ? "" : value;
+    updateUrl();
+    render(posts);
+  });
+
+  yearSelect?.addEventListener("change", () => {
+    state.year = yearSelect.value;
+    updateUrl();
+    render(posts);
+  });
+
+  categorySelect?.addEventListener("change", () => {
+    state.category = categorySelect.value;
     updateUrl();
     render(posts);
   });

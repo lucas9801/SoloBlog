@@ -1077,6 +1077,15 @@ function archiveFilterRow(label, ariaLabel, links) {
   </div>`;
 }
 
+function archiveFilterSelect(label, name, options) {
+  return `<label>
+    <span>${escapeHtml(label)}</span>
+    <select name="${escapeAttr(name)}" data-archive-${escapeAttr(name)}>
+      ${options.join("")}
+    </select>
+  </label>`;
+}
+
 function archiveFilters(
   categories,
   years,
@@ -1100,8 +1109,27 @@ function archiveFilters(
       return `<a class="${activeClass}" href="${archiveSelectionPath({ category, year: activeYear })}"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
     })
   ];
+  const yearOptions = [
+    `<option value=""${!activeYear ? " selected" : ""}>全部年份 (${yearTotalCount})</option>`,
+    ...years.map(([year, list]) => {
+      const active = year === activeYear ? " selected" : "";
+      return `<option value="${escapeAttr(year)}"${active}>${escapeHtml(year)} (${list.length})</option>`;
+    })
+  ];
+  const categoryOptions = [
+    `<option value="" data-category-slug=""${!activeCategory ? " selected" : ""}>全部分类 (${categoryTotalCount})</option>`,
+    ...categories.map(([category, list]) => {
+      const active = category === activeCategory ? " selected" : "";
+      return `<option value="${escapeAttr(category)}" data-category-slug="${escapeAttr(slugify(category))}"${active}>${escapeHtml(category)} (${list.length})</option>`;
+    })
+  ];
 
   return `<div class="archive-filter-stack">
+    <form class="archive-filter-form" data-archive-filter-form aria-label="文章联合筛选">
+      ${archiveFilterSelect("年份", "year", yearOptions)}
+      ${archiveFilterSelect("分类", "category", categoryOptions)}
+      <button class="secondary-button" type="submit">应用筛选</button>
+    </form>
     ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
     ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
   </div>`;
@@ -1743,10 +1771,24 @@ function searchPage() {
     <h1 class="sr-only">搜索文章</h1>
     <section class="search-page-card">
       <div class="search-controls">
-        <label>
+        <label class="search-query-control">
           <span class="sr-only">搜索关键词</span>
           <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" autofocus />
         </label>
+        <div class="search-filter-selects" aria-label="年份和分类筛选">
+          <label>
+            <span>年份</span>
+            <select id="searchYearFilter" aria-label="按年份筛选" aria-controls="searchResults searchStatus">
+              <option value="">全部年份</option>
+            </select>
+          </label>
+          <label>
+            <span>分类</span>
+            <select id="searchCategoryFilter" aria-label="按分类筛选" aria-controls="searchResults searchStatus">
+              <option value="">全部分类</option>
+            </select>
+          </label>
+        </div>
         <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchResults searchFacets" hidden>清空</button>
       </div>
       <div class="search-layout">

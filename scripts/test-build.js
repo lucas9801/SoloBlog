@@ -149,6 +149,9 @@ try {
 
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.doesNotMatch(archive, /class="page-context"/);
+  assert.match(archive, /class="archive-filter-form"/);
+  assert.match(archive, /data-archive-year/);
+  assert.match(archive, /data-category-slug="图形渲染"/);
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, />全部年份 <b>3<\/b><\/a>[\s\S]*>全部分类 <b>3<\/b><\/a>/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
@@ -165,6 +168,7 @@ try {
   assert.match(home, /data-copy-rss-status/);
   assert.match(home, /站点地图/);
   assert.doesNotMatch(home, /Recommended|Latest Posts|Technical Archive/);
+  assert.match(home, /<link rel="alternate" type="application\/rss\+xml" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/rss\.xml" \/>/);
   assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
   assert.match(home, /\/src\/styles\.css\?v=[0-9a-f]{12}/);
@@ -260,7 +264,11 @@ try {
 
   const search = await readFile(path.join(tempRoot, "dist", "search", "index.html"), "utf8");
   assert.doesNotMatch(search, /class="page-title"/);
+  assert.doesNotMatch(search, /class="section-kicker"/);
   assert.match(search, /class="page-shell search-page"/);
+  assert.match(search, /class="search-filter-selects"/);
+  assert.match(search, /id="searchYearFilter"/);
+  assert.match(search, /id="searchCategoryFilter"/);
   assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类或标签"/);
   assert.match(search, /id="searchInputPage"[^>]+aria-describedby="searchStatus"[^>]+aria-controls="searchResults searchFacets"/);
   assert.match(search, /id="searchStatus" class="search-status" role="status" aria-live="polite"/);
