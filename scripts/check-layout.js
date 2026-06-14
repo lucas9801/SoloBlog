@@ -33,7 +33,7 @@ function pageName(pathname) {
 }
 
 async function defaultPaths() {
-  const paths = ["/", "/archive/", "/tags/", "/series/", "/search/", "/404.html"];
+  const paths = ["/", "/archive/", "/tags/", "/series/", "/search/", "/about/", "/404.html"];
 
   const searchIndex = await readFile(path.join(root, "dist", "search-index.json"), "utf8")
     .then(JSON.parse)
@@ -43,6 +43,7 @@ async function defaultPaths() {
   const firstYear = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.year)?.year : "";
   if (firstYear) paths.splice(3, 0, `/years/${firstYear}/`);
   const firstCategory = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.category)?.category : "";
+  if (firstCategory) paths.splice(4, 0, `/categories/${slugifyForPath(firstCategory)}/`);
   if (firstYear && firstCategory) paths.splice(4, 0, `/archive/${slugifyForPath(firstYear)}/${slugifyForPath(firstCategory)}/`);
   const firstTag = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.tags?.length)?.tags[0] : "";
   if (firstTag) paths.splice(5, 0, `/tags/${slugifyForPath(firstTag)}/`);

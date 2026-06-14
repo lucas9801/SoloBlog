@@ -50,6 +50,7 @@ const [
   viewsMigration,
   viewEventsMigration,
   buildScript,
+  checkLayoutScript,
   checkOutputScript,
   headers,
   packageConfig,
@@ -66,6 +67,7 @@ const [
   readFile(path.join(root, "migrations/0001_post_views.sql"), "utf8"),
   readFile(path.join(root, "migrations/0002_post_view_events.sql"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
+  readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
@@ -272,6 +274,9 @@ if (css.includes(".page-context")) {
 }
 if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("CollectionPage")) {
   failures.push("Index pages must expose page-level structured data.");
+}
+if (!checkLayoutScript.includes('"/about/"') || !checkLayoutScript.includes("/categories/${slugifyForPath(firstCategory)}/")) {
+  failures.push("Layout checks must cover the about page and a category archive page by default.");
 }
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
