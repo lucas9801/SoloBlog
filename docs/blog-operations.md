@@ -43,6 +43,12 @@ cd D:\MyBlog
 npm run new:post -- "文章标题"
 ```
 
+也可以在新建时直接写入分类、标签、摘要、专题和精选状态：
+
+```powershell
+npm run new:post -- "Unity 性能预算" --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。" --series "性能与渲染排查" --series-order 3 --featured
+```
+
 发布前完整检查：
 
 ```powershell
@@ -94,6 +100,12 @@ http://localhost:4173
 npm run new:post -- "Unity 性能优化记录"
 ```
 
+如果分类、标签和摘要已经确定，可以一次生成更完整的草稿：
+
+```powershell
+npm run new:post -- "Unity 性能优化记录" --category Unity --tags "Unity,性能,Profiler" --summary "记录一次 Unity 性能分析流程。"
+```
+
 脚本会在 `content/posts/` 里生成一个 Markdown 文件，例如：
 
 ```text
@@ -102,16 +114,16 @@ content/posts/2026-06-04-unity-性能优化记录.md
 
 如果同名文章或同名 slug 已经存在，脚本会自动追加编号，避免覆盖已有文章。
 
-打开这个文件，会看到类似内容：
+使用上面带参数的命令时，打开这个文件会看到类似内容：
 
 ```yaml
 ---
 title: Unity 性能优化记录
 slug: unity-性能优化记录
 date: 2026-06-04
-category: 未分类
-tags: []
-summary: 这里写一句文章摘要。
+category: Unity
+tags: ["Unity", "性能", "Profiler"]
+summary: "记录一次 Unity 性能分析流程。"
 status: draft
 ---
 ```

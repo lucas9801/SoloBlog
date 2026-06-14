@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -49,6 +49,18 @@ function parseJsonString(value) {
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "solus-new-post-"));
 
 try {
+  await mkdir(path.join(tempRoot, "content"), { recursive: true });
+  await writeFile(
+    path.join(tempRoot, "content", "site.json"),
+    JSON.stringify({
+      categoryCovers: {
+        Unity: "/assets/posts/unity.svg",
+        工具链: "/assets/posts/toolchain.svg"
+      }
+    }),
+    "utf8"
+  );
+
   let result = await runNewPost(tempRoot, []);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /Usage:/);
@@ -75,6 +87,44 @@ try {
     assert.equal(frontMatterValue(post, "category"), "未分类");
     assert.match(post, /## 小标题/);
   }
+
+  result = await runNewPost(tempRoot, [
+    "Unity 性能预算",
+    "--category",
+    "Unity",
+    "--tags",
+    "Unity, 性能，Profiler",
+    "--summary",
+    "建立 Unity 性能分析入口。",
+    "--series",
+    "性能与渲染排查",
+    "--series-order",
+    "3",
+    "--featured"
+  ]);
+  assert.equal(result.code, 0);
+
+  const updatedFiles = (await readdir(postsDir)).filter((file) => file.endsWith(".md")).sort();
+  assert.equal(updatedFiles.length, 3);
+  const optionPost = (
+    await Promise.all(updatedFiles.map((file) => readFile(path.join(postsDir, file), "utf8")))
+  ).find((post) => parseJsonString(frontMatterValue(post, "title")) === "Unity 性能预算");
+  assert.ok(optionPost);
+  assert.equal(parseJsonString(frontMatterValue(optionPost, "category")), "Unity");
+  assert.deepEqual(JSON.parse(frontMatterValue(optionPost, "tags")), ["Unity", "性能", "Profiler"]);
+  assert.equal(parseJsonString(frontMatterValue(optionPost, "summary")), "建立 Unity 性能分析入口。");
+  assert.equal(parseJsonString(frontMatterValue(optionPost, "series")), "性能与渲染排查");
+  assert.equal(frontMatterValue(optionPost, "seriesOrder"), "3");
+  assert.equal(frontMatterValue(optionPost, "featured"), "true");
+  assert.equal(frontMatterValue(optionPost, "status"), "draft");
+
+  result = await runNewPost(tempRoot, ["Bad Category", "--category", "Unknown"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Unknown category/);
+
+  result = await runNewPost(tempRoot, ["Bad Series", "--series-order", "0"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /positive integer/);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

@@ -1,10 +1,101 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const title = process.argv.slice(2).join(" ").trim();
+const args = process.argv.slice(2);
+const options = {
+  category: "未分类",
+  tags: [],
+  summary: "这里写一句文章摘要。",
+  series: "",
+  seriesOrder: "",
+  featured: false
+};
+const titleParts = [];
+
+function usage() {
+  return `Usage: npm run new:post -- "文章标题" [options]
+
+Options:
+  --category <name>       设置分类，例如 Unity
+  --tags <a,b,c>          设置标签，使用逗号分隔
+  --summary <text>        设置摘要
+  --series <name>         设置专题名称
+  --series-order <number> 设置专题内排序
+  --featured             标记为推荐阅读`;
+}
+
+function readOptionValue(flag, index) {
+  const value = args[index + 1];
+  if (!value || value.startsWith("--")) {
+    console.error(`${flag} requires a value.`);
+    console.error(usage());
+    process.exit(1);
+  }
+  return value;
+}
+
+function splitList(value) {
+  return String(value || "")
+    .split(/[，,;；]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+for (let index = 0; index < args.length; index += 1) {
+  const arg = args[index];
+  if (!arg.startsWith("--")) {
+    titleParts.push(arg);
+    continue;
+  }
+
+  if (arg === "--help" || arg === "-h") {
+    console.log(usage());
+    process.exit(0);
+  }
+  if (arg === "--featured") {
+    options.featured = true;
+    continue;
+  }
+  if (arg === "--category") {
+    options.category = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
+  if (arg === "--tags" || arg === "--tag") {
+    options.tags = splitList(readOptionValue(arg, index));
+    index += 1;
+    continue;
+  }
+  if (arg === "--summary") {
+    options.summary = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
+  if (arg === "--series") {
+    options.series = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
+  if (arg === "--series-order") {
+    options.seriesOrder = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
+
+  console.error(`Unknown option: ${arg}`);
+  console.error(usage());
+  process.exit(1);
+}
+
+const title = titleParts.join(" ").trim();
 
 if (!title) {
-  console.error('Usage: npm run new:post -- "文章标题"');
+  console.error(usage());
+  process.exit(1);
+}
+
+if (options.seriesOrder && (!/^\d+$/.test(options.seriesOrder) || Number.parseInt(options.seriesOrder, 10) <= 0)) {
+  console.error("--series-order must be a positive integer.");
   process.exit(1);
 }
 
@@ -24,6 +115,10 @@ function parseFrontMatterValue(value) {
 
 function yamlString(value) {
   return JSON.stringify(String(value).replace(/\r\n/g, "\n").replace(/\r/g, "\n"));
+}
+
+function yamlArray(values) {
+  return `[${values.map(yamlString).join(", ")}]`;
 }
 
 function parseSlug(source) {
@@ -63,6 +158,22 @@ const now = new Date();
 const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 const date = localDate.toISOString().slice(0, 10);
 const postsDir = path.join(process.cwd(), "content", "posts");
+const siteConfigPath = path.join(process.cwd(), "content", "site.json");
+const knownCategories = await readFile(siteConfigPath, "utf8")
+  .then((raw) => new Set(Object.keys(JSON.parse(raw).categoryCovers || {})))
+  .catch(() => new Set());
+
+if (
+  options.category &&
+  options.category !== "未分类" &&
+  knownCategories.size > 0 &&
+  !knownCategories.has(options.category)
+) {
+  console.error(`Unknown category: ${options.category}`);
+  console.error(`Known categories: ${[...knownCategories].join(", ")}`);
+  process.exit(1);
+}
+
 const usedSlugs = await existingSlugs(postsDir);
 const baseSlug = slugify(title);
 let slug = baseSlug;
@@ -74,17 +185,22 @@ while (usedSlugs.has(slug) || (await fileExists(file))) {
   suffix += 1;
 }
 
-const template = `---
-title: ${yamlString(title)}
-slug: ${yamlString(slug)}
-date: ${date}
-category: 未分类
-tags: []
-# series: 专题名称
-# seriesOrder: 1
-summary: 这里写一句文章摘要。
-status: draft
----
+const frontMatter = [
+  "---",
+  `title: ${yamlString(title)}`,
+  `slug: ${yamlString(slug)}`,
+  `date: ${date}`,
+  `category: ${options.category === "未分类" ? options.category : yamlString(options.category)}`,
+  `tags: ${yamlArray(options.tags)}`,
+  options.series ? `series: ${yamlString(options.series)}` : "# series: 专题名称",
+  options.seriesOrder ? `seriesOrder: ${Number.parseInt(options.seriesOrder, 10)}` : "# seriesOrder: 1",
+  `summary: ${yamlString(options.summary)}`,
+  options.featured ? "featured: true" : "",
+  "status: draft",
+  "---"
+].filter(Boolean);
+
+const template = `${frontMatter.join("\n")}
 
 从这里开始写正文。
 
