@@ -507,6 +507,15 @@ if (
   failures.push("Article code blocks must expose keyboard scroll and accessible copy feedback.");
 }
 if (
+  !buildScript.includes("data-copy-article-url") ||
+  !buildScript.includes("data-copy-article-status") ||
+  !articleScript.includes("data-copy-article-url") ||
+  !articleScript.includes("本文链接已复制") ||
+  !css.includes(".article-footer-tools")
+) {
+  failures.push("Article pages must expose an accessible permalink copy action.");
+}
+if (
   !searchScript.includes("searchFacets") ||
   !searchScript.includes("searchYearFilter") ||
   !searchScript.includes("searchCategoryFilter") ||

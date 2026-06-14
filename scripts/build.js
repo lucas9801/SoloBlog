@@ -1737,7 +1737,11 @@ function postPage(post, posts) {
       </header>
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
-        <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
+        <div class="article-footer-tools">
+          <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
+          <button class="secondary-button article-copy-link" type="button" data-copy-article-url="${escapeAttr(absoluteUrl(post.url))}" aria-label="复制本文链接">复制链接</button>
+          <span class="sr-only" aria-live="polite" data-copy-article-status></span>
+        </div>
         ${seriesPanel(post, posts)}
         ${postNavigation(post, posts)}
       </footer>

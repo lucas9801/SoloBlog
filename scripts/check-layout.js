@@ -746,6 +746,19 @@ async function checkViewport(viewport, page) {
                 }
               }
 
+              const copyArticleButton = document.querySelector("[data-copy-article-url]");
+              const copyArticleStatus = document.querySelector("[data-copy-article-status]");
+              if (!(copyArticleButton instanceof HTMLButtonElement)) {
+                failures.push("article copy link button is missing");
+              } else {
+                copyArticleButton.click();
+                await waitFor(() => copyArticleButton.textContent.trim() !== "复制链接", 1600);
+                const copyFeedback = (copyArticleButton.textContent || "") + " " + (copyArticleStatus?.textContent || "");
+                if (!copyFeedback.includes("已复制") && !copyFeedback.includes("复制失败")) {
+                  failures.push("article copy link button did not expose feedback");
+                }
+              }
+
               const readPercent = () => Number.parseInt(percentNode.textContent || "0", 10) || 0;
               await instantScrollTo(0);
               await wait(180);

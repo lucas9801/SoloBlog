@@ -1635,6 +1635,22 @@ pre {
   padding: 0 42px 42px;
 }
 
+.article-footer-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.article-footer-tools .tag-row {
+  flex: 1 1 260px;
+}
+
+.article-copy-link {
+  flex: 0 0 auto;
+}
+
 .series-panel {
   margin-top: 24px;
   padding: 16px;

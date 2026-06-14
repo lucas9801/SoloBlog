@@ -262,6 +262,35 @@ updateViewCount().catch(() => {
 });
 
 article?.addEventListener("click", async (event) => {
+  const articleLinkButton = event.target.closest("[data-copy-article-url]");
+  if (articleLinkButton) {
+    const status = articleLinkButton.parentElement?.querySelector("[data-copy-article-status]");
+    const previousText = articleLinkButton.textContent;
+    const previousLabel = articleLinkButton.getAttribute("aria-label");
+    const url = articleLinkButton.dataset.copyArticleUrl || window.location.href;
+
+    if (await copyText(url)) {
+      articleLinkButton.textContent = "已复制";
+      articleLinkButton.setAttribute("aria-label", "本文链接已复制");
+      if (status) status.textContent = "本文链接已复制";
+    } else {
+      articleLinkButton.textContent = "复制失败";
+      articleLinkButton.setAttribute("aria-label", "本文链接复制失败");
+      if (status) status.textContent = "本文链接复制失败";
+    }
+
+    window.setTimeout(() => {
+      articleLinkButton.textContent = previousText;
+      if (previousLabel) {
+        articleLinkButton.setAttribute("aria-label", previousLabel);
+      } else {
+        articleLinkButton.removeAttribute("aria-label");
+      }
+      if (status) status.textContent = "";
+    }, 1400);
+    return;
+  }
+
   const button = event.target.closest("[data-copy-code]");
   if (!button) return;
 

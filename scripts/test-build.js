@@ -136,6 +136,8 @@ try {
   assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<meta name="twitter:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<a class="active" href="\/archive\/" aria-current="page">文章<\/a>/);
+  assert.match(article, /data-copy-article-url="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/"/);
+  assert.match(article, /data-copy-article-status/);
   const articleJsonLd = jsonLdObjects(article);
   const techArticle = articleJsonLd.find((item) => item["@type"] === "TechArticle");
   const breadcrumb = articleJsonLd.find((item) => item["@type"] === "BreadcrumbList");
