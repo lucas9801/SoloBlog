@@ -8,6 +8,7 @@ const options = {
   summary: "这里写一句文章摘要。",
   series: "",
   seriesOrder: "",
+  slug: "",
   featured: false
 };
 const titleParts = [];
@@ -19,6 +20,7 @@ Options:
   --category <name>       设置分类，例如 Unity
   --tags <a,b,c>          设置标签，使用逗号分隔
   --summary <text>        设置摘要
+  --slug <slug>           设置英文 URL slug，例如 unity-performance-budget
   --series <name>         设置专题名称
   --series-order <number> 设置专题内排序
   --featured             标记为推荐阅读`;
@@ -71,6 +73,11 @@ for (let index = 0; index < args.length; index += 1) {
     index += 1;
     continue;
   }
+  if (arg === "--slug") {
+    options.slug = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
   if (arg === "--series") {
     options.series = readOptionValue(arg, index).trim();
     index += 1;
@@ -107,6 +114,10 @@ function slugify(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
     .replace(/^-+|-+$/g, "") || "new-post";
+}
+
+function isCanonicalSlug(value) {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
 }
 
 function parseFrontMatterValue(value) {
@@ -175,14 +186,26 @@ if (
 }
 
 const usedSlugs = await existingSlugs(postsDir);
-const baseSlug = slugify(title);
+const baseSlug = options.slug || slugify(title);
+if (options.slug && !isCanonicalSlug(options.slug)) {
+  console.error("--slug must use lowercase English letters, numbers, and single hyphens.");
+  process.exit(1);
+}
+if (options.slug && usedSlugs.has(options.slug)) {
+  console.error(`Slug already exists: ${options.slug}`);
+  process.exit(1);
+}
 let slug = baseSlug;
 let suffix = 2;
 let file = path.join(postsDir, `${date}-${slug}.md`);
-while (usedSlugs.has(slug) || (await fileExists(file))) {
+while (!options.slug && (usedSlugs.has(slug) || (await fileExists(file)))) {
   slug = `${baseSlug}-${suffix}`;
   file = path.join(postsDir, `${date}-${slug}.md`);
   suffix += 1;
+}
+if (options.slug && (await fileExists(file))) {
+  console.error(`Post file already exists: ${file}`);
+  process.exit(1);
 }
 
 const frontMatter = [

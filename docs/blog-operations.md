@@ -46,7 +46,7 @@ npm run new:post -- "文章标题"
 也可以在新建时直接写入分类、标签、摘要、专题和精选状态：
 
 ```powershell
-npm run new:post -- "Unity 性能预算" --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。" --series "性能与渲染排查" --series-order 3 --featured
+npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。" --series "性能与渲染排查" --series-order 3 --featured
 ```
 
 发布前完整检查：
@@ -103,16 +103,16 @@ npm run new:post -- "Unity 性能优化记录"
 如果分类、标签和摘要已经确定，可以一次生成更完整的草稿：
 
 ```powershell
-npm run new:post -- "Unity 性能优化记录" --category Unity --tags "Unity,性能,Profiler" --summary "记录一次 Unity 性能分析流程。"
+npm run new:post -- "Unity 性能优化记录" --slug unity-performance-notes --category Unity --tags "Unity,性能,Profiler" --summary "记录一次 Unity 性能分析流程。"
 ```
 
 脚本会在 `content/posts/` 里生成一个 Markdown 文件，例如：
 
 ```text
-content/posts/2026-06-04-unity-性能优化记录.md
+content/posts/2026-06-04-unity-performance-notes.md
 ```
 
-如果同名文章或同名 slug 已经存在，脚本会自动追加编号，避免覆盖已有文章。
+如果没有手动设置 `--slug`，同名文章会自动追加编号，避免覆盖已有文章。设置了 `--slug` 时，如果 slug 已存在，脚本会直接报错，避免发布后 URL 和预期不一致。
 
 使用上面带参数的命令时，打开这个文件会看到类似内容：
 

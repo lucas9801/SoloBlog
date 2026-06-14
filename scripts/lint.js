@@ -52,6 +52,7 @@ const [
   viewsMigration,
   viewEventsMigration,
   buildScript,
+  newPostScript,
   checkLayoutScript,
   checkOutputScript,
   headers,
@@ -73,6 +74,7 @@ const [
   readFile(path.join(root, "migrations/0001_post_views.sql"), "utf8"),
   readFile(path.join(root, "migrations/0002_post_view_events.sql"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
+  readFile(path.join(root, "scripts/new-post.js"), "utf8"),
   readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
@@ -128,6 +130,10 @@ function slugify(value = "") {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function isCanonicalSlug(value) {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
 }
 
 function isDate(value) {
@@ -530,6 +536,13 @@ if (!packageConfig.scripts?.["deploy:cloudflare"]?.includes("--project-name solo
 if (!/^name\s*=\s*"soloblog-4w3"/m.test(wranglerConfig)) {
   failures.push("wrangler.toml must target the current Cloudflare Pages project.");
 }
+if (
+  !newPostScript.includes("--slug <slug>") ||
+  !newPostScript.includes("isCanonicalSlug") ||
+  !blogOperationsDocs.includes("--slug unity-performance")
+) {
+  failures.push("New post workflow must support explicit canonical slugs.");
+}
 if (site.comments?.enabled) {
   for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {
     if (!site.comments[key]) failures.push(`comments.${key} is required when comments are enabled.`);
@@ -564,6 +577,9 @@ for (const post of posts) {
   if (!hasFrontMatter) failures.push(`${file} is missing front matter.`);
   if (!data.title) failures.push(`${file} is missing title.`);
   if (!slug) failures.push(`${file} has an empty slug.`);
+  if (slug && !isCanonicalSlug(slug)) {
+    failures.push(`${file} slug must use lowercase English letters, numbers, and single hyphens.`);
+  }
   if (!isDate(data.date)) failures.push(`${file} is missing YYYY-MM-DD date.`);
   if (data.updated && !isDate(data.updated)) failures.push(`${file} has invalid updated date.`);
   if (isDate(data.date) && isDate(data.updated) && new Date(data.updated) < new Date(data.date)) {

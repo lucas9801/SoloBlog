@@ -96,6 +96,8 @@ try {
     "Unity, 性能，Profiler",
     "--summary",
     "建立 Unity 性能分析入口。",
+    "--slug",
+    "unity-performance-budget",
     "--series",
     "性能与渲染排查",
     "--series-order",
@@ -110,6 +112,7 @@ try {
     await Promise.all(updatedFiles.map((file) => readFile(path.join(postsDir, file), "utf8")))
   ).find((post) => parseJsonString(frontMatterValue(post, "title")) === "Unity 性能预算");
   assert.ok(optionPost);
+  assert.equal(parseJsonString(frontMatterValue(optionPost, "slug")), "unity-performance-budget");
   assert.equal(parseJsonString(frontMatterValue(optionPost, "category")), "Unity");
   assert.deepEqual(JSON.parse(frontMatterValue(optionPost, "tags")), ["Unity", "性能", "Profiler"]);
   assert.equal(parseJsonString(frontMatterValue(optionPost, "summary")), "建立 Unity 性能分析入口。");
@@ -125,6 +128,14 @@ try {
   result = await runNewPost(tempRoot, ["Bad Series", "--series-order", "0"]);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /positive integer/);
+
+  result = await runNewPost(tempRoot, ["Bad Slug", "--slug", "Bad Slug"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /lowercase English/);
+
+  result = await runNewPost(tempRoot, ["Duplicate Slug", "--slug", "unity-performance-budget"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Slug already exists/);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

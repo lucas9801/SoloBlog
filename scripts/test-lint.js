@@ -58,6 +58,7 @@ try {
   const tomorrow = localDateString(new Date(Date.now() + 24 * 60 * 60 * 1000));
   const brokenPost = (await readFile(postPath, "utf8"))
     .replace(/^date: .+$/m, `date: ${tomorrow}`)
+    .replace(/^slug: .+$/m, "slug: Bad Slug")
     .replace(/^category: .+$/m, "category: 模板分类")
     .replace(/^tags: .+$/m, "tags: [Unity, Unity, #Profiler]")
     .replace(/\s*$/, "\n\n[bad](javascript:alert(1)) and [relative](notes/relative-path).\n\n![](/assets/og/solus-og.png)\n");
@@ -66,6 +67,7 @@ try {
   result = await runLint(tempRoot);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /published date cannot be in the future/);
+  assert.match(result.stderr, /slug must use lowercase English letters/);
   assert.match(result.stderr, /category "模板分类" must be declared/);
   assert.match(result.stderr, /duplicates tag "Unity"/);
   assert.match(result.stderr, /tag "#Profiler" must not start with #/);
