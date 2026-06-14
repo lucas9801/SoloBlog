@@ -345,6 +345,13 @@ if (!checkLayoutScript.includes('"/about/"') || !checkLayoutScript.includes("/ca
 if (!checkLayoutScript.includes("startPreviewIfNeeded") || !checkLayoutScript.includes("scripts/preview.js")) {
   failures.push("Layout checks must start a local preview server when CHECK_URL is not provided.");
 }
+if (
+  checkLayoutScript.includes("archiveRuntime") &&
+  (!checkLayoutScript.includes('await send("Page.navigate", { url: page.url });') ||
+    !checkLayoutScript.includes("waitForPathname(page.pathname)"))
+) {
+  failures.push("Layout checks must restore archive pages before screenshot capture.");
+}
 if (!checkLayoutScript.includes("footer is floating above the viewport bottom")) {
   failures.push("Layout checks must prevent short-page footers from floating mid-viewport.");
 }

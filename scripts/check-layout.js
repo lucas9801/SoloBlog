@@ -282,6 +282,21 @@ async function checkViewport(viewport, page) {
     });
 
     const send = (method, params = {}) => client.send(method, params, sessionId);
+    const currentPathname = async () => {
+      const location = await send("Runtime.evaluate", {
+        returnByValue: true,
+        expression: "decodeURIComponent(location.pathname)"
+      });
+      return location.result.value || "";
+    };
+    const waitForPathname = async (expectedPathname, timeoutMs = 4000) => {
+      const started = Date.now();
+      while (Date.now() - started < timeoutMs) {
+        if ((await currentPathname()) === expectedPathname) return true;
+        await wait(80);
+      }
+      return false;
+    };
 
     await send("Emulation.setDeviceMetricsOverride", {
       width: viewport.width,
@@ -612,13 +627,12 @@ async function checkViewport(viewport, page) {
     const archiveNavigationFailures = [];
     const archiveTargetPath = archiveRuntime.result.value?.targetPath || "";
     if (archiveTargetPath) {
-      await wait(900);
-      const archiveLocation = await send("Runtime.evaluate", {
-        returnByValue: true,
-        expression: "decodeURIComponent(location.pathname)"
-      });
-      if (archiveLocation.result.value !== archiveTargetPath) {
+      if (!(await waitForPathname(archiveTargetPath))) {
         archiveNavigationFailures.push("archive combined year/category filter did not navigate to " + archiveTargetPath);
+      }
+      await send("Page.navigate", { url: page.url });
+      if (!(await waitForPathname(page.pathname))) {
+        archiveNavigationFailures.push("archive page was not restored before screenshot capture");
       }
     }
     const articleRuntime =
