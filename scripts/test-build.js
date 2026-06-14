@@ -150,6 +150,7 @@ try {
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.doesNotMatch(archive, /class="page-context"/);
   assert.match(archive, /href="\/years\/2026\/"/);
+  assert.match(archive, />全部年份 <b>3<\/b><\/a>[\s\S]*>全部分类 <b>3<\/b><\/a>/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
   const archiveCollection = jsonLdObjects(archive).find((item) => item["@type"] === "CollectionPage");
@@ -196,6 +197,8 @@ try {
   );
   assert.doesNotMatch(combinedArchivePage, /class="page-title"/);
   assert.match(combinedArchivePage, /href="\/posts\/markdown-followup\/"/);
+  assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/">全部年份 <b>2<\/b><\/a>/);
+  assert.match(combinedArchivePage, /href="\/years\/2026\/">全部分类 <b>3<\/b><\/a>/);
   assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/"/);
   assert.match(combinedArchivePage, /aria-current="page">图形渲染 <b>2<\/b><\/a>/);
   assert.match(combinedArchivePage, /aria-current="page">2026 <b>2<\/b><\/a>/);
@@ -258,6 +261,7 @@ try {
   const search = await readFile(path.join(tempRoot, "dist", "search", "index.html"), "utf8");
   assert.doesNotMatch(search, /class="page-title"/);
   assert.match(search, /class="page-shell search-page"/);
+  assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类或标签"/);
   assert.match(search, /id="searchInputPage"[^>]+aria-describedby="searchStatus"[^>]+aria-controls="searchResults searchFacets"/);
   assert.match(search, /id="searchStatus" class="search-status" role="status" aria-live="polite"/);
   assert.match(search, /id="searchResults" class="search-results" role="list"/);

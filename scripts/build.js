@@ -827,7 +827,7 @@ function pageLayout({
       <form class="site-search" action="/search/" method="get">
         <label>
           <span class="sr-only">搜索文章</span>
-          <input name="q" type="search" placeholder="搜索文章、分类、标签" />
+          <input name="q" type="search" placeholder="搜索文章、年份、分类、标签" />
         </label>
         <button type="submit" aria-label="搜索">⌕</button>
       </form>
@@ -1091,17 +1091,8 @@ function archiveFilters(
   years,
   { activeCategory = "", activeYear = "", totalCount, categoryTotalCount = totalCount, yearTotalCount = totalCount }
 ) {
-  const categoryLinks = [
-    `<a class="${!activeCategory ? "active" : ""}" href="${archiveSelectionPath({ year: activeYear })}"${!activeCategory ? ` aria-current="page"` : ""}>全部 <b>${categoryTotalCount}</b></a>`,
-    ...categories.map(([category, list]) => {
-      const active = category === activeCategory;
-      const activeClass = active ? "active" : "";
-      const ariaCurrent = active ? ` aria-current="page"` : "";
-      return `<a class="${activeClass}" href="${archiveSelectionPath({ category, year: activeYear })}"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
-    })
-  ];
   const yearLinks = [
-    `<a class="${!activeYear ? "active" : ""}" href="${archiveSelectionPath({ category: activeCategory })}"${!activeYear ? ` aria-current="page"` : ""}>全部 <b>${yearTotalCount}</b></a>`,
+    `<a class="${!activeYear ? "active" : ""}" href="${archiveSelectionPath({ category: activeCategory })}"${!activeYear ? ` aria-current="page"` : ""}>全部年份 <b>${yearTotalCount}</b></a>`,
     ...years.map(([year, list]) => {
       const active = year === activeYear;
       const activeClass = active ? "active" : "";
@@ -1109,10 +1100,19 @@ function archiveFilters(
       return `<a class="${activeClass}" href="${archiveSelectionPath({ category: activeCategory, year })}"${ariaCurrent}>${escapeHtml(year)} <b>${list.length}</b></a>`;
     })
   ];
+  const categoryLinks = [
+    `<a class="${!activeCategory ? "active" : ""}" href="${archiveSelectionPath({ year: activeYear })}"${!activeCategory ? ` aria-current="page"` : ""}>全部分类 <b>${categoryTotalCount}</b></a>`,
+    ...categories.map(([category, list]) => {
+      const active = category === activeCategory;
+      const activeClass = active ? "active" : "";
+      const ariaCurrent = active ? ` aria-current="page"` : "";
+      return `<a class="${activeClass}" href="${archiveSelectionPath({ category, year: activeYear })}"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
+    })
+  ];
 
   return `<div class="archive-filter-stack">
-    ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
     ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
+    ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
   </div>`;
 }
 
@@ -1757,7 +1757,7 @@ function searchPage() {
       <div class="search-controls">
         <label>
           <span class="sr-only">搜索关键词</span>
-          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" autofocus />
+          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" autofocus />
         </label>
         <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchResults searchFacets" hidden>清空</button>
       </div>
