@@ -168,6 +168,21 @@ function pagePathFromFile(file) {
   return `/${relative}`;
 }
 
+function pageHref(basePath, page) {
+  const cleanBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+  return page === 1 ? cleanBase : `${cleanBase}page/${page}/`;
+}
+
+function paginationContext(file) {
+  const currentPath = pagePathFromFile(file);
+  const match = currentPath.match(/^(.*\/)page\/(\d+)\/$/);
+  if (!match) return { basePath: currentPath, currentPage: 1 };
+  return {
+    basePath: match[1],
+    currentPage: Number.parseInt(match[2], 10)
+  };
+}
+
 function isValidDate(value) {
   return !Number.isNaN(Date.parse(value));
 }
@@ -203,6 +218,38 @@ function checkCanonical(file, html) {
   const ogUrl = html.match(/<meta\s+property="og:url"\s+content="([^"]+)"/)?.[1];
   if (ogUrl !== canonicalUrl.toString()) {
     failures.push(`${relative} og:url must match canonical URL.`);
+  }
+}
+
+async function checkPaginationLinks(file, html) {
+  const relative = displayPath(file);
+  const { basePath, currentPage } = paginationContext(file);
+  const relLinks = [...html.matchAll(/<link\s+rel="(prev|next)"\s+href="([^"]+)"\s*\/?>/g)].map((match) => ({
+    rel: match[1],
+    href: match[2]
+  }));
+  const links = new Map();
+  for (const rel of ["prev", "next"]) {
+    const matches = relLinks.filter((link) => link.rel === rel);
+    if (matches.length > 1) failures.push(`${relative} must contain at most one rel="${rel}" link.`);
+    if (matches.length === 1) links.set(rel, matches[0].href);
+  }
+  const expectedPrev = currentPage > 1 ? new URL(pageHref(basePath, currentPage - 1), absoluteSiteRoot).toString() : "";
+  const expectedNext = (await localTargetExists(pageHref(basePath, currentPage + 1)))
+    ? new URL(pageHref(basePath, currentPage + 1), absoluteSiteRoot).toString()
+    : "";
+
+  for (const [rel, expected] of [
+    ["prev", expectedPrev],
+    ["next", expectedNext]
+  ]) {
+    const actual = links.get(rel) || "";
+    if (expected && actual !== expected) {
+      failures.push(`${relative} rel="${rel}" must be ${expected}.`);
+    }
+    if (!expected && actual) {
+      failures.push(`${relative} must not include rel="${rel}" without a matching page.`);
+    }
   }
 }
 
@@ -934,6 +981,7 @@ async function main() {
     checkContentLandmarks(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
+    await checkPaginationLinks(file, html);
     await checkStructuredData(file, html);
     checkFeedDiscovery(file, html);
     checkSearchDiscovery(file, html);

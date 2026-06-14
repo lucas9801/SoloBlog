@@ -337,6 +337,15 @@ if (
 ) {
   failures.push("Output checks must validate skip links and the main content landmark.");
 }
+if (
+  !checkOutputScript.includes("function checkPaginationLinks") ||
+  !checkOutputScript.includes("expectedPrev") ||
+  !checkOutputScript.includes("expectedNext") ||
+  !checkOutputScript.includes("pageHref(basePath") ||
+  !checkOutputScript.includes("matching page")
+) {
+  failures.push("Output checks must validate pagination prev/next head links.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
