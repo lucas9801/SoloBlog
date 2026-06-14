@@ -171,6 +171,7 @@ try {
   const yearPage = await readFile(path.join(tempRoot, "dist", "years", "2026", "index.html"), "utf8");
   assert.match(yearPage, /2026 年文章/);
   assert.match(yearPage, /href="\/posts\/markdown-followup\/"/);
+  assert.match(yearPage, /href="\/archive\/2026\/图形渲染\/"/);
   assert.match(yearPage, /aria-current="page">2026 <b>3<\/b><\/a>/);
   assert.match(yearPage, /href="\/years\/2026\/page\/2\/"/);
   assert.equal(
@@ -186,8 +187,11 @@ try {
     path.join(tempRoot, "dist", "archive", "2026", "图形渲染", "index.html"),
     "utf8"
   );
+  assert.doesNotMatch(combinedArchivePage, /class="page-title"/);
   assert.match(combinedArchivePage, /href="\/posts\/markdown-followup\/"/);
   assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/"/);
+  assert.match(combinedArchivePage, /aria-current="page">图形渲染 <b>2<\/b><\/a>/);
+  assert.match(combinedArchivePage, /aria-current="page">2026 <b>2<\/b><\/a>/);
   assert.equal(
     jsonLdObjects(combinedArchivePage).find((item) => item["@type"] === "CollectionPage").url,
     new URL("/archive/2026/图形渲染/", "https://blog.solus.games/").toString()

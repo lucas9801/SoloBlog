@@ -801,8 +801,12 @@ async function main() {
     if (relative.startsWith("dist/posts/") && html.includes("/src/views.js")) {
       failures.push(`${relative} loads views.js even though article.js handles article views.`);
     }
-    if (/^dist\/(?:archive|categories|years|tags|series)\//.test(relative) && html.includes('class="page-context"')) {
+    const collectionIndex = /^dist\/(?:archive|categories|years|tags|series)\//.test(relative);
+    if (collectionIndex && html.includes('class="page-context"')) {
       failures.push(`${relative} must not render the page context title block.`);
+    }
+    if (collectionIndex && html.includes('class="page-title"')) {
+      failures.push(`${relative} must not render a visible page title block.`);
     }
     if (relative === "dist/search/index.html" && html.includes('class="page-title"')) {
       failures.push("dist/search/index.html must not render a large visible title block.");

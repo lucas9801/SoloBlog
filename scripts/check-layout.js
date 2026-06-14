@@ -468,6 +468,24 @@ async function checkViewport(viewport, page) {
                 if (selectedYear && url.searchParams.get("year") !== selectedYear) {
                   failures.push("category facet did not preserve the selected year");
                 }
+                await wait(120);
+                const resultCards = Array.from(document.querySelectorAll(".search-result-card"));
+                if (resultCards.length === 0) {
+                  failures.push("combined year and category facets rendered no result cards");
+                }
+                if (selectedYear && resultCards.some((card) => card.dataset.resultYear !== selectedYear)) {
+                  failures.push("combined search results include posts outside the selected year");
+                }
+                if (selectedCategory && resultCards.some((card) => card.dataset.resultCategory !== selectedCategory)) {
+                  failures.push("combined search results include posts outside the selected category");
+                }
+                const summaryText = results.textContent || "";
+                if (selectedYear && !summaryText.includes("年份：" + selectedYear)) {
+                  failures.push("combined search summary does not show the selected year");
+                }
+                if (selectedCategory && !summaryText.includes("分类：" + selectedCategory)) {
+                  failures.push("combined search summary does not show the selected category");
+                }
               } else {
                 failures.push("category facet button is missing");
               }

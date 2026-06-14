@@ -269,6 +269,9 @@ if (!checkOutputScript.includes("checkInteractiveNames")) {
 if (!checkOutputScript.includes("must not render the page context title block")) {
   failures.push("Output checks must prevent title context blocks on archive index pages.");
 }
+if (!checkOutputScript.includes("must not render a visible page title block")) {
+  failures.push("Output checks must prevent large visible title blocks on collection index pages.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
