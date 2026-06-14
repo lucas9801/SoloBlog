@@ -190,6 +190,9 @@ if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
+if (!/\[hidden]\s*\{[\s\S]*?display:\s*none\s*!important;/.test(css)) {
+  failures.push("CSS must preserve the native hidden state even on styled controls.");
+}
 if (!css.includes("scroll-padding-top") || !css.includes("scroll-margin-top")) {
   failures.push("Article anchors must account for the sticky header on desktop and mobile.");
 }

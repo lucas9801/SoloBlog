@@ -404,12 +404,15 @@ async function checkViewport(viewport, page) {
               if (!facets) failures.push("search facets container is missing");
               if (!clearButton) failures.push("search clear button is missing");
               if (failures.length > 0) return failures;
+              const clearButtonIsHidden = () => clearButton.hidden && getComputedStyle(clearButton).display === "none";
+              const clearButtonIsVisible = () => !clearButton.hidden && getComputedStyle(clearButton).display !== "none";
 
               await waitFor(() => document.querySelectorAll(".search-result-card").length > 0 || document.querySelector(".search-empty"));
               const initialCards = document.querySelectorAll(".search-result-card").length;
               const facetButtons = document.querySelectorAll("[data-facet-type]").length;
               if (initialCards === 0) failures.push("search page did not render initial recent posts");
               if (facetButtons === 0) failures.push("search page did not render facet buttons");
+              if (!clearButtonIsHidden()) failures.push("clear button is visible before any search state");
               if (invalidFacetUrl && new URL(location.href).search !== "") {
                 failures.push("search page did not remove invalid facet URL params");
               }
@@ -422,7 +425,7 @@ async function checkViewport(viewport, page) {
               if (queryCards === 0) failures.push("search query did not render result cards");
               if (!queryText.toLowerCase().includes("unity")) failures.push("search query results do not mention Unity");
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
-              if (clearButton.hidden) failures.push("clear button stayed hidden after search input");
+              if (!clearButtonIsVisible()) failures.push("clear button stayed hidden after search input");
 
               const facetByValue = (type, value) =>
                 Array.from(document.querySelectorAll('[data-facet-type="' + type + '"]')).find(
@@ -478,6 +481,7 @@ async function checkViewport(viewport, page) {
               if (document.querySelectorAll(".search-result-card").length === 0) {
                 failures.push("clear button did not restore recent results");
               }
+              if (!clearButtonIsHidden()) failures.push("clear button stayed visible after clearing search state");
 
               return failures;
             })()`
