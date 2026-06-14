@@ -787,13 +787,43 @@ async function checkViewport(viewport, page) {
             })()`
           })
         : { result: { value: [] } };
+    const printRuntime =
+      page.pathname.startsWith("/posts/") && viewport.name === "desktop"
+        ? await (async () => {
+            await send("Emulation.setEmulatedMedia", { media: "print" });
+            await wait(80);
+            const runtime = await send("Runtime.evaluate", {
+              returnByValue: true,
+              expression: `(() => {
+                const failures = [];
+                const isHidden = (selector) => {
+                  const element = document.querySelector(selector);
+                  return element && getComputedStyle(element).display === "none";
+                };
+                if (!isHidden(".site-header")) failures.push("print stylesheet did not hide the site header");
+                if (!isHidden(".article-aside")) failures.push("print stylesheet did not hide article sidebars");
+                if (!isHidden(".reading-pill")) failures.push("print stylesheet did not hide reading progress");
+                if (!isHidden(".comments-section")) failures.push("print stylesheet did not hide comments");
+                const articleShell = document.querySelector(".article-shell");
+                if (articleShell && getComputedStyle(articleShell).display !== "block") {
+                  failures.push("print stylesheet did not simplify article shell layout");
+                }
+                return failures;
+              })()`
+            });
+            await send("Emulation.setEmulatedMedia", { media: "screen" });
+            await wait(80);
+            return runtime;
+          })()
+        : { result: { value: [] } };
     result.result.value.runtimeFailures = [
       ...(siteRuntime.result.value || []),
       ...(searchRuntime.result.value || []),
       ...(archiveRuntime.result.value?.failures || archiveRuntime.result.value || []),
       ...archiveNavigationFailures,
       ...headerSearchFailures,
-      ...(articleRuntime.result.value || [])
+      ...(articleRuntime.result.value || []),
+      ...(printRuntime.result.value || [])
     ];
 
     await mkdir(path.join(root, "screenshots"), { recursive: true });

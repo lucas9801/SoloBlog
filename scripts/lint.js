@@ -233,6 +233,15 @@ if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
+if (
+  !css.includes("@media print") ||
+  !css.includes(".comments-section") ||
+  !css.includes(".reading-pill") ||
+  !css.includes("break-inside: avoid") ||
+  !css.includes("@page")
+) {
+  failures.push("CSS must provide a print stylesheet for long-form technical articles.");
+}
 if (!/body\s*\{[\s\S]*?display:\s*flex;[\s\S]*?flex-direction:\s*column;/.test(css) || !/body\s*>\s*main\s*\{[\s\S]*?flex:\s*1\s+0\s+auto;/.test(css)) {
   failures.push("Page layout must keep footers pinned to the viewport bottom on short pages.");
 }
