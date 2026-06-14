@@ -2,18 +2,26 @@ const input = document.querySelector("#searchInputPage");
 const results = document.querySelector("#searchResults");
 const status = document.querySelector("#searchStatus");
 const facets = document.querySelector("#searchFacets");
+const pagination = document.querySelector("#searchPagination");
 const clearButton = document.querySelector("[data-search-clear]");
 const yearSelect = document.querySelector("#searchYearFilter");
 const categorySelect = document.querySelector("#searchCategoryFilter");
 const params = new URLSearchParams(window.location.search);
+const SEARCH_RESULTS_PER_PAGE = 6;
 const searchRenderDelay = 160;
 let searchRenderTimer = 0;
+
+function pageNumber(value) {
+  const page = Number.parseInt(value || "1", 10);
+  return Number.isFinite(page) && page > 0 ? page : 1;
+}
 
 const state = {
   query: params.get("q") || "",
   year: params.get("year") || "",
   category: params.get("category") || "",
-  tag: params.get("tag") || ""
+  tag: params.get("tag") || "",
+  page: pageNumber(params.get("page"))
 };
 
 function normalize(value) {
@@ -170,6 +178,10 @@ function sanitizeState(posts) {
     state.tag = "";
     changed = true;
   }
+  if (!hasSearchState() && state.page !== 1) {
+    state.page = 1;
+    changed = true;
+  }
 
   if (changed) updateUrl();
 }
@@ -288,6 +300,64 @@ function selectedFilters() {
     .join(" · ");
 }
 
+function hasSearchState() {
+  return Boolean(normalize(state.query) || state.year || state.category || state.tag);
+}
+
+function paginationItems(currentPage, totalPages) {
+  const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+  return [...pages]
+    .filter((page) => page >= 1 && page <= totalPages)
+    .sort((a, b) => a - b)
+    .flatMap((page, index, sorted) => {
+      const previous = sorted[index - 1];
+      return previous && page - previous > 1 ? ["gap", page] : [page];
+    });
+}
+
+function searchHref(page) {
+  const url = new URL(window.location.href);
+  const next = new URLSearchParams();
+  if (normalize(state.query)) next.set("q", state.query.trim());
+  if (state.year) next.set("year", state.year);
+  if (state.category) next.set("category", state.category);
+  if (state.tag) next.set("tag", state.tag);
+  if (page > 1) next.set("page", String(page));
+  url.search = next.toString();
+  return `${url.pathname}${url.search}`;
+}
+
+function renderSearchPagination(totalPages) {
+  if (!pagination) return;
+  if (totalPages <= 1) {
+    pagination.hidden = true;
+    pagination.innerHTML = "";
+    return;
+  }
+
+  const currentPage = state.page;
+  const previous =
+    currentPage > 1
+      ? `<a class="pagination-control" href="${escapeHtml(searchHref(currentPage - 1))}" data-search-page="${currentPage - 1}">上一页</a>`
+      : `<span class="pagination-control disabled" aria-disabled="true">上一页</span>`;
+  const next =
+    currentPage < totalPages
+      ? `<a class="pagination-control" href="${escapeHtml(searchHref(currentPage + 1))}" data-search-page="${currentPage + 1}">下一页</a>`
+      : `<span class="pagination-control disabled" aria-disabled="true">下一页</span>`;
+  const pages = paginationItems(currentPage, totalPages)
+    .map((page) => {
+      if (page === "gap") return `<span class="pagination-ellipsis" aria-hidden="true">...</span>`;
+      if (page === currentPage) {
+        return `<span class="active" aria-current="page" aria-label="第 ${page} 页，当前页">${page}</span>`;
+      }
+      return `<a href="${escapeHtml(searchHref(page))}" data-search-page="${page}" aria-label="第 ${page} 页">${page}</a>`;
+    })
+    .join("");
+
+  pagination.hidden = false;
+  pagination.innerHTML = `${previous}${pages}${next}`;
+}
+
 function renderCard(post, query) {
   return `<article class="search-result-card" role="listitem" data-result-year="${escapeHtml(postYear(post))}" data-result-category="${escapeHtml(post.category)}">
     <a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="${escapeHtml(post.title)}">
@@ -332,6 +402,7 @@ function updateUrl() {
   if (state.year) next.set("year", state.year);
   if (state.category) next.set("category", state.category);
   if (state.tag) next.set("tag", state.tag);
+  if (hasSearchState() && state.page > 1) next.set("page", String(state.page));
   url.search = next.toString();
   window.history.replaceState({}, "", url);
 }
@@ -340,7 +411,7 @@ function syncControls() {
   if (input && input.value !== state.query) input.value = state.query;
   if (yearSelect && yearSelect.value !== state.year) yearSelect.value = state.year;
   if (categorySelect && categorySelect.value !== state.category) categorySelect.value = state.category;
-  const hasState = Boolean(normalize(state.query) || state.year || state.category || state.tag);
+  const hasState = hasSearchState();
   if (clearButton) clearButton.hidden = !hasState;
   for (const button of facets?.querySelectorAll("[data-facet-type]") || []) {
     const type = button.dataset.facetType;
@@ -351,13 +422,22 @@ function syncControls() {
 }
 
 function render(posts) {
-  const showingRecent = !normalize(state.query) && !state.year && !state.category && !state.tag;
+  const showingRecent = !hasSearchState();
   const matched = rankedPosts(posts);
-  const visible = showingRecent ? matched.slice(0, 6) : matched;
+  const totalPages = showingRecent ? 1 : Math.max(1, Math.ceil(matched.length / SEARCH_RESULTS_PER_PAGE));
+  const nextPage = showingRecent ? 1 : Math.min(state.page, totalPages);
+  if (state.page !== nextPage) {
+    state.page = nextPage;
+    updateUrl();
+  }
+  const visible = showingRecent
+    ? matched.slice(0, SEARCH_RESULTS_PER_PAGE)
+    : matched.slice((state.page - 1) * SEARCH_RESULTS_PER_PAGE, state.page * SEARCH_RESULTS_PER_PAGE);
   const filters = selectedFilters();
 
   renderFilterSelects(posts);
   renderFacets(posts);
+  renderSearchPagination(visible.length > 0 ? totalPages : 1);
   syncControls();
 
   if (visible.length === 0) {
@@ -367,6 +447,7 @@ function render(posts) {
         ${filters ? `<span>${escapeHtml(filters)}</span>` : ""}
       </div>`;
     }
+    renderSearchPagination(1);
     results.removeAttribute("role");
     results.innerHTML = `<div class="search-empty">
       <p>没有找到匹配文章。</p>
@@ -377,9 +458,13 @@ function render(posts) {
 
   results.setAttribute("role", "list");
   if (status) {
+    const resultCount = showingRecent ? visible.length : matched.length;
     status.innerHTML = `<div class="search-summary">
-    <p class="search-count">${resultLabel(state.query, visible.length, showingRecent)}</p>
-    ${filters ? `<span>${escapeHtml(filters)}</span>` : ""}
+    <p class="search-count">${resultLabel(state.query, resultCount, showingRecent)}</p>
+    ${[filters, totalPages > 1 ? `第 ${state.page}/${totalPages} 页` : ""]
+      .filter(Boolean)
+      .map((item) => `<span>${escapeHtml(item)}</span>`)
+      .join("")}
   </div>`;
   }
   results.innerHTML = visible.map((post) => renderCard(post, state.query)).join("");
@@ -414,6 +499,7 @@ async function boot() {
 
   input.addEventListener("input", () => {
     state.query = input.value;
+    state.page = 1;
     scheduleSearchRender(posts);
   });
 
@@ -421,6 +507,7 @@ async function boot() {
     if (event.key !== "Escape") return;
     cancelScheduledSearchRender();
     state.query = "";
+    state.page = 1;
     input.value = "";
     updateUrl();
     render(posts);
@@ -433,6 +520,17 @@ async function boot() {
     const type = button.dataset.facetType;
     const value = button.dataset.facetValue || "";
     state[type] = state[type] === value ? "" : value;
+    state.page = 1;
+    updateUrl();
+    render(posts);
+  });
+
+  pagination?.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-search-page]");
+    if (!link) return;
+    event.preventDefault();
+    cancelScheduledSearchRender();
+    state.page = pageNumber(link.dataset.searchPage);
     updateUrl();
     render(posts);
   });
@@ -440,6 +538,7 @@ async function boot() {
   yearSelect?.addEventListener("change", () => {
     cancelScheduledSearchRender();
     state.year = yearSelect.value;
+    state.page = 1;
     updateUrl();
     render(posts);
   });
@@ -447,6 +546,7 @@ async function boot() {
   categorySelect?.addEventListener("change", () => {
     cancelScheduledSearchRender();
     state.category = categorySelect.value;
+    state.page = 1;
     updateUrl();
     render(posts);
   });
@@ -457,6 +557,7 @@ async function boot() {
     state.year = "";
     state.category = "";
     state.tag = "";
+    state.page = 1;
     updateUrl();
     render(posts);
     input.focus();

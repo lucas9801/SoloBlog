@@ -286,6 +286,7 @@ try {
   assert.match(search, /data-search-clear[^>]+aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets"/);
   assert.match(search, /id="searchStatus" class="search-status" role="status" aria-live="polite"/);
   assert.match(search, /id="searchResults" class="search-results" role="list"/);
+  assert.match(search, /id="searchPagination" class="pagination search-pagination" aria-label="搜索结果分页" hidden/);
   assert.equal(
     jsonLdObjects(search).find((item) => item["@type"] === "SearchResultsPage").url,
     "https://blog.solus.games/search/"

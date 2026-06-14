@@ -485,12 +485,14 @@ async function checkViewport(viewport, page) {
               const results = document.querySelector("#searchResults");
               const status = document.querySelector("#searchStatus");
               const facets = document.querySelector("#searchFacets");
+              const pagination = document.querySelector("#searchPagination");
               const clearButton = document.querySelector("[data-search-clear]");
               const invalidFacetUrl = ${JSON.stringify(page.search.includes("__missing__"))};
               if (!input) failures.push("search input is missing");
               if (!results) failures.push("search results container is missing");
               if (!status) failures.push("search status container is missing");
               if (!facets) failures.push("search facets container is missing");
+              if (!pagination) failures.push("search pagination container is missing");
               if (!clearButton) failures.push("search clear button is missing");
               if (failures.length > 0) return failures;
               const clearButtonIsHidden = () => clearButton.hidden && getComputedStyle(clearButton).display === "none";
@@ -502,6 +504,9 @@ async function checkViewport(viewport, page) {
               if (initialCards === 0) failures.push("search page did not render initial recent posts");
               if (initialCards > 0 && results.getAttribute("role") !== "list") {
                 failures.push("search result cards must be inside a list container");
+              }
+              if (pagination && !pagination.hidden && !pagination.querySelector("[data-search-page]")) {
+                failures.push("search pagination is visible without page links");
               }
               if (facetButtons === 0) failures.push("search page did not render facet buttons");
               if (!clearButtonIsHidden()) failures.push("clear button is visible before any search state");

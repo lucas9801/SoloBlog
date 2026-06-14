@@ -1984,6 +1984,10 @@ pre {
   gap: 12px;
 }
 
+.search-pagination {
+  margin-top: 4px;
+}
+
 .search-summary {
   display: flex;
   flex-wrap: wrap;

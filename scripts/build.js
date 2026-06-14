@@ -1830,6 +1830,7 @@ function searchPage() {
         <section class="search-result-panel" aria-label="搜索结果">
           <div id="searchStatus" class="search-status" role="status" aria-live="polite"></div>
           <div id="searchResults" class="search-results" role="list"></div>
+          <nav id="searchPagination" class="pagination search-pagination" aria-label="搜索结果分页" hidden></nav>
         </section>
       </div>
     </section>

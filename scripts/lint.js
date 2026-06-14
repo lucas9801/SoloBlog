@@ -545,10 +545,20 @@ if (
   !buildScript.includes('aria-describedby="searchStatus"') ||
   !buildScript.includes('aria-controls="searchResults searchFacets"') ||
   !buildScript.includes('aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets"') ||
+  !buildScript.includes('id="searchPagination"') ||
   !searchScript.includes('results.setAttribute("role", "list")') ||
   !searchScript.includes('results.removeAttribute("role")')
 ) {
   failures.push("Search page must separate live status text from the result list semantics.");
+}
+if (
+  !searchScript.includes("SEARCH_RESULTS_PER_PAGE") ||
+  !searchScript.includes("paginationItems") ||
+  !searchScript.includes("data-search-page") ||
+  !searchScript.includes('next.set("page", String(state.page))') ||
+  !searchScript.includes("renderSearchPagination")
+) {
+  failures.push("Search results must paginate long result sets and preserve page state in the URL.");
 }
 if (
   !siteScript.includes("function siteSearchTarget") ||
