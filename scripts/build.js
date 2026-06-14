@@ -1832,6 +1832,10 @@ function searchPage() {
           <div id="searchFacets" class="search-facets" aria-label="搜索筛选"></div>
         </aside>
         <section class="search-result-panel" aria-label="搜索结果">
+          <noscript class="search-noscript">
+            <p>搜索功能需要启用 JavaScript。可以先从全部文章继续浏览。</p>
+            <a class="ghost-link" href="/archive/">全部文章</a>
+          </noscript>
           <div id="searchStatus" class="search-status" role="status" aria-live="polite"></div>
           <div id="searchResults" class="search-results" role="list"></div>
           <nav id="searchPagination" class="pagination search-pagination" aria-label="搜索结果分页" hidden></nav>

@@ -582,6 +582,13 @@ if (
   failures.push("Search results must paginate long result sets and preserve page state in the URL.");
 }
 if (
+  !buildScript.includes('<noscript class="search-noscript">') ||
+  !buildScript.includes("搜索功能需要启用 JavaScript") ||
+  !css.includes(".search-noscript")
+) {
+  failures.push("Search page must provide a no-script fallback to the article archive.");
+}
+if (
   !siteScript.includes("function siteSearchTarget") ||
   !siteScript.includes("input[name=\"q\"]") ||
   !siteScript.includes("target.searchParams.set(\"q\", query)") ||

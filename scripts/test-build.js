@@ -282,6 +282,8 @@ try {
   assert.doesNotMatch(search, /class="section-kicker"/);
   assert.match(search, /class="page-shell search-page"/);
   assert.match(search, /class="search-filter-selects"/);
+  assert.match(search, /<noscript class="search-noscript">/);
+  assert.match(search, /搜索功能需要启用 JavaScript/);
   assert.match(search, /id="searchYearFilter"/);
   assert.match(search, /id="searchCategoryFilter"/);
   assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类或标签"/);
