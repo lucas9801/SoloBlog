@@ -412,7 +412,7 @@ assets/unity-profiler.png
 ![Unity Profiler 截图](/assets/unity-profiler.png)
 ```
 
-注意路径前面要有 `/assets/`。
+注意路径前面要有 `/assets/`，方括号里要写清楚图片内容。正文图片会进入文章可访问性和 SEO 检查，不能写成 `![](...)`。
 
 ## 修改博客标题、描述和导航
 

@@ -458,7 +458,8 @@ function markdownToHtml(markdown) {
 
   function renderCodeBlock(block) {
     const languageAttr = block.language ? ` data-language="${escapeAttr(block.language)}"` : "";
-    return `<pre${languageAttr}><button class="code-copy-button" type="button" data-copy-code>复制</button><code>${escapeHtml(block.lines.join("\n"))}</code></pre>`;
+    const scrollLabel = block.language ? `${block.language} 代码块，可横向滚动` : "代码块，可横向滚动";
+    return `<pre${languageAttr} tabindex="0" aria-label="${escapeAttr(scrollLabel)}"><button class="code-copy-button" type="button" data-copy-code aria-label="复制代码">复制</button><span class="sr-only" aria-live="polite" data-copy-code-status></span><code>${escapeHtml(block.lines.join("\n"))}</code></pre>`;
   }
 
   for (let index = 0; index < lines.length; index += 1) {

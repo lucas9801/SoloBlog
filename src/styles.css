@@ -1309,6 +1309,13 @@ pre {
   font-weight: 600;
 }
 
+.article-content img {
+  margin: 1.4em 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
 .article-content pre {
   position: relative;
   overflow-x: auto;
@@ -1319,6 +1326,11 @@ pre {
   color: #eaf2ff;
   font-size: 14px;
   line-height: 1.65;
+}
+
+.article-content pre:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
 }
 
 .article-content pre code {

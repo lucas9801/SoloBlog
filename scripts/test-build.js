@@ -57,7 +57,7 @@ async function writeFixtureProject(target) {
       {
         title: "SOLUS Dev Notes",
         brand: "SOLUS",
-        tagline: "Game Development Archive",
+        tagline: "技术档案",
         description: "测试博客。",
         baseUrl: "https://blog.solus.games/",
         language: "zh-CN",
@@ -132,6 +132,7 @@ try {
   assert.doesNotMatch(article, /javascript:alert/);
   assert.doesNotMatch(article, /href="relative-page"/);
   assert.match(article, /<img src="\/assets\/posts\/inline\.svg" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
+  assert.match(article, /<pre data-language="js" tabindex="0" aria-label="js 代码块，可横向滚动"><button class="code-copy-button" type="button" data-copy-code aria-label="复制代码">复制<\/button><span class="sr-only" aria-live="polite" data-copy-code-status><\/span><code>console\.log\(&quot;ok&quot;\);<\/code><\/pre>/);
   assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<meta name="twitter:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   const articleJsonLd = jsonLdObjects(article);
@@ -142,7 +143,7 @@ try {
   assert.equal(techArticle.headline, "Markdown Edge Cases");
   assert.equal(breadcrumb.itemListElement.at(-1).item, "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(article, /<td data-align="left">A \| B<\/td>/);
-  assert.match(article, /<pre data-language="js"><button class="code-copy-button"/);
+  assert.match(article, /aria-label="js 代码块，可横向滚动"/);
   assert.match(article, /<blockquote>quoted text<\/blockquote>/);
   await assert.rejects(access(path.join(tempRoot, "dist", "posts", "draft-only", "index.html")));
 

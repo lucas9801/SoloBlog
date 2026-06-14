@@ -60,7 +60,7 @@ try {
     .replace(/^date: .+$/m, `date: ${tomorrow}`)
     .replace(/^category: .+$/m, "category: 模板分类")
     .replace(/^tags: .+$/m, "tags: [Unity, Unity, #Profiler]")
-    .replace(/\s*$/, "\n\n[bad](javascript:alert(1)) and [relative](notes/relative-path).\n");
+    .replace(/\s*$/, "\n\n[bad](javascript:alert(1)) and [relative](notes/relative-path).\n\n![](/assets/og/solus-og.png)\n");
   await writeFile(postPath, brokenPost, "utf8");
 
   result = await runLint(tempRoot);
@@ -71,6 +71,7 @@ try {
   assert.match(result.stderr, /tag "#Profiler" must not start with #/);
   assert.match(result.stderr, /markdown link uses unsupported URL scheme "javascript"/);
   assert.match(result.stderr, /markdown link uses a rootless relative URL/);
+  assert.match(result.stderr, /markdown image needs descriptive alt text/);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

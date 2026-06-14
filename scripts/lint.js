@@ -153,6 +153,7 @@ function markdownUrlReferences(markdown) {
     return {
       raw,
       url,
+      label: match[0].match(/!?\[([^\]]*)]/)?.[1] || "",
       isImage: match[1] === "!"
     };
   });
@@ -356,6 +357,14 @@ if (!articleScript.includes("giscusTheme") || !articleScript.includes("preferred
 }
 if (!articleScript.includes("readingTarget") || !articleScript.includes(".article-content")) {
   failures.push("Article reading progress must be based on article content, not the whole document.");
+}
+if (
+  !buildScript.includes("data-copy-code-status") ||
+  !buildScript.includes('aria-label="复制代码"') ||
+  !buildScript.includes('tabindex="0" aria-label="${escapeAttr(scrollLabel)}"') ||
+  !articleScript.includes("代码已复制")
+) {
+  failures.push("Article code blocks must expose keyboard scroll and accessible copy feedback.");
 }
 if (
   !searchScript.includes("searchFacets") ||
@@ -582,6 +591,10 @@ for (const post of posts) {
   }
 
   for (const ref of markdownUrlReferences(body)) {
+    if (ref.isImage && !ref.label.trim()) {
+      failures.push(`${file} markdown image needs descriptive alt text: ${ref.raw}`);
+    }
+
     const issue = markdownUrlIssue(ref);
     if (issue) {
       failures.push(`${file} markdown ${ref.isImage ? "image" : "link"} ${issue}`);

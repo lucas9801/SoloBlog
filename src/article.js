@@ -218,21 +218,31 @@ article?.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-copy-code]");
   if (!button) return;
 
-  const code = button.closest("pre")?.querySelector("code")?.textContent || "";
+  const block = button.closest("pre");
+  const code = block?.querySelector("code")?.textContent || "";
+  const status = block?.querySelector("[data-copy-code-status]");
   if (!code) return;
 
   try {
     await navigator.clipboard.writeText(code);
     button.classList.add("is-copied");
     button.textContent = "已复制";
+    button.setAttribute("aria-label", "代码已复制");
+    if (status) status.textContent = "代码已复制";
     window.setTimeout(() => {
       button.classList.remove("is-copied");
       button.textContent = "复制";
+      button.setAttribute("aria-label", "复制代码");
+      if (status) status.textContent = "";
     }, 1400);
   } catch {
     button.textContent = "复制失败";
+    button.setAttribute("aria-label", "代码复制失败");
+    if (status) status.textContent = "代码复制失败";
     window.setTimeout(() => {
       button.textContent = "复制";
+      button.setAttribute("aria-label", "复制代码");
+      if (status) status.textContent = "";
     }, 1400);
   }
 });
