@@ -327,6 +327,9 @@ if (!checkOutputScript.includes("must not render a visible section kicker")) {
 if (!checkOutputScript.includes("checkAriaReferences") || !checkOutputScript.includes("controls|describedby|labelledby")) {
   failures.push("Output checks must validate ARIA ID references.");
 }
+if (!checkOutputScript.includes("function checkDuplicateIds") || !checkOutputScript.includes("contains duplicate id")) {
+  failures.push("Output checks must reject duplicate HTML ids.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }

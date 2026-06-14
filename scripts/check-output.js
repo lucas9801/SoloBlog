@@ -97,6 +97,20 @@ function checkHeadingIds(file, html) {
   }
 }
 
+function checkDuplicateIds(file, html) {
+  const relative = displayPath(file);
+  const seen = new Set();
+  for (const match of html.matchAll(/\sid=(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g)) {
+    const id = match[1] ?? match[2] ?? match[3] ?? "";
+    if (!id.trim()) {
+      failures.push(`${relative} contains an empty id attribute.`);
+      continue;
+    }
+    if (seen.has(id)) failures.push(`${relative} contains duplicate id: ${id}`);
+    seen.add(id);
+  }
+}
+
 function checkDocumentBasics(file, html) {
   const relative = displayPath(file);
   const htmlTag = html.match(/<html\b[^>]*>/i)?.[0];
@@ -902,6 +916,7 @@ async function main() {
     checkFeedDiscovery(file, html);
     checkSearchDiscovery(file, html);
     await checkSocialMeta(file, html);
+    checkDuplicateIds(file, html);
     checkHeadingIds(file, html);
     await checkLocalReferences(file, html);
   }
