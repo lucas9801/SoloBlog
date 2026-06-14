@@ -49,6 +49,14 @@ npm run new:post -- "文章标题"
 npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 2026-06-04 --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。" --series "性能与渲染排查" --series-order 3 --featured
 ```
 
+如果封面已经准备好，先把图片放到 `assets/posts/`，再加 `--cover`：
+
+```powershell
+npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 2026-06-04 --category Unity --cover /assets/posts/unity-performance-budget.svg
+```
+
+`--cover` 只接受本地 `/assets/...` 路径，并且文件必须已经存在。不设置时构建脚本会按文章内容自动生成封面。
+
 发布前完整检查：
 
 ```powershell
@@ -105,6 +113,8 @@ npm run new:post -- "Unity 性能优化记录"
 ```powershell
 npm run new:post -- "Unity 性能优化记录" --slug unity-performance-notes --date 2026-06-04 --category Unity --tags "Unity,性能,Profiler" --summary "记录一次 Unity 性能分析流程。"
 ```
+
+如果已经准备了封面文件，可以追加 `--cover /assets/posts/unity-performance-notes.svg`。这个路径必须指向仓库里的本地资源，不能用外链。
 
 脚本会在 `content/posts/` 里生成一个 Markdown 文件，例如：
 
@@ -208,7 +218,7 @@ status: published
 | `series` | 否 | 专题/系列名称，用来把多篇文章组织成连续阅读链路 |
 | `seriesOrder` | 否 | 专题内排序，正整数，数字越小越靠前 |
 | `summary` | 推荐 | 摘要，会显示在首页、列表页、RSS 和搜索结果 |
-| `cover` | 推荐 | 文章列表页封面图路径，例如 `/assets/my-cover.png` |
+| `cover` | 推荐 | 文章列表页封面图路径，例如 `/assets/posts/my-cover.png`；本地路径必须存在 |
 | `featured` | 否 | 是否作为首页精选文章 |
 | `status` | 是 | `draft` 草稿，`published` 发布 |
 
@@ -625,6 +635,7 @@ npm run new:post -- "文章标题"
 category: Unity
 tags: [Unity, 性能]
 summary: 这里写摘要。
+# cover: /assets/posts/my-cover.svg
 # cover 可省略；省略时构建脚本会按文章自动生成封面
 status: published
 ```

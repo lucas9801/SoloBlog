@@ -17,6 +17,8 @@ npm run preview
 npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 2026-06-04 --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。"
 ```
 
+如果已经把封面图片放到 `assets/posts/`，可以额外加 `--cover /assets/posts/your-cover.svg`。封面参数只接受本地 `/assets/...` 路径，文件必须已经存在；不设置时构建脚本会按文章自动生成封面。
+
 本地预览地址：
 
 ```text

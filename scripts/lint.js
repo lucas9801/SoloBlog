@@ -540,11 +540,14 @@ if (
   !newPostScript.includes("--slug <slug>") ||
   !newPostScript.includes("--date <YYYY-MM-DD>") ||
   !newPostScript.includes("--updated <YYYY-MM-DD>") ||
+  !newPostScript.includes("--cover <path>") ||
   !newPostScript.includes("isCanonicalSlug") ||
   !newPostScript.includes("isValidDate") ||
+  !newPostScript.includes("isAssetPath") ||
+  !newPostScript.includes("localAssetExists") ||
   !blogOperationsDocs.includes("--slug unity-performance")
 ) {
-  failures.push("New post workflow must support explicit canonical slugs and dates.");
+  failures.push("New post workflow must support explicit canonical slugs, dates, and covers.");
 }
 if (site.comments?.enabled) {
   for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {

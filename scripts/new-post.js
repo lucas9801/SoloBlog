@@ -11,6 +11,7 @@ const options = {
   slug: "",
   date: "",
   updated: "",
+  cover: "",
   featured: false
 };
 const titleParts = [];
@@ -25,6 +26,7 @@ Options:
   --slug <slug>           设置英文 URL slug，例如 unity-performance-budget
   --date <YYYY-MM-DD>     设置发布日期
   --updated <YYYY-MM-DD>  设置更新日期
+  --cover <path>          设置封面路径，例如 /assets/posts/unity-budget.svg
   --series <name>         设置专题名称
   --series-order <number> 设置专题内排序
   --featured             标记为推荐阅读`;
@@ -92,6 +94,11 @@ for (let index = 0; index < args.length; index += 1) {
     index += 1;
     continue;
   }
+  if (arg === "--cover") {
+    options.cover = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
   if (arg === "--series") {
     options.series = readOptionValue(arg, index).trim();
     index += 1;
@@ -140,6 +147,16 @@ function isValidDate(value) {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
+function isAssetPath(value) {
+  const pathname = String(value || "").trim();
+  if (!pathname.startsWith("/assets/")) return false;
+  if (/[?#\\\u0000-\u001f\u007f]/.test(pathname)) return false;
+  return pathname
+    .split("/")
+    .slice(1)
+    .every((segment) => segment && segment !== "." && segment !== "..");
+}
+
 function parseFrontMatterValue(value) {
   return value.replace(/^["']|["']$/g, "");
 }
@@ -185,6 +202,11 @@ async function fileExists(file) {
   }
 }
 
+async function localAssetExists(urlPath) {
+  if (!isAssetPath(urlPath)) return false;
+  return fileExists(path.join(process.cwd(), urlPath.replace(/^\/+/, "")));
+}
+
 const now = new Date();
 const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 const date = options.date || localDate.toISOString().slice(0, 10);
@@ -198,6 +220,14 @@ if (options.updated && !isValidDate(options.updated)) {
 }
 if (options.updated && options.updated < date) {
   console.error("--updated cannot be earlier than --date.");
+  process.exit(1);
+}
+if (options.cover && !isAssetPath(options.cover)) {
+  console.error("--cover must point to a local /assets/... file.");
+  process.exit(1);
+}
+if (options.cover && !(await localAssetExists(options.cover))) {
+  console.error(`Cover file does not exist: ${options.cover}`);
   process.exit(1);
 }
 const postsDir = path.join(process.cwd(), "content", "posts");
@@ -251,6 +281,7 @@ const frontMatter = [
   options.series ? `series: ${yamlString(options.series)}` : "# series: 专题名称",
   options.seriesOrder ? `seriesOrder: ${Number.parseInt(options.seriesOrder, 10)}` : "# seriesOrder: 1",
   `summary: ${yamlString(options.summary)}`,
+  options.cover ? `cover: ${yamlString(options.cover)}` : "# cover: /assets/posts/example.svg",
   options.featured ? "featured: true" : "",
   "status: draft",
   "---"

@@ -50,6 +50,12 @@ const tempRoot = await mkdtemp(path.join(os.tmpdir(), "solus-new-post-"));
 
 try {
   await mkdir(path.join(tempRoot, "content"), { recursive: true });
+  await mkdir(path.join(tempRoot, "assets", "posts"), { recursive: true });
+  await writeFile(
+    path.join(tempRoot, "assets", "posts", "custom-cover.svg"),
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10"/></svg>',
+    "utf8"
+  );
   await writeFile(
     path.join(tempRoot, "content", "site.json"),
     JSON.stringify({
@@ -102,6 +108,8 @@ try {
     "2026-01-02",
     "--updated",
     "2026-01-03",
+    "--cover",
+    "/assets/posts/custom-cover.svg",
     "--series",
     "性能与渲染排查",
     "--series-order",
@@ -122,6 +130,7 @@ try {
   assert.equal(parseJsonString(frontMatterValue(optionPost, "category")), "Unity");
   assert.deepEqual(JSON.parse(frontMatterValue(optionPost, "tags")), ["Unity", "性能", "Profiler"]);
   assert.equal(parseJsonString(frontMatterValue(optionPost, "summary")), "建立 Unity 性能分析入口。");
+  assert.equal(parseJsonString(frontMatterValue(optionPost, "cover")), "/assets/posts/custom-cover.svg");
   assert.equal(parseJsonString(frontMatterValue(optionPost, "series")), "性能与渲染排查");
   assert.equal(frontMatterValue(optionPost, "seriesOrder"), "3");
   assert.equal(frontMatterValue(optionPost, "featured"), "true");
@@ -150,6 +159,18 @@ try {
   result = await runNewPost(tempRoot, ["Bad Updated", "--date", "2026-02-02", "--updated", "2026-02-01"]);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /cannot be earlier/);
+
+  result = await runNewPost(tempRoot, ["Remote Cover", "--cover", "https://example.com/cover.png"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /local \/assets/);
+
+  result = await runNewPost(tempRoot, ["Backslash Cover", "--cover", "/assets/posts\\cover.svg"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /local \/assets/);
+
+  result = await runNewPost(tempRoot, ["Missing Cover", "--cover", "/assets/posts/missing.svg"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Cover file does not exist/);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }
