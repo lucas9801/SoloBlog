@@ -278,7 +278,9 @@ try {
   const rss = await readFile(path.join(tempRoot, "dist", "rss.xml"), "utf8");
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
   assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
+  assert.match(rss, /href="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/#repeat"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
+  assert.doesNotMatch(rss, /\shref="#/);
   assert.equal((rss.match(/<item>/g) || []).length, 3);
   assert.ok(rss.indexOf("https://blog.solus.games/posts/markdown-followup/") < rss.indexOf("https://blog.solus.games/posts/markdown-edge-cases/"));
   assert.doesNotMatch(rss, /draft-only|Draft Only/);
@@ -292,7 +294,9 @@ try {
   assert.equal(jsonFeed.items.some((item) => item.url.includes("/draft-only/")), false);
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
+  assert.match(feedMarkdownEdge.content_html, /href="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/#repeat"/);
   assert.doesNotMatch(feedMarkdownEdge.content_html, /\s(?:href|src)="\//);
+  assert.doesNotMatch(feedMarkdownEdge.content_html, /\shref="#/);
 
   const openSearch = await readFile(path.join(tempRoot, "dist", "opensearch.xml"), "utf8");
   assert.match(openSearch, /<OpenSearchDescription xmlns="http:\/\/a9\.com\/-\/spec\/opensearch\/1\.1\/">/);

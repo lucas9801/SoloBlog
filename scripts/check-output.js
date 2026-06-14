@@ -549,6 +549,9 @@ async function checkRss(rss) {
   if (/\s(?:href|src)="\//.test(rss)) {
     failures.push("dist/rss.xml must not contain relative local href/src URLs.");
   }
+  if (/\shref="#/.test(rss)) {
+    failures.push("dist/rss.xml must not contain fragment-only heading links.");
+  }
 
   const items = [...rss.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((match) => match[1]);
   if (items.length === 0) failures.push("dist/rss.xml must contain at least one item.");
@@ -686,6 +689,9 @@ async function checkJsonFeed(feed) {
     }
     if (/\s(?:href|src)="\//.test(item.content_html)) {
       failures.push(`dist/feed.json item content must not contain relative local href/src URLs: ${item.id}`);
+    }
+    if (/\shref="#/.test(item.content_html)) {
+      failures.push(`dist/feed.json item content must not contain fragment-only heading links: ${item.id}`);
     }
     for (const match of String(item.content_html).matchAll(/\s(?:href|src)="(https?:\/\/[^"]+)"/g)) {
       const contentUrl = new URL(match[1]);

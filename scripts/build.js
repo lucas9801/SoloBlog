@@ -1828,7 +1828,7 @@ function rss(posts) {
   <pubDate>${new Date(post.date).toUTCString()}</pubDate>
   ${categories.map((category) => `<category>${escapeHtml(category)}</category>`).join("\n  ")}
   <description>${escapeHtml(post.summary)}</description>
-  <content:encoded>${cdata(absolutizeFeedHtml(post.html))}</content:encoded>
+  <content:encoded>${cdata(absolutizeFeedHtml(post.html, post.url))}</content:encoded>
 </item>`;
       }
     )
@@ -1866,7 +1866,7 @@ function jsonFeed(posts) {
       id: absoluteUrl(post.url),
       url: absoluteUrl(post.url),
       title: post.title,
-      content_html: absolutizeFeedHtml(post.html),
+      content_html: absolutizeFeedHtml(post.html, post.url),
       summary: post.summary,
       date_published: new Date(post.date).toISOString(),
       date_modified: new Date(post.updated || post.date).toISOString(),
@@ -1905,9 +1905,15 @@ function cdata(value = "") {
   return `<![CDATA[${String(value).replaceAll("]]>", "]]]]><![CDATA[>")}]]>`;
 }
 
-function absolutizeFeedHtml(html) {
-  return String(html || "").replace(/\s(href|src)="(\/[^"]*)"/g, (_, attr, value) => {
-    return ` ${attr}="${escapeAttr(absoluteUrl(value))}"`;
+function absolutizeFeedHtml(html, basePath = "/") {
+  return String(html || "").replace(/\s(href|src)="([^"]*)"/g, (match, attr, value) => {
+    if (value.startsWith("/")) {
+      return ` ${attr}="${escapeAttr(absoluteUrl(value))}"`;
+    }
+    if (attr === "href" && value.startsWith("#")) {
+      return ` ${attr}="${escapeAttr(absoluteUrl(`${basePath}${value}`))}"`;
+    }
+    return match;
   });
 }
 

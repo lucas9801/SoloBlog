@@ -256,6 +256,9 @@ if (!buildScript.includes("noindex,follow")) failures.push("404 page must be mar
 if (!buildScript.includes("content:encoded") || !buildScript.includes("absolutizeFeedHtml")) {
   failures.push("RSS feed must include full post content with absolute local URLs.");
 }
+if (!buildScript.includes('value.startsWith("#")') || !checkOutputScript.includes("fragment-only heading links")) {
+  failures.push("RSS and JSON Feed content must absolutize article heading fragment links.");
+}
 if (!buildScript.includes("https://jsonfeed.org/version/1.1") || !buildScript.includes("content_html")) {
   failures.push("JSON Feed must include full HTML content using JSON Feed 1.1.");
 }
