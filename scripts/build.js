@@ -1695,7 +1695,6 @@ async function aboutPage() {
   const pageBody = `<main class="page-shell narrow">
     <article class="article-page simple-page">
       <header class="page-title">
-        <span class="section-kicker">About</span>
         <h1>${escapeHtml(title)}</h1>
         <p>${escapeHtml(data.summary || "")}</p>
       </header>

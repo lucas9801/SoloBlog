@@ -32,7 +32,7 @@ async function copyFixtureProject(target) {
   for (const dir of ["content", "src", "scripts", "public", "assets", "docs", "functions", "migrations"]) {
     await cp(path.join(root, dir), path.join(target, dir), { recursive: true });
   }
-  for (const file of ["package.json", "wrangler.toml", ".node-version"]) {
+  for (const file of ["package.json", "wrangler.toml", ".node-version", "README.md"]) {
     await cp(path.join(root, file), path.join(target, file));
   }
 }

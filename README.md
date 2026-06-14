@@ -1,6 +1,6 @@
-# My Game Dev Blog
+# SOLUS Dev Notes
 
-一个文件驱动的静态博客。文章使用 Markdown 写在 `content/posts`，构建后生成可部署的静态站点。
+面向游戏开发、图形渲染与工程实践的文件驱动技术档案站。文章使用 Markdown 写在 `content/posts`，构建后生成可部署的静态站点。
 
 ## 快速开始
 

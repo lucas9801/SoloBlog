@@ -30,7 +30,8 @@ const requiredFiles = [
   "docs/cloudflare-pages.md",
   "assets/og/solus-og.svg",
   "assets/og/solus-og.png",
-  "migrations/0002_post_view_events.sql"
+  "migrations/0002_post_view_events.sql",
+  "README.md"
 ];
 
 for (const file of requiredFiles) {
@@ -56,7 +57,8 @@ const [
   headers,
   packageConfig,
   wranglerConfig,
-  socialImageStats
+  socialImageStats,
+  readme
 ] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
@@ -74,7 +76,8 @@ const [
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
-  stat(path.join(root, "assets/og/solus-og.png"))
+  stat(path.join(root, "assets/og/solus-og.png")),
+  readFile(path.join(root, "README.md"), "utf8")
 ]);
 
 const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file) =>
@@ -395,6 +398,12 @@ if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("
 }
 if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
   failures.push("Home page must not keep template-like English kicker labels.");
+}
+if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog")) {
+  failures.push("Project identity must not keep initial template naming.");
+}
+if (buildScript.includes('<span class="section-kicker">About</span>')) {
+  failures.push("About page must not expose an English template kicker.");
 }
 if (!buildScript.includes("data-copy-rss-status") || !siteScript.includes("RSS 链接已复制")) {
   failures.push("RSS copy action must expose a clear copied state.");
