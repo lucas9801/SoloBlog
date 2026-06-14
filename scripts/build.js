@@ -927,6 +927,28 @@ function archivePostCard(post) {
   </article>`;
 }
 
+function compactPostIndex(posts, title = "最近更新") {
+  const items = posts.slice(0, 6);
+  if (!items.length) return "";
+
+  return `<section class="compact-post-index" aria-labelledby="compact-post-index-title">
+    <div class="compact-post-index-head">
+      <h2 id="compact-post-index-title">${escapeHtml(title)}</h2>
+      <a href="/archive/">全部文章</a>
+    </div>
+    <div class="compact-post-list">
+      ${items
+        .map(
+          (post) => `<a class="compact-post-link" href="${post.url}">
+            <span>${escapeHtml(post.title)}</span>
+            <small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small>
+          </a>`
+        )
+        .join("")}
+    </div>
+  </section>`;
+}
+
 function rankingPayload(posts) {
   return escapeAttr(
     JSON.stringify(
@@ -1394,6 +1416,7 @@ function tagIndexPage(entries, posts) {
     <section class="tag-matrix-page">
       ${tagCloud(entries)}
     </section>
+    ${compactPostIndex(posts)}
   </main>`;
   return pageLayout({
     title: "标签",
@@ -1493,7 +1516,7 @@ function sortSeriesPosts(posts) {
   );
 }
 
-function seriesIndexPage(entries) {
+function seriesIndexPage(entries, posts) {
   const body = `<main class="page-shell series-page">
     <h1 class="sr-only">专题索引</h1>
     <section class="series-grid">
@@ -1525,6 +1548,7 @@ function seriesIndexPage(entries) {
         })
         .join("")}
     </section>
+    ${compactPostIndex(posts)}
   </main>`;
   return pageLayout({
     title: "专题",
@@ -2033,7 +2057,7 @@ await writeArchivePages({
   totalCount: posts.length
 });
 await writePage("tags", tagIndexPage(tags, posts));
-await writePage("series", seriesIndexPage(seriesEntries));
+await writePage("series", seriesIndexPage(seriesEntries, posts));
 await writePage("search", searchPage());
 await writePage("about", await aboutPage());
 await writeFile(path.join(dist, "404.html"), notFoundPage(), "utf8");

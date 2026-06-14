@@ -329,6 +329,8 @@ async function checkViewport(viewport, page) {
           ".pagination",
           ".tag-matrix-page",
           ".tag-matrix",
+          ".compact-post-index",
+          ".compact-post-list",
           ".series-page",
           ".series-grid",
           ".article-shell",

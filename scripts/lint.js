@@ -58,6 +58,7 @@ const [
   buildScript,
   newPostScript,
   previewScript,
+  testBuildScript,
   testPreviewScript,
   checkAllScript,
   checkLayoutScript,
@@ -87,6 +88,7 @@ const [
   readFile(path.join(root, "scripts/build.js"), "utf8"),
   readFile(path.join(root, "scripts/new-post.js"), "utf8"),
   readFile(path.join(root, "scripts/preview.js"), "utf8"),
+  readFile(path.join(root, "scripts/test-build.js"), "utf8"),
   readFile(path.join(root, "scripts/test-preview.js"), "utf8"),
   readFile(path.join(root, "scripts/check-all.js"), "utf8"),
   readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
@@ -432,6 +434,14 @@ if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPa
 }
 if (!buildScript.includes("series-card-list") || !css.includes(".series-card-list")) {
   failures.push("Series index cards must preview posts inside each series.");
+}
+if (
+  !buildScript.includes("function compactPostIndex") ||
+  !buildScript.includes("compact-post-index") ||
+  !css.includes(".compact-post-list") ||
+  !testBuildScript.includes("compact-post-index")
+) {
+  failures.push("Short taxonomy index pages must expose a compact recent-post index.");
 }
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");

@@ -251,6 +251,9 @@ try {
   assert.doesNotMatch(tagIndex, /class="page-context"/);
   assert.doesNotMatch(tagIndex, /class="page-title"/);
   assert.doesNotMatch(tagIndex, /class="section-kicker"/);
+  assert.match(tagIndex, /class="compact-post-index"/);
+  assert.match(tagIndex, /href="\/archive\/">全部文章<\/a>/);
+  assert.match(tagIndex, /Markdown Followup/);
   assert.equal(jsonLdObjects(tagIndex).find((item) => item["@type"] === "CollectionPage").url, "https://blog.solus.games/tags/");
 
   const seriesIndex = await readFile(path.join(tempRoot, "dist", "series", "index.html"), "utf8");
@@ -260,6 +263,7 @@ try {
   assert.doesNotMatch(seriesIndex, />专题<\/span>/);
   assert.match(seriesIndex, /class="series-card-head"/);
   assert.match(seriesIndex, /class="series-card-list"/);
+  assert.match(seriesIndex, /class="compact-post-index"/);
   assert.match(seriesIndex, /Markdown Edge Cases/);
   assert.match(seriesIndex, /Markdown Followup/);
   assert.equal(
