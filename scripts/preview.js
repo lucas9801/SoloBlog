@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 const root = path.resolve(process.cwd(), "dist");
@@ -20,6 +20,31 @@ const contentTypes = new Map([
   [".json", "application/json; charset=utf-8"],
   [".webmanifest", "application/manifest+json; charset=utf-8"]
 ]);
+
+async function loadRedirects() {
+  const source = await readFile(path.join(root, "_redirects"), "utf8").catch(() => "");
+  return source
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"))
+    .map((line) => {
+      const [from, to, status = "302"] = line.split(/\s+/);
+      return {
+        from,
+        to,
+        status: Number.parseInt(status, 10) || 302
+      };
+    })
+    .filter((redirect) => redirect.from?.startsWith("/") && redirect.to);
+}
+
+function redirectLocation(target, requestUrl) {
+  const location = new URL(target, "http://localhost");
+  if (!location.search && requestUrl.search) location.search = requestUrl.search;
+  return location.origin === "http://localhost"
+    ? `${location.pathname}${location.search}${location.hash}`
+    : location.toString();
+}
 
 function isInsideRoot(filePath) {
   const relative = path.relative(root, filePath);
@@ -69,6 +94,21 @@ function sendFile(request, response, filePath, size, status = 200) {
     .pipe(response);
 }
 
+function sendRedirect(request, response, location, status) {
+  response.writeHead(status, {
+    "Location": location,
+    "Cache-Control": "no-store",
+    "Content-Type": "text/plain; charset=utf-8"
+  });
+  if (request.method === "HEAD") {
+    response.end();
+    return;
+  }
+  response.end(`Redirecting to ${location}`);
+}
+
+const redirects = await loadRedirects();
+
 const server = createServer(async (request, response) => {
   try {
     if (!["GET", "HEAD"].includes(request.method || "GET")) {
@@ -81,6 +121,12 @@ const server = createServer(async (request, response) => {
     }
 
     const url = new URL(request.url || "/", "http://localhost");
+    const redirect = redirects.find((item) => item.from === url.pathname);
+    if (redirect) {
+      sendRedirect(request, response, redirectLocation(redirect.to, url), redirect.status);
+      return;
+    }
+
     const resolved = await resolveRequestPath(url.pathname);
     if (resolved.status === 403) {
       response.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });

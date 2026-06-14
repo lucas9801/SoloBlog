@@ -119,6 +119,14 @@ try {
   assert.match(response.headers.get("content-type") || "", /text\/plain/);
   assert.match(await response.text(), /Sitemap: https:\/\/blog\.solus\.games\/sitemap\.xml/);
 
+  response = await request(baseUrl, "/rss", { redirect: "manual" });
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get("location"), "/rss.xml");
+
+  response = await request(baseUrl, "/feed.xml", { redirect: "manual" });
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get("location"), "/rss.xml");
+
   response = await request(baseUrl, "/", { method: "HEAD" });
   assert.equal(response.status, 200);
   assert.equal(await response.text(), "");

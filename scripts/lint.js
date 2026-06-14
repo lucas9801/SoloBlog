@@ -17,6 +17,7 @@ const requiredFiles = [
   "scripts/check-layout.js",
   "scripts/check-output.js",
   "scripts/new-post.js",
+  "scripts/preview.js",
   "scripts/test-build.js",
   "scripts/test-lint.js",
   "scripts/test-new-post.js",
@@ -54,9 +55,12 @@ const [
   viewEventsMigration,
   buildScript,
   newPostScript,
+  previewScript,
+  testPreviewScript,
   checkLayoutScript,
   checkOutputScript,
   headers,
+  redirects,
   packageConfig,
   wranglerConfig,
   socialImageSvg,
@@ -78,9 +82,12 @@ const [
   readFile(path.join(root, "migrations/0002_post_view_events.sql"), "utf8"),
   readFile(path.join(root, "scripts/build.js"), "utf8"),
   readFile(path.join(root, "scripts/new-post.js"), "utf8"),
+  readFile(path.join(root, "scripts/preview.js"), "utf8"),
+  readFile(path.join(root, "scripts/test-preview.js"), "utf8"),
   readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
   readFile(path.join(root, "public/_headers"), "utf8"),
+  readFile(path.join(root, "public/_redirects"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
   readFile(path.join(root, "assets/og/solus-og.svg"), "utf8"),
@@ -542,6 +549,15 @@ if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
 }
 if (/style-src[^;\n]*'unsafe-inline'/.test(headers)) {
   failures.push("Cloudflare style-src must not allow unsafe-inline.");
+}
+if (!/^\/rss\s+\/rss\.xml\s+301$/m.test(redirects) || !/^\/feed\.xml\s+\/rss\.xml\s+301$/m.test(redirects)) {
+  failures.push("Cloudflare redirects must expose RSS aliases for /rss and /feed.xml.");
+}
+if (!previewScript.includes("loadRedirects") || !previewScript.includes("_redirects")) {
+  failures.push("Preview server must read dist/_redirects.");
+}
+if (!testPreviewScript.includes('"/rss"') || !testPreviewScript.includes('"/feed.xml"') || !testPreviewScript.includes('redirect: "manual"')) {
+  failures.push("Preview tests must verify RSS alias redirects.");
 }
 if (manifest.name !== "SOLUS Dev Notes") failures.push("site.webmanifest name must match the site title.");
 if (manifest.short_name !== "SOLUS") failures.push("site.webmanifest short_name must be SOLUS.");

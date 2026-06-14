@@ -651,6 +651,32 @@ async function checkOpenSearch(openSearch) {
   if (/pages\.dev/i.test(openSearch)) failures.push("dist/opensearch.xml must not contain a pages.dev URL.");
 }
 
+async function checkRedirects(redirects) {
+  const rules = redirects
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"))
+    .map((line) => line.split(/\s+/));
+  const required = new Map([
+    ["/rss", "/rss.xml"],
+    ["/feed.xml", "/rss.xml"]
+  ]);
+
+  for (const [from, to] of required) {
+    const rule = rules.find(([source]) => source === from);
+    if (!rule) {
+      failures.push(`dist/_redirects must redirect ${from} to ${to}.`);
+      continue;
+    }
+    if (rule[1] !== to || rule[2] !== "301") {
+      failures.push(`dist/_redirects ${from} must be a 301 redirect to ${to}.`);
+    }
+    if (!(await localTargetExists(to))) {
+      failures.push(`dist/_redirects ${from} references missing target ${to}.`);
+    }
+  }
+}
+
 async function checkJsonFeed(feed) {
   if (!feed || typeof feed !== "object" || Array.isArray(feed)) {
     failures.push("dist/feed.json must be a JSON Feed object.");
@@ -757,7 +783,7 @@ async function main() {
     throw new Error("dist/ does not exist. Run npm run build first.");
   }
 
-  const requiredFiles = ["404.html", "_headers", "robots.txt", "rss.xml", "feed.json", "sitemap.xml", "opensearch.xml", "search-index.json"];
+  const requiredFiles = ["404.html", "_headers", "_redirects", "robots.txt", "rss.xml", "feed.json", "sitemap.xml", "opensearch.xml", "search-index.json"];
   for (const file of requiredFiles) {
     if (!(await exists(path.join(dist, file)))) failures.push(`Missing dist/${file}`);
   }
@@ -775,6 +801,9 @@ async function main() {
   if (/style-src[^;\n]*'unsafe-inline'/.test(headers)) {
     failures.push("dist/_headers style-src must not allow unsafe-inline.");
   }
+
+  const redirects = await readFile(path.join(dist, "_redirects"), "utf8").catch(() => "");
+  await checkRedirects(redirects);
 
   const searchIndex = await readFile(path.join(dist, "search-index.json"), "utf8")
     .then(JSON.parse)
