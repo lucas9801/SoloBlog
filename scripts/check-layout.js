@@ -103,6 +103,14 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function runQuiet(command, args) {
+  return new Promise((resolve) => {
+    const child = spawn(command, args, { stdio: "ignore" });
+    child.on("error", resolve);
+    child.on("exit", resolve);
+  });
+}
+
 async function removeWithRetry(target, attempts = 8) {
   for (let index = 0; index < attempts; index += 1) {
     try {
@@ -120,8 +128,25 @@ async function removeWithRetry(target, attempts = 8) {
 async function stopProcess(child) {
   if (child.exitCode !== null) return;
   const exited = new Promise((resolve) => child.once("exit", resolve));
+  if (process.platform === "win32" && child.pid) {
+    const taskkill = spawn("taskkill", ["/pid", String(child.pid), "/t", "/f"], {
+      stdio: "ignore"
+    });
+    await Promise.race([
+      new Promise((resolve) => taskkill.once("exit", resolve)),
+      wait(1500)
+    ]);
+  }
   child.kill();
   await Promise.race([exited, wait(1500)]);
+  if (child.exitCode === null) child.kill("SIGKILL");
+}
+
+async function stopEdgeUserDataProcesses(userDataDir) {
+  if (process.platform !== "win32") return;
+  const needle = userDataDir.replaceAll("'", "''");
+  const command = `$needle = '${needle}'; Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'msedge.exe' -and $_.CommandLine -like "*$needle*" } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
+  await runQuiet("powershell.exe", ["-NoProfile", "-Command", command]);
 }
 
 async function waitForJson(endpoint, timeoutMs = 20000) {
@@ -196,6 +221,8 @@ async function launchBrowser(port, viewport, page) {
   const child = spawn(edgePath, [
     "--headless=new",
     "--disable-gpu",
+    "--disable-crash-reporter",
+    "--disable-crashpad",
     "--no-sandbox",
     "--hide-scrollbars",
     `--remote-debugging-port=${port}`,
@@ -317,8 +344,12 @@ async function checkViewport(viewport, page) {
               const header = document.querySelector(".site-header");
               const hero = document.querySelector(".hero-inner");
               const toggle = document.querySelector("[data-theme-toggle]");
+              const rankingTitle = document.querySelector("[data-ranking-title]");
               if (!header) failures.push("site header is missing");
               if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
+              if (rankingTitle && rankingTitle.textContent.trim() !== "近期文章") {
+                failures.push("ranking fallback title should be recent posts before view data loads");
+              }
               if (failures.length > 0) return failures;
 
               if (innerWidth <= 720 && hero) {
@@ -602,10 +633,12 @@ async function checkViewport(viewport, page) {
 
     await client.close();
     await stopProcess(browser.child);
+    await stopEdgeUserDataProcesses(browser.userDataDir);
     await removeWithRetry(browser.userDataDir);
     return result.result.value;
   } catch (error) {
     await stopProcess(browser.child);
+    await stopEdgeUserDataProcesses(browser.userDataDir);
     await removeWithRetry(browser.userDataDir);
     throw error;
   }

@@ -46,6 +46,7 @@ const [
   siteScript,
   articleScript,
   searchScript,
+  viewsClientScript,
   viewsFunction,
   viewsMigration,
   viewEventsMigration,
@@ -63,6 +64,7 @@ const [
   readFile(path.join(root, "src/site.js"), "utf8"),
   readFile(path.join(root, "src/article.js"), "utf8"),
   readFile(path.join(root, "src/search.js"), "utf8"),
+  readFile(path.join(root, "src/views.js"), "utf8"),
   readFile(path.join(root, "functions/api/views.js"), "utf8"),
   readFile(path.join(root, "migrations/0001_post_views.sql"), "utf8"),
   readFile(path.join(root, "migrations/0002_post_view_events.sql"), "utf8"),
@@ -387,6 +389,9 @@ if (!viewsFunction.includes("storageError") || !viewsFunction.includes("View cou
 }
 if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.includes("idx_post_views_ranking")) {
   failures.push("Views API and migration must create an index for reading ranking queries.");
+}
+if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("rankingTitle.textContent = \"阅读排行\"")) {
+  failures.push("Reading ranking must clearly distinguish fallback recent posts from loaded view rankings.");
 }
 if (
   !viewsFunction.includes("post_view_events") ||

@@ -1,5 +1,6 @@
 const viewNodes = Array.from(document.querySelectorAll("[data-view-slug]"));
 const rankingList = document.querySelector("[data-ranking-posts]");
+const rankingTitle = document.querySelector("[data-ranking-title]");
 
 function uniqueSlugs(nodes) {
   return Array.from(new Set(nodes.map((node) => node.dataset.viewSlug).filter(Boolean)));
@@ -63,6 +64,7 @@ function renderRanking(ranking, posts) {
   if (items.length === 0) return;
 
   const formatter = new Intl.NumberFormat("zh-CN");
+  if (rankingTitle) rankingTitle.textContent = "阅读排行";
   rankingList.innerHTML = items
     .map(
       (item, index) =>
