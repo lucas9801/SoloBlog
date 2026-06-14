@@ -219,6 +219,9 @@ if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
+if (!/body\s*\{[\s\S]*?display:\s*flex;[\s\S]*?flex-direction:\s*column;/.test(css) || !/body\s*>\s*main\s*\{[\s\S]*?flex:\s*1\s+0\s+auto;/.test(css)) {
+  failures.push("Page layout must keep footers pinned to the viewport bottom on short pages.");
+}
 if (!/\[hidden]\s*\{[\s\S]*?display:\s*none\s*!important;/.test(css)) {
   failures.push("CSS must preserve the native hidden state even on styled controls.");
 }
@@ -323,6 +326,12 @@ if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("Collecti
 }
 if (!checkLayoutScript.includes('"/about/"') || !checkLayoutScript.includes("/categories/${slugifyForPath(firstCategory)}/")) {
   failures.push("Layout checks must cover the about page and a category archive page by default.");
+}
+if (!checkLayoutScript.includes("startPreviewIfNeeded") || !checkLayoutScript.includes("scripts/preview.js")) {
+  failures.push("Layout checks must start a local preview server when CHECK_URL is not provided.");
+}
+if (!checkLayoutScript.includes("footer is floating above the viewport bottom")) {
+  failures.push("Layout checks must prevent short-page footers from floating mid-viewport.");
 }
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");

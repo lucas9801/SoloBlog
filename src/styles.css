@@ -51,13 +51,20 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100svh;
   margin: 0;
+  display: flex;
+  flex-direction: column;
   overflow-x: hidden;
   background:
     linear-gradient(90deg, rgba(37, 99, 235, 0.035) 1px, transparent 1px),
     linear-gradient(rgba(37, 99, 235, 0.028) 1px, transparent 1px),
     var(--bg);
   background-size: 56px 56px;
+}
+
+body > main {
+  flex: 1 0 auto;
 }
 
 a {

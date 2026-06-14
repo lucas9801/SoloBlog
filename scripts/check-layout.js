@@ -4,7 +4,7 @@ import net from "node:net";
 import path from "node:path";
 
 const edgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-const requestedUrl = process.env.CHECK_URL || "http://localhost:4173";
+let requestedUrl = process.env.CHECK_URL || "";
 const root = process.cwd();
 
 const viewports = [
@@ -126,7 +126,7 @@ async function removeWithRetry(target, attempts = 8) {
 }
 
 async function stopProcess(child) {
-  if (child.exitCode !== null) return;
+  if (!child || child.exitCode !== null) return;
   const exited = new Promise((resolve) => child.once("exit", resolve));
   if (process.platform === "win32" && child.pid) {
     const taskkill = spawn("taskkill", ["/pid", String(child.pid), "/t", "/f"], {
@@ -140,6 +140,37 @@ async function stopProcess(child) {
   child.kill();
   await Promise.race([exited, wait(1500)]);
   if (child.exitCode === null) child.kill("SIGKILL");
+}
+
+async function waitForPreview(url, timeoutMs = 20000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) return;
+    } catch {
+      // The preview server is still starting.
+    }
+    await wait(150);
+  }
+  throw new Error(`Timed out waiting for preview server at ${url}`);
+}
+
+async function startPreviewIfNeeded() {
+  if (requestedUrl) return null;
+
+  const port = await getFreePort();
+  requestedUrl = `http://127.0.0.1:${port}/`;
+  const preview = spawn(process.execPath, ["scripts/preview.js"], {
+    env: {
+      ...process.env,
+      PORT: String(port)
+    },
+    stdio: ["ignore", "pipe", "inherit"]
+  });
+  preview.stdout.on("data", (chunk) => process.stdout.write(chunk));
+  await waitForPreview(requestedUrl);
+  return preview;
 }
 
 async function stopEdgeUserDataProcesses(userDataDir) {
@@ -306,14 +337,22 @@ async function checkViewport(viewport, page) {
           viewport: { width: innerWidth, height: innerHeight },
           document: {
             clientWidth: document.documentElement.clientWidth,
-            scrollWidth: document.documentElement.scrollWidth
+            scrollWidth: document.documentElement.scrollWidth,
+            scrollHeight: document.documentElement.scrollHeight
           },
           body: {
             clientWidth: document.body.clientWidth,
-            scrollWidth: document.body.scrollWidth
+            scrollWidth: document.body.scrollWidth,
+            scrollHeight: document.body.scrollHeight
           },
           mainCount: document.querySelectorAll("main").length,
           visibleBrokenImages,
+          footer: (() => {
+            const footer = document.querySelector(".site-footer");
+            if (!footer) return null;
+            const rect = footer.getBoundingClientRect();
+            return { bottom: Math.round(rect.bottom) };
+          })(),
           elements: []
         };
         for (const selector of selectors) {
@@ -648,57 +687,67 @@ async function checkViewport(viewport, page) {
   }
 }
 
-const failures = [];
-const pages = await pagesToCheck();
+const preview = await startPreviewIfNeeded();
 
-for (const page of pages) {
-  for (const viewport of viewports) {
-    const metrics = await checkViewport(viewport, page);
-    const overflow =
-      Math.max(metrics.document.scrollWidth, metrics.body.scrollWidth) -
-      metrics.document.clientWidth;
+try {
+  const failures = [];
+  const pages = await pagesToCheck();
 
-    console.log(
-      `${page.name}/${viewport.name}: viewport=${metrics.viewport.width}x${metrics.viewport.height}, document=${metrics.document.clientWidth}/${metrics.document.scrollWidth}, overflow=${overflow}`
-    );
+  for (const page of pages) {
+    for (const viewport of viewports) {
+      const metrics = await checkViewport(viewport, page);
+      const overflow =
+        Math.max(metrics.document.scrollWidth, metrics.body.scrollWidth) -
+        metrics.document.clientWidth;
 
-    if (metrics.mainCount !== 1) {
-      failures.push(`${page.name}/${viewport.name} expected exactly one main element, found ${metrics.mainCount}`);
-    }
-    if (metrics.visibleBrokenImages.length > 0) {
-      failures.push(`${page.name}/${viewport.name} has broken visible images: ${metrics.visibleBrokenImages.join(", ")}`);
-    }
-    for (const runtimeFailure of metrics.runtimeFailures || []) {
-      failures.push(`${page.name}/${viewport.name} runtime check failed: ${runtimeFailure}`);
-    }
-    if (overflow > 1) {
-      failures.push(`${page.name}/${viewport.name} has ${overflow}px horizontal overflow`);
-    }
-
-    for (const element of metrics.elements) {
-      const overflowsSelf = element.scrollWidth - element.clientWidth;
-      const selfOverflowIsManaged = ["hidden", "clip", "auto", "scroll"].includes(
-        element.overflowX
+      console.log(
+        `${page.name}/${viewport.name}: viewport=${metrics.viewport.width}x${metrics.viewport.height}, document=${metrics.document.clientWidth}/${metrics.document.scrollWidth}, overflow=${overflow}`
       );
-      if (overflowsSelf > 1 && !selfOverflowIsManaged) {
-        failures.push(
-          `${page.name}/${viewport.name} ${element.selector} overflows itself by ${overflowsSelf}px`
-        );
+
+      if (metrics.mainCount !== 1) {
+        failures.push(`${page.name}/${viewport.name} expected exactly one main element, found ${metrics.mainCount}`);
       }
-      if (element.left < -1 || element.right > metrics.viewport.width + 1) {
-        failures.push(
-          `${page.name}/${viewport.name} ${element.selector} is outside viewport (${element.left}-${element.right})`
+      if (metrics.visibleBrokenImages.length > 0) {
+        failures.push(`${page.name}/${viewport.name} has broken visible images: ${metrics.visibleBrokenImages.join(", ")}`);
+      }
+      const documentHeight = Math.max(metrics.document.scrollHeight, metrics.body.scrollHeight);
+      if (metrics.footer && documentHeight <= metrics.viewport.height + 2 && metrics.footer.bottom < metrics.viewport.height - 28) {
+        failures.push(`${page.name}/${viewport.name} footer is floating above the viewport bottom`);
+      }
+      for (const runtimeFailure of metrics.runtimeFailures || []) {
+        failures.push(`${page.name}/${viewport.name} runtime check failed: ${runtimeFailure}`);
+      }
+      if (overflow > 1) {
+        failures.push(`${page.name}/${viewport.name} has ${overflow}px horizontal overflow`);
+      }
+
+      for (const element of metrics.elements) {
+        const overflowsSelf = element.scrollWidth - element.clientWidth;
+        const selfOverflowIsManaged = ["hidden", "clip", "auto", "scroll"].includes(
+          element.overflowX
         );
+        if (overflowsSelf > 1 && !selfOverflowIsManaged) {
+          failures.push(
+            `${page.name}/${viewport.name} ${element.selector} overflows itself by ${overflowsSelf}px`
+          );
+        }
+        if (element.left < -1 || element.right > metrics.viewport.width + 1) {
+          failures.push(
+            `${page.name}/${viewport.name} ${element.selector} is outside viewport (${element.left}-${element.right})`
+          );
+        }
       }
     }
   }
-}
 
-if (failures.length > 0) {
-  for (const failure of failures) {
-    console.error(`Failed: ${failure}`);
+  if (failures.length > 0) {
+    for (const failure of failures) {
+      console.error(`Failed: ${failure}`);
+    }
+    process.exitCode = 1;
+  } else {
+    console.log("Layout checks passed.");
   }
-  process.exit(1);
+} finally {
+  await stopProcess(preview);
 }
-
-console.log("Layout checks passed.");
