@@ -350,9 +350,17 @@ if (
   !checkOutputScript.includes("function checkSitemapCoverage") ||
   !checkOutputScript.includes("dist/sitemap.xml is missing expected URL") ||
   !checkOutputScript.includes("/search/") ||
+  !checkOutputScript.includes("/about/") ||
   !checkOutputScript.includes("/categories/${slugify")
 ) {
   failures.push("Output checks must ensure sitemap covers generated public indexes.");
+}
+if (
+  !checkOutputScript.includes("references missing category archive") ||
+  !checkOutputScript.includes("references missing tag archive") ||
+  !checkOutputScript.includes("references missing series archive")
+) {
+  failures.push("Output checks must ensure search index taxonomy references resolve.");
 }
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");

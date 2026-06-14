@@ -666,7 +666,7 @@ async function checkSitemap(sitemap) {
 function checkSitemapCoverage(sitemap, searchIndex) {
   if (!Array.isArray(searchIndex)) return;
   const locs = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
-  const expectedPaths = new Set(["/", "/archive/", "/tags/", "/series/", "/search/"]);
+  const expectedPaths = new Set(["/", "/archive/", "/tags/", "/series/", "/search/", "/about/"]);
 
   for (const item of searchIndex) {
     if (!item?.url) continue;
@@ -906,6 +906,17 @@ async function checkSearchIndex(searchIndex) {
     }
     if (!(await localTargetExists(`/years/${item.year}/`))) {
       failures.push(`dist/search-index.json references missing year archive: ${item.year}`);
+    }
+    if (!(await localTargetExists(`/categories/${slugify(item.category)}/`))) {
+      failures.push(`dist/search-index.json references missing category archive: ${item.category}`);
+    }
+    for (const tag of item.tags) {
+      if (!(await localTargetExists(`/tags/${slugify(tag)}/`))) {
+        failures.push(`dist/search-index.json references missing tag archive: ${item.slug} -> ${tag}`);
+      }
+    }
+    if (item.series && !(await localTargetExists(`/series/${slugify(item.series)}/`))) {
+      failures.push(`dist/search-index.json references missing series archive: ${item.slug} -> ${item.series}`);
     }
     if (item.cover && !(await localTargetExists(item.cover))) {
       failures.push(`dist/search-index.json references missing post cover: ${item.cover}`);

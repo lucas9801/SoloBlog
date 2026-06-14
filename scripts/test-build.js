@@ -328,6 +328,8 @@ try {
   const sitemap = await readFile(path.join(tempRoot, "dist", "sitemap.xml"), "utf8");
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/years\/2026\//);
+  assert.match(sitemap, /https:\/\/blog\.solus\.games\/about\//);
+  assert.match(sitemap, new RegExp(new URL("/categories/图形渲染/", "https://blog.solus.games/").toString()));
   assert.match(sitemap, new RegExp(new URL("/archive/2026/图形渲染/", "https://blog.solus.games/").toString()));
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\//);
