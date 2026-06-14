@@ -391,6 +391,15 @@ if (!searchScript.includes('width="1200" height="675"')) {
 if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
   failures.push("Search page must provide clear/reset controls.");
 }
+if (
+  !buildScript.includes('id="searchStatus"') ||
+  !buildScript.includes('aria-describedby="searchStatus"') ||
+  !buildScript.includes('aria-controls="searchResults searchFacets"') ||
+  !searchScript.includes('results.setAttribute("role", "list")') ||
+  !searchScript.includes('results.removeAttribute("role")')
+) {
+  failures.push("Search page must separate live status text from the result list semantics.");
+}
 if (!viewsFunction.includes("isSameOriginRequest") || !viewsFunction.includes("isJsonRequest")) {
   failures.push("Views API must reject cross-origin and non-JSON write requests.");
 }

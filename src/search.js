@@ -1,5 +1,6 @@
 const input = document.querySelector("#searchInputPage");
 const results = document.querySelector("#searchResults");
+const status = document.querySelector("#searchStatus");
 const facets = document.querySelector("#searchFacets");
 const clearButton = document.querySelector("[data-search-clear]");
 const params = new URLSearchParams(window.location.search);
@@ -345,17 +346,28 @@ function render(posts) {
   syncControls();
 
   if (visible.length === 0) {
-    results.innerHTML = `<div class="search-empty" role="status">
+    if (status) {
+      status.innerHTML = `<div class="search-summary">
+        <p class="search-count">没有找到匹配文章</p>
+        ${filters ? `<span>${escapeHtml(filters)}</span>` : ""}
+      </div>`;
+    }
+    results.removeAttribute("role");
+    results.innerHTML = `<div class="search-empty">
       <p>没有找到匹配文章。</p>
       <small>${filters ? `${escapeHtml(filters)} · ` : ""}可以换一个关键词或清除筛选。</small>
     </div>`;
     return;
   }
 
-  results.innerHTML = `<div class="search-summary">
+  results.setAttribute("role", "list");
+  if (status) {
+    status.innerHTML = `<div class="search-summary">
     <p class="search-count">${resultLabel(state.query, visible.length, showingRecent)}</p>
     ${filters ? `<span>${escapeHtml(filters)}</span>` : ""}
-  </div>${visible.map((post) => renderCard(post, state.query)).join("")}`;
+  </div>`;
+  }
+  results.innerHTML = visible.map((post) => renderCard(post, state.query)).join("");
 }
 
 async function boot() {
@@ -406,5 +418,7 @@ async function boot() {
 }
 
 boot().catch(() => {
-  results.innerHTML = '<p class="muted">搜索索引暂时不可用。</p>';
+  results?.removeAttribute("role");
+  if (status) status.innerHTML = '<p class="muted">搜索索引暂时不可用。</p>';
+  if (results) results.innerHTML = "";
 });

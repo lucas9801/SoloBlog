@@ -256,6 +256,9 @@ try {
   const search = await readFile(path.join(tempRoot, "dist", "search", "index.html"), "utf8");
   assert.doesNotMatch(search, /class="page-title"/);
   assert.match(search, /class="page-shell search-page"/);
+  assert.match(search, /id="searchInputPage"[^>]+aria-describedby="searchStatus"[^>]+aria-controls="searchResults searchFacets"/);
+  assert.match(search, /id="searchStatus" class="search-status" role="status" aria-live="polite"/);
+  assert.match(search, /id="searchResults" class="search-results" role="list"/);
   assert.equal(
     jsonLdObjects(search).find((item) => item["@type"] === "SearchResultsPage").url,
     "https://blog.solus.games/search/"

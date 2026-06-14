@@ -1726,15 +1726,18 @@ function searchPage() {
       <div class="search-controls">
         <label>
           <span class="sr-only">搜索关键词</span>
-          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、分类或标签" autofocus />
+          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" autofocus />
         </label>
-        <button class="secondary-button search-clear" type="button" data-search-clear hidden>清空</button>
+        <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchResults searchFacets" hidden>清空</button>
       </div>
       <div class="search-layout">
         <aside class="search-filter-panel" aria-label="筛选条件">
           <div id="searchFacets" class="search-facets" aria-label="搜索筛选"></div>
         </aside>
-        <div id="searchResults" class="search-results" role="list" aria-live="polite"></div>
+        <section class="search-result-panel" aria-label="搜索结果">
+          <div id="searchStatus" class="search-status" role="status" aria-live="polite"></div>
+          <div id="searchResults" class="search-results" role="list"></div>
+        </section>
       </div>
     </section>
   </main>

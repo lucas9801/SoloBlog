@@ -1718,6 +1718,12 @@ pre {
   min-width: 0;
 }
 
+.search-result-panel {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
 .search-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

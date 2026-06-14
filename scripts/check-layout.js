@@ -427,11 +427,13 @@ async function checkViewport(viewport, page) {
 
               const input = document.querySelector("#searchInputPage");
               const results = document.querySelector("#searchResults");
+              const status = document.querySelector("#searchStatus");
               const facets = document.querySelector("#searchFacets");
               const clearButton = document.querySelector("[data-search-clear]");
               const invalidFacetUrl = ${JSON.stringify(page.search.includes("__missing__"))};
               if (!input) failures.push("search input is missing");
               if (!results) failures.push("search results container is missing");
+              if (!status) failures.push("search status container is missing");
               if (!facets) failures.push("search facets container is missing");
               if (!clearButton) failures.push("search clear button is missing");
               if (failures.length > 0) return failures;
@@ -442,6 +444,9 @@ async function checkViewport(viewport, page) {
               const initialCards = document.querySelectorAll(".search-result-card").length;
               const facetButtons = document.querySelectorAll("[data-facet-type]").length;
               if (initialCards === 0) failures.push("search page did not render initial recent posts");
+              if (initialCards > 0 && results.getAttribute("role") !== "list") {
+                failures.push("search result cards must be inside a list container");
+              }
               if (facetButtons === 0) failures.push("search page did not render facet buttons");
               if (!clearButtonIsHidden()) failures.push("clear button is visible before any search state");
               if (invalidFacetUrl && new URL(location.href).search !== "") {
@@ -452,7 +457,7 @@ async function checkViewport(viewport, page) {
               input.dispatchEvent(new Event("input", { bubbles: true }));
               await wait(120);
               const queryCards = document.querySelectorAll(".search-result-card").length;
-              const queryText = results.textContent || "";
+              const queryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
               if (queryCards === 0) failures.push("search query did not render result cards");
               if (!queryText.toLowerCase().includes("unity")) failures.push("search query results do not mention Unity");
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
@@ -509,7 +514,7 @@ async function checkViewport(viewport, page) {
                 if (selectedCategory && resultCards.some((card) => card.dataset.resultCategory !== selectedCategory)) {
                   failures.push("combined search results include posts outside the selected category");
                 }
-                const summaryText = results.textContent || "";
+                const summaryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
                 if (selectedYear && !summaryText.includes("年份：" + selectedYear)) {
                   failures.push("combined search summary does not show the selected year");
                 }
@@ -529,6 +534,9 @@ async function checkViewport(viewport, page) {
               }
               if (document.querySelectorAll(".search-result-card").length === 0) {
                 failures.push("clear button did not restore recent results");
+              }
+              if (results.getAttribute("role") !== "list") {
+                failures.push("clear button did not restore list semantics for results");
               }
               if (!clearButtonIsHidden()) failures.push("clear button stayed visible after clearing search state");
 
