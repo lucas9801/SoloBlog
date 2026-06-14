@@ -179,6 +179,8 @@ try {
   assert.match(home, /<link rel="alternate" type="application\/rss\+xml" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/rss\.xml" \/>/);
   assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);
   assert.match(home, /<link rel="search" type="application\/opensearchdescription\+xml" title="SOLUS Dev Notes" href="\/opensearch\.xml" \/>/);
+  assert.match(home, /<meta name="theme-color" media="\(prefers-color-scheme: light\)" content="#f6f8fb" \/>/);
+  assert.match(home, /<meta name="theme-color" media="\(prefers-color-scheme: dark\)" content="#090d12" \/>/);
   assert.match(home, /\/src\/styles\.css\?v=[0-9a-f]{12}/);
   assert.doesNotMatch(home, /[?&]v=local/);
   assert.doesNotMatch(home, /draft-only|Draft Only/);

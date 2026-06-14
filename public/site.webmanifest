@@ -2,6 +2,7 @@
   "name": "SOLUS Dev Notes",
   "short_name": "SOLUS",
   "description": "Game engine, rendering, tools, and engineering practice notes.",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

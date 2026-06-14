@@ -149,6 +149,16 @@ function checkDocumentBasics(file, html) {
     failures.push(`${relative} meta description must not be empty.`);
   }
 
+  const themeColorTags = [...html.matchAll(/<meta\s+name="theme-color"\s+([^>]+)>/gi)].map((match) => match[0]);
+  if (themeColorTags.length !== 2) {
+    failures.push(`${relative} must contain light and dark theme-color meta tags.`);
+  } else if (
+    !themeColorTags.some((tag) => tag.includes('media="(prefers-color-scheme: light)"') && tag.includes('content="#f6f8fb"')) ||
+    !themeColorTags.some((tag) => tag.includes('media="(prefers-color-scheme: dark)"') && tag.includes('content="#090d12"'))
+  ) {
+    failures.push(`${relative} theme-color meta tags must match the SOLUS light and dark backgrounds.`);
+  }
+
   const h1Count = [...html.matchAll(/<h1\b[^>]*>/gi)].length;
   if (h1Count !== 1) failures.push(`${relative} must contain exactly one h1 element.`);
 }

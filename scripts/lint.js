@@ -470,6 +470,14 @@ if (
 }
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
+if (
+  !buildScript.includes('name="theme-color"') ||
+  !buildScript.includes('(prefers-color-scheme: light)') ||
+  !buildScript.includes('(prefers-color-scheme: dark)') ||
+  !checkOutputScript.includes("theme-color meta tags")
+) {
+  failures.push("Page head must expose light and dark mobile theme colors.");
+}
 if (!buildScript.includes("application/rss+xml")) failures.push("Page head must expose RSS discovery.");
 if (!buildScript.includes("application/feed+json")) failures.push("Page head must expose JSON Feed discovery.");
 if (!buildScript.includes('rel="search"') || !buildScript.includes("application/opensearchdescription+xml")) {
@@ -710,6 +718,7 @@ if (!testPreviewScript.includes('"/rss"') || !testPreviewScript.includes('"/feed
 }
 if (manifest.name !== "SOLUS Dev Notes") failures.push("site.webmanifest name must match the site title.");
 if (manifest.short_name !== "SOLUS") failures.push("site.webmanifest short_name must be SOLUS.");
+if (manifest.id !== "/") failures.push("site.webmanifest id must be stable at the site root.");
 if (manifest.start_url !== "/" || manifest.scope !== "/") failures.push("site.webmanifest must start at the site root.");
 if (manifest.display !== "standalone") failures.push("site.webmanifest display must be standalone.");
 if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.src === "/favicon.svg")) {
