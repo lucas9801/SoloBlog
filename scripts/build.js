@@ -1036,6 +1036,24 @@ function pageRoute(baseRoute, page) {
   return page === 1 ? baseRoute : path.join(baseRoute, "page", String(page));
 }
 
+function archiveSelectionPath({ category = "", year = "" } = {}) {
+  if (category && year) return `/archive/${slugify(year)}/${slugify(category)}/`;
+  if (category) return `/categories/${slugify(category)}/`;
+  if (year) return `/years/${slugify(year)}/`;
+  return "/archive/";
+}
+
+function archiveSelectionRoute({ category = "", year = "" } = {}) {
+  if (category && year) return path.join("archive", slugify(year), slugify(category));
+  if (category) return path.join("categories", slugify(category));
+  if (year) return path.join("years", slugify(year));
+  return "archive";
+}
+
+function filterArchivePosts(posts, { category = "", year = "" } = {}) {
+  return posts.filter((post) => (!category || post.category === category) && (!year || postYear(post) === year));
+}
+
 function paginate(list, page, perPage) {
   const totalPages = Math.max(1, Math.ceil(list.length / perPage));
   const currentPage = Math.min(Math.max(page, 1), totalPages);
@@ -1054,39 +1072,34 @@ function archiveFilterRow(label, ariaLabel, links) {
   </div>`;
 }
 
-function archiveFilters(categories, years, { activeCategory = "", activeYear = "", totalCount }) {
-  const allActive = !activeCategory && !activeYear;
+function archiveFilters(
+  categories,
+  years,
+  { activeCategory = "", activeYear = "", totalCount, categoryTotalCount = totalCount, yearTotalCount = totalCount }
+) {
   const categoryLinks = [
-    `<a class="${allActive ? "active" : ""}" href="/archive/"${allActive ? ` aria-current="page"` : ""}>全部 <b>${totalCount}</b></a>`,
+    `<a class="${!activeCategory ? "active" : ""}" href="${archiveSelectionPath({ year: activeYear })}"${!activeCategory ? ` aria-current="page"` : ""}>全部 <b>${categoryTotalCount}</b></a>`,
     ...categories.map(([category, list]) => {
       const active = category === activeCategory;
       const activeClass = active ? "active" : "";
       const ariaCurrent = active ? ` aria-current="page"` : "";
-      return `<a class="${activeClass}" href="/categories/${slugify(category)}/"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
+      return `<a class="${activeClass}" href="${archiveSelectionPath({ category, year: activeYear })}"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
     })
   ];
-  const yearLinks = years.map(([year, list]) => {
-    const active = year === activeYear;
-    const activeClass = active ? "active" : "";
-    const ariaCurrent = active ? ` aria-current="page"` : "";
-    return `<a class="${activeClass}" href="/years/${slugify(year)}/"${ariaCurrent}>${escapeHtml(year)} <b>${list.length}</b></a>`;
-  });
+  const yearLinks = [
+    `<a class="${!activeYear ? "active" : ""}" href="${archiveSelectionPath({ category: activeCategory })}"${!activeYear ? ` aria-current="page"` : ""}>全部 <b>${yearTotalCount}</b></a>`,
+    ...years.map(([year, list]) => {
+      const active = year === activeYear;
+      const activeClass = active ? "active" : "";
+      const ariaCurrent = active ? ` aria-current="page"` : "";
+      return `<a class="${activeClass}" href="${archiveSelectionPath({ category: activeCategory, year })}"${ariaCurrent}>${escapeHtml(year)} <b>${list.length}</b></a>`;
+    })
+  ];
 
   return `<div class="archive-filter-stack">
     ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
     ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
   </div>`;
-}
-
-function pageContext({ eyebrow = "", title, meta = "", description = "" }) {
-  return `<header class="page-context">
-    ${eyebrow ? `<span class="page-context-kicker">${escapeHtml(eyebrow)}</span>` : ""}
-    <div class="page-context-copy">
-      <h1>${escapeHtml(title)}</h1>
-      ${description ? `<p>${escapeHtml(description)}</p>` : ""}
-    </div>
-    ${meta ? `<b>${escapeHtml(meta)}</b>` : ""}
-  </header>`;
 }
 
 function paginationNav(basePath, currentPage, totalPages) {
@@ -1248,27 +1261,53 @@ function homePage(posts, categories, tags) {
   });
 }
 
-function archivePage({ posts, categories, years, activeCategory = "", activeYear = "", basePath = "/archive/", page = 1, totalCount }) {
+function archivePage({
+  posts,
+  allPosts = posts,
+  categories,
+  years,
+  activeCategory = "",
+  activeYear = "",
+  basePath = "/archive/",
+  page = 1,
+  totalCount
+}) {
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
-  const title = activeCategory ? `${activeCategory} 分类` : activeYear ? `${activeYear} 年文章` : "全部文章";
-  const description = activeCategory
-    ? `筛选 ${activeCategory} 分类下的技术笔记。`
-    : activeYear
-      ? `浏览 ${activeYear} 年发布的技术笔记。`
-      : "按时间、分类和主题浏览所有技术笔记。";
+  const title =
+    activeCategory && activeYear
+      ? `${activeYear} 年 ${activeCategory}`
+      : activeCategory
+        ? `${activeCategory} 分类`
+        : activeYear
+          ? `${activeYear} 年文章`
+          : "全部文章";
+  const description =
+    activeCategory && activeYear
+      ? `筛选 ${activeYear} 年 ${activeCategory} 分类下的技术笔记。`
+      : activeCategory
+        ? `筛选 ${activeCategory} 分类下的技术笔记。`
+        : activeYear
+          ? `浏览 ${activeYear} 年发布的技术笔记。`
+          : "按时间、分类和主题浏览所有技术笔记。";
+  const categoryScopePosts = activeYear ? filterArchivePosts(allPosts, { year: activeYear }) : allPosts;
+  const yearScopePosts = activeCategory ? filterArchivePosts(allPosts, { category: activeCategory }) : allPosts;
+  const categoryEntries = activeYear ? groupBy(categoryScopePosts, (post) => post.category) : categories;
+  const yearEntries = activeCategory ? groupByYear(yearScopePosts) : years;
   const body = `<main class="page-shell article-index-page">
-    ${pageContext({
-      title,
-      description,
-      meta: `${posts.length} 篇`
+    <h1 class="sr-only">${escapeHtml(title)}</h1>
+    ${archiveFilters(categoryEntries, yearEntries, {
+      activeCategory,
+      activeYear,
+      totalCount,
+      categoryTotalCount: categoryScopePosts.length,
+      yearTotalCount: yearScopePosts.length
     })}
-    ${archiveFilters(categories, years, { activeCategory, activeYear, totalCount })}
     <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
     ${paginationNav(basePath, currentPage, totalPages)}
   </main>`;
   return pageLayout({
-    title: activeCategory ? `分类：${activeCategory}` : activeYear ? `${activeYear} 年文章` : "全部文章",
+    title: activeCategory && activeYear ? `${activeYear} 年 ${activeCategory}` : activeCategory ? `分类：${activeCategory}` : activeYear ? `${activeYear} 年文章` : "全部文章",
     description,
     current: "/archive/",
     body,
@@ -1284,13 +1323,24 @@ function archivePage({ posts, categories, years, activeCategory = "", activeYear
   });
 }
 
-async function writeArchivePages({ posts, categories, years, baseRoute, basePath, activeCategory = "", activeYear = "", totalCount }) {
+async function writeArchivePages({
+  posts,
+  allPosts = posts,
+  categories,
+  years,
+  baseRoute,
+  basePath,
+  activeCategory = "",
+  activeYear = "",
+  totalCount
+}) {
   const totalPages = Math.max(1, Math.ceil(posts.length / archivePostsPerPage()));
   for (let page = 1; page <= totalPages; page += 1) {
     await writePage(
       pageRoute(baseRoute, page),
       archivePage({
         posts,
+        allPosts,
         categories,
         years,
         activeCategory,
@@ -1337,11 +1387,7 @@ function taxonomyIndexPage(title, description, entries, basePath, current) {
 
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
-    ${pageContext({
-      title: "标签索引",
-      description: "按技术主题、工具和问题类型浏览文章。",
-      meta: `${entries.length} 个`
-    })}
+    <h1 class="sr-only">标签索引</h1>
     <section class="tag-matrix-page">
       ${tagCloud(entries)}
     </section>
@@ -1388,11 +1434,7 @@ function tagListPage({ tag, posts, tags, page = 1, basePath }) {
   const title = `标签：${tag}`;
   const description = `带有 ${tag} 标签的全部文章。`;
   const body = `<main class="page-shell tags-page">
-    ${pageContext({
-      title: `${tag} 标签`,
-      description: `当前标签下的全部技术笔记。`,
-      meta: `${posts.length} 篇`
-    })}
+    <h1 class="sr-only">${escapeHtml(`${tag} 标签`)}</h1>
     <section class="tag-matrix-page">
       ${tagCloud(tags, tag)}
     </section>
@@ -1478,11 +1520,7 @@ function sortSeriesPosts(posts) {
 
 function seriesIndexPage(entries) {
   const body = `<main class="page-shell series-page">
-    ${pageContext({
-      title: "专题索引",
-      description: "按长期主题浏览成组沉淀的技术笔记。",
-      meta: `${entries.length} 个`
-    })}
+    <h1 class="sr-only">专题索引</h1>
     <section class="series-grid">
       ${entries
         .map(([name, list]) => {
@@ -1520,11 +1558,7 @@ function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(sorted, page, perPage);
   const body = `<main class="page-shell series-page">
-    ${pageContext({
-      title: name,
-      description: "围绕同一长期主题连续阅读相关技术笔记。",
-      meta: `${sorted.length} 篇`
-    })}
+    <h1 class="sr-only">${escapeHtml(name)}</h1>
     <section class="series-timeline" aria-label="${escapeAttr(name)} 专题文章">
       ${items
         .map(
@@ -1929,6 +1963,11 @@ function sitemap(posts, categories, years, tags, seriesEntries) {
     paginatedSitemapEntries(`/categories/${slugify(category)}/`, list, "0.7")
   );
   const yearUrls = years.flatMap(([year, list]) => paginatedSitemapEntries(`/years/${slugify(year)}/`, list, "0.7"));
+  const archiveCombinationUrls = categories.flatMap(([category, list]) =>
+    groupByYear(list).flatMap(([year, yearList]) =>
+      paginatedSitemapEntries(archiveSelectionPath({ category, year }), yearList, "0.7")
+    )
+  );
   const tagUrls = tags.flatMap(([tag, list]) => paginatedSitemapEntries(`/tags/${slugify(tag)}/`, list, "0.6"));
   const seriesUrls = seriesEntries.flatMap(([seriesName, list]) =>
     paginatedSitemapEntries(`/series/${slugify(seriesName)}/`, list, "0.7")
@@ -1943,6 +1982,7 @@ function sitemap(posts, categories, years, tags, seriesEntries) {
     ...posts.map((post) => sitemapEntry(post.url, post.updated || post.date, "0.9")),
     ...categoryUrls,
     ...yearUrls,
+    ...archiveCombinationUrls,
     ...seriesUrls,
     ...tagUrls
   ];
@@ -1972,6 +2012,7 @@ await copyDirectory(path.join(root, "public"), dist).catch((error) => {
 await writePage(".", homePage(posts, categories, tags));
 await writeArchivePages({
   posts,
+  allPosts: posts,
   categories,
   years,
   baseRoute: "archive",
@@ -1992,6 +2033,7 @@ for (const [category, list] of categories) {
   const categorySlug = slugify(category);
   await writeArchivePages({
     posts: list,
+    allPosts: posts,
     categories,
     years,
     activeCategory: category,
@@ -2005,6 +2047,7 @@ for (const [year, list] of years) {
   const yearSlug = slugify(year);
   await writeArchivePages({
     posts: list,
+    allPosts: posts,
     categories,
     years,
     activeYear: year,
@@ -2012,6 +2055,22 @@ for (const [year, list] of years) {
     basePath: `/years/${yearSlug}/`,
     totalCount: posts.length
   });
+}
+
+for (const [category, categoryPosts] of categories) {
+  for (const [year, list] of groupByYear(categoryPosts)) {
+    await writeArchivePages({
+      posts: list,
+      allPosts: posts,
+      categories,
+      years,
+      activeCategory: category,
+      activeYear: year,
+      baseRoute: archiveSelectionRoute({ category, year }),
+      basePath: archiveSelectionPath({ category, year }),
+      totalCount: posts.length
+    });
+  }
 }
 
 for (const [tag, list] of tags) {

@@ -147,6 +147,7 @@ try {
   await assert.rejects(access(path.join(tempRoot, "dist", "posts", "draft-only", "index.html")));
 
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
+  assert.doesNotMatch(archive, /class="page-context"/);
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
@@ -177,7 +178,23 @@ try {
     "https://blog.solus.games/years/2026/"
   );
 
+  const categoryPage = await readFile(path.join(tempRoot, "dist", "categories", "图形渲染", "index.html"), "utf8");
+  assert.doesNotMatch(categoryPage, /class="page-context"/);
+  assert.match(categoryPage, /href="\/archive\/2026\/图形渲染\/"/);
+
+  const combinedArchivePage = await readFile(
+    path.join(tempRoot, "dist", "archive", "2026", "图形渲染", "index.html"),
+    "utf8"
+  );
+  assert.match(combinedArchivePage, /href="\/posts\/markdown-followup\/"/);
+  assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/"/);
+  assert.equal(
+    jsonLdObjects(combinedArchivePage).find((item) => item["@type"] === "CollectionPage").url,
+    new URL("/archive/2026/图形渲染/", "https://blog.solus.games/").toString()
+  );
+
   const tagPage = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "index.html"), "utf8");
+  assert.doesNotMatch(tagPage, /class="page-context"/);
   assert.match(tagPage, /Markdown 标签/);
   assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
@@ -206,9 +223,11 @@ try {
   assert.match(seriesPage2, /<link rel="prev" href="https:\/\/blog\.solus\.games\/series\/markdown-lab\/" \/>/);
 
   const tagIndex = await readFile(path.join(tempRoot, "dist", "tags", "index.html"), "utf8");
+  assert.doesNotMatch(tagIndex, /class="page-context"/);
   assert.equal(jsonLdObjects(tagIndex).find((item) => item["@type"] === "CollectionPage").url, "https://blog.solus.games/tags/");
 
   const seriesIndex = await readFile(path.join(tempRoot, "dist", "series", "index.html"), "utf8");
+  assert.doesNotMatch(seriesIndex, /class="page-context"/);
   assert.equal(
     jsonLdObjects(seriesIndex).find((item) => item["@type"] === "CollectionPage").url,
     "https://blog.solus.games/series/"
@@ -260,6 +279,7 @@ try {
   const sitemap = await readFile(path.join(tempRoot, "dist", "sitemap.xml"), "utf8");
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/years\/2026\//);
+  assert.match(sitemap, new RegExp(new URL("/archive/2026/图形渲染/", "https://blog.solus.games/").toString()));
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\//);
   assert.match(sitemap, /https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\//);
   assert.doesNotMatch(sitemap, /draft-only/);

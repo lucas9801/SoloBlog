@@ -801,6 +801,9 @@ async function main() {
     if (relative.startsWith("dist/posts/") && html.includes("/src/views.js")) {
       failures.push(`${relative} loads views.js even though article.js handles article views.`);
     }
+    if (/^dist\/(?:archive|categories|years|tags|series)\//.test(relative) && html.includes('class="page-context"')) {
+      failures.push(`${relative} must not render the page context title block.`);
+    }
     if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 
     checkDocumentBasics(file, html);

@@ -255,6 +255,12 @@ if (!checkOutputScript.includes("checkStructuredData") || !checkOutputScript.inc
 if (!checkOutputScript.includes("checkInteractiveNames")) {
   failures.push("Output checks must validate accessible names for interactive elements.");
 }
+if (!checkOutputScript.includes("must not render the page context title block")) {
+  failures.push("Output checks must prevent title context blocks on archive index pages.");
+}
+if (css.includes(".page-context")) {
+  failures.push("CSS must not keep the retired page context title block styles.");
+}
 if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("CollectionPage")) {
   failures.push("Index pages must expose page-level structured data.");
 }
@@ -263,6 +269,13 @@ if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"
 }
 if (!buildScript.includes("groupByYear") || !buildScript.includes("/years/") || !css.includes(".archive-filter-stack")) {
   failures.push("Archive pages must expose year-based browsing alongside category filters.");
+}
+if (
+  !buildScript.includes("archiveSelectionPath") ||
+  !buildScript.includes("archiveSelectionRoute") ||
+  !buildScript.includes("filterArchivePosts")
+) {
+  failures.push("Archive pages must support combined year and category filtering.");
 }
 if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage({ tag, posts, tags, page")) {
   failures.push("Tag result pages must be paginated.");

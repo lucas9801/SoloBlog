@@ -42,6 +42,8 @@ async function defaultPaths() {
   if (firstPost) paths.splice(1, 0, firstPost);
   const firstYear = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.year)?.year : "";
   if (firstYear) paths.splice(3, 0, `/years/${firstYear}/`);
+  const firstCategory = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.category)?.category : "";
+  if (firstYear && firstCategory) paths.splice(4, 0, `/archive/${slugifyForPath(firstYear)}/${slugifyForPath(firstCategory)}/`);
   const firstTag = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.tags?.length)?.tags[0] : "";
   if (firstTag) paths.splice(5, 0, `/tags/${slugifyForPath(firstTag)}/`);
   const firstSeries = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.series)?.series : "";

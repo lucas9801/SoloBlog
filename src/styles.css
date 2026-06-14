@@ -528,58 +528,6 @@ pre {
   max-width: 1180px;
 }
 
-.page-context {
-  margin: 0 0 16px;
-  padding: 0 4px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px 12px;
-  align-items: end;
-  color: var(--muted);
-}
-
-.page-context-kicker {
-  grid-column: 1 / -1;
-  color: var(--brand);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.page-context-copy {
-  min-width: 0;
-}
-
-.page-context h1 {
-  margin: 0;
-  color: var(--text);
-  font-size: clamp(24px, 2.8vw, 34px);
-  line-height: 1.18;
-  font-weight: 800;
-}
-
-.page-context p {
-  max-width: 720px;
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.page-context b {
-  min-height: 22px;
-  padding: 0 8px;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .archive-filter-stack {
   margin: 0 0 18px;
   display: grid;
@@ -2089,18 +2037,6 @@ pre {
   .recommended-grid,
   .home-post-grid {
     grid-template-columns: 1fr;
-  }
-
-  .page-context {
-    grid-template-columns: 1fr;
-  }
-
-  .page-context b {
-    width: max-content;
-  }
-
-  .page-context {
-    margin-bottom: 10px;
   }
 
   .archive-filter-stack {
