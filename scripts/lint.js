@@ -58,6 +58,7 @@ const [
   headers,
   packageConfig,
   wranglerConfig,
+  socialImageSvg,
   socialImageStats,
   readme,
   blogOperationsDocs,
@@ -80,6 +81,7 @@ const [
   readFile(path.join(root, "public/_headers"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
+  readFile(path.join(root, "assets/og/solus-og.svg"), "utf8"),
   stat(path.join(root, "assets/og/solus-og.png")),
   readFile(path.join(root, "README.md"), "utf8"),
   readFile(path.join(root, "docs/blog-operations.md"), "utf8"),
@@ -449,6 +451,12 @@ if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?
 }
 if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog")) {
   failures.push("Project identity must not keep initial template naming.");
+}
+if (/Game Development Archive|Technical Archive/i.test(socialImageSvg)) {
+  failures.push("Open Graph source image must not keep template archive wording.");
+}
+if (!socialImageSvg.includes("SOLUS Dev Notes") || !socialImageSvg.includes("游戏开发 / 图形渲染 / 工程实践")) {
+  failures.push("Open Graph source image must carry the current SOLUS technical archive identity.");
 }
 if (buildScript.includes("SOLUS ARCHIVE") || buildScript.includes('placeholder="搜索文章、标签"')) {
   failures.push("Visible generated surfaces must use current SOLUS wording.");

@@ -21,13 +21,13 @@
     <text x="32" y="42" text-anchor="middle" fill="#2563eb" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900">S</text>
     <rect x="74" y="16" width="4" height="32" rx="2" fill="#14b8a6"/>
     <text x="96" y="28" fill="#151922" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900">SOLUS</text>
-    <text x="96" y="54" fill="#687385" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700">Game Development Archive</text>
+    <text x="96" y="54" fill="#687385" font-family="Inter, Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700">游戏开发 / 图形渲染 / 工程实践</text>
   </g>
   <g transform="translate(104 226)">
-    <text fill="#2563eb" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800" letter-spacing="4">TECHNICAL ARCHIVE</text>
+    <text fill="#2563eb" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800" letter-spacing="4">ENGINEERING NOTES</text>
     <text y="70" fill="#151922" font-family="Inter, Arial, sans-serif" font-size="68" font-weight="850">SOLUS Dev Notes</text>
     <text y="128" fill="#151922" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="750">Game Engine, Rendering, Tools</text>
-    <text y="188" fill="#687385" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Notes for rendering, tools, and game engineering.</text>
+    <text y="188" fill="#687385" font-family="Inter, Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="600">克制、精确、长期沉淀的游戏技术档案。</text>
   </g>
   <g transform="translate(776 146)">
     <rect width="284" height="320" rx="18" fill="url(#panel)"/>
