@@ -98,6 +98,10 @@ try {
     "建立 Unity 性能分析入口。",
     "--slug",
     "unity-performance-budget",
+    "--date",
+    "2026-01-02",
+    "--updated",
+    "2026-01-03",
     "--series",
     "性能与渲染排查",
     "--series-order",
@@ -113,6 +117,8 @@ try {
   ).find((post) => parseJsonString(frontMatterValue(post, "title")) === "Unity 性能预算");
   assert.ok(optionPost);
   assert.equal(parseJsonString(frontMatterValue(optionPost, "slug")), "unity-performance-budget");
+  assert.equal(frontMatterValue(optionPost, "date"), "2026-01-02");
+  assert.equal(frontMatterValue(optionPost, "updated"), "2026-01-03");
   assert.equal(parseJsonString(frontMatterValue(optionPost, "category")), "Unity");
   assert.deepEqual(JSON.parse(frontMatterValue(optionPost, "tags")), ["Unity", "性能", "Profiler"]);
   assert.equal(parseJsonString(frontMatterValue(optionPost, "summary")), "建立 Unity 性能分析入口。");
@@ -136,6 +142,14 @@ try {
   result = await runNewPost(tempRoot, ["Duplicate Slug", "--slug", "unity-performance-budget"]);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /Slug already exists/);
+
+  result = await runNewPost(tempRoot, ["Bad Date", "--date", "2026-02-31"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /valid YYYY-MM-DD/);
+
+  result = await runNewPost(tempRoot, ["Bad Updated", "--date", "2026-02-02", "--updated", "2026-02-01"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /cannot be earlier/);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

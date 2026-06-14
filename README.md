@@ -14,7 +14,7 @@ npm run preview
 新建文章时也可以直接带上常用元信息：
 
 ```powershell
-npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。"
+npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 2026-06-04 --category Unity --tags "Unity,性能,Profiler" --summary "建立 Unity 性能分析入口。"
 ```
 
 本地预览地址：

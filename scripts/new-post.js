@@ -9,6 +9,8 @@ const options = {
   series: "",
   seriesOrder: "",
   slug: "",
+  date: "",
+  updated: "",
   featured: false
 };
 const titleParts = [];
@@ -21,6 +23,8 @@ Options:
   --tags <a,b,c>          设置标签，使用逗号分隔
   --summary <text>        设置摘要
   --slug <slug>           设置英文 URL slug，例如 unity-performance-budget
+  --date <YYYY-MM-DD>     设置发布日期
+  --updated <YYYY-MM-DD>  设置更新日期
   --series <name>         设置专题名称
   --series-order <number> 设置专题内排序
   --featured             标记为推荐阅读`;
@@ -78,6 +82,16 @@ for (let index = 0; index < args.length; index += 1) {
     index += 1;
     continue;
   }
+  if (arg === "--date") {
+    options.date = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
+  if (arg === "--updated") {
+    options.updated = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
   if (arg === "--series") {
     options.series = readOptionValue(arg, index).trim();
     index += 1;
@@ -118,6 +132,12 @@ function slugify(value) {
 
 function isCanonicalSlug(value) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
+}
+
+function isValidDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))) return false;
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 function parseFrontMatterValue(value) {
@@ -167,7 +187,19 @@ async function fileExists(file) {
 
 const now = new Date();
 const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-const date = localDate.toISOString().slice(0, 10);
+const date = options.date || localDate.toISOString().slice(0, 10);
+if (!isValidDate(date)) {
+  console.error("--date must use a valid YYYY-MM-DD date.");
+  process.exit(1);
+}
+if (options.updated && !isValidDate(options.updated)) {
+  console.error("--updated must use a valid YYYY-MM-DD date.");
+  process.exit(1);
+}
+if (options.updated && options.updated < date) {
+  console.error("--updated cannot be earlier than --date.");
+  process.exit(1);
+}
 const postsDir = path.join(process.cwd(), "content", "posts");
 const siteConfigPath = path.join(process.cwd(), "content", "site.json");
 const knownCategories = await readFile(siteConfigPath, "utf8")
@@ -213,6 +245,7 @@ const frontMatter = [
   `title: ${yamlString(title)}`,
   `slug: ${yamlString(slug)}`,
   `date: ${date}`,
+  options.updated ? `updated: ${options.updated}` : "",
   `category: ${options.category === "未分类" ? options.category : yamlString(options.category)}`,
   `tags: ${yamlArray(options.tags)}`,
   options.series ? `series: ${yamlString(options.series)}` : "# series: 专题名称",

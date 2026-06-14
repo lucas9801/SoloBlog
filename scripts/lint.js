@@ -538,10 +538,13 @@ if (!/^name\s*=\s*"soloblog-4w3"/m.test(wranglerConfig)) {
 }
 if (
   !newPostScript.includes("--slug <slug>") ||
+  !newPostScript.includes("--date <YYYY-MM-DD>") ||
+  !newPostScript.includes("--updated <YYYY-MM-DD>") ||
   !newPostScript.includes("isCanonicalSlug") ||
+  !newPostScript.includes("isValidDate") ||
   !blogOperationsDocs.includes("--slug unity-performance")
 ) {
-  failures.push("New post workflow must support explicit canonical slugs.");
+  failures.push("New post workflow must support explicit canonical slugs and dates.");
 }
 if (site.comments?.enabled) {
   for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {
