@@ -844,7 +844,7 @@ function viewCountMeta(post) {
 function postMeta(post) {
   const updated =
     post.updated && post.updated !== post.date
-      ? `<span class="updated-date">更新 ${formatDate(post.updated)}</span>`
+      ? `<time class="updated-date" datetime="${escapeAttr(post.updated)}">更新 ${formatDate(post.updated)}</time>`
       : "";
   return `<div class="post-meta">
     <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>

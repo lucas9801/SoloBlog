@@ -111,6 +111,19 @@ function checkDuplicateIds(file, html) {
   }
 }
 
+function checkTimeElements(file, html) {
+  const relative = displayPath(file);
+  for (const match of html.matchAll(/<time\b[^>]*>/gi)) {
+    const tag = match[0];
+    const datetime = tagAttributes(tag).get("datetime") || "";
+    if (!datetime.trim()) {
+      failures.push(`${relative} contains a time element without datetime.`);
+    } else if (!isValidDate(datetime)) {
+      failures.push(`${relative} contains a time element with invalid datetime: ${datetime}`);
+    }
+  }
+}
+
 function checkDocumentBasics(file, html) {
   const relative = displayPath(file);
   const htmlTag = html.match(/<html\b[^>]*>/i)?.[0];
@@ -1031,6 +1044,7 @@ async function main() {
     if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 
     checkDocumentBasics(file, html);
+    checkTimeElements(file, html);
     checkInlineScripts(file, html);
     checkImages(file, html);
     checkLinks(file, html);
