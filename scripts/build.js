@@ -1729,6 +1729,7 @@ function postPage(post, posts) {
   return pageLayout({
     title: post.title,
     description: post.summary,
+    current: "/archive/",
     body,
     canonical: post.url,
     image: socialImage,

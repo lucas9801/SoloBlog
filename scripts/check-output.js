@@ -847,6 +847,9 @@ async function main() {
     if (relative.startsWith("dist/posts/") && html.includes("/src/views.js")) {
       failures.push(`${relative} loads views.js even though article.js handles article views.`);
     }
+    if (relative.startsWith("dist/posts/") && !html.includes('<a class="active" href="/archive/" aria-current="page">文章</a>')) {
+      failures.push(`${relative} must mark the article archive navigation item as active.`);
+    }
     const collectionIndex = /^dist\/(?:archive|categories|years|tags|series)\//.test(relative);
     if (collectionIndex && html.includes('class="page-context"')) {
       failures.push(`${relative} must not render the page context title block.`);

@@ -135,6 +135,7 @@ try {
   assert.match(article, /<pre data-language="js" tabindex="0" aria-label="js 代码块，可横向滚动"><button class="code-copy-button" type="button" data-copy-code aria-label="复制代码">复制<\/button><span class="sr-only" aria-live="polite" data-copy-code-status><\/span><code>console\.log\(&quot;ok&quot;\);<\/code><\/pre>/);
   assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<meta name="twitter:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
+  assert.match(article, /<a class="active" href="\/archive\/" aria-current="page">文章<\/a>/);
   const articleJsonLd = jsonLdObjects(article);
   const techArticle = articleJsonLd.find((item) => item["@type"] === "TechArticle");
   const breadcrumb = articleJsonLd.find((item) => item["@type"] === "BreadcrumbList");

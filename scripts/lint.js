@@ -396,6 +396,9 @@ if (!buildScript.includes('rel="search"') || !buildScript.includes("application/
 }
 if (!buildScript.includes("/src/theme-init.js")) failures.push("Page head must load the external theme initializer.");
 if (!buildScript.includes("socialImageForPost")) failures.push("Article pages must choose social images independently from visual covers.");
+if (!/function postPage[\s\S]*current:\s*"\/archive\/"/.test(buildScript)) {
+  failures.push("Article pages must keep the archive navigation item active.");
+}
 if (!buildScript.includes("coverImage") || !buildScript.includes('fetchpriority="${escapeAttr(fetchPriority)}"')) {
   failures.push("Build must render cover images with stable dimensions and explicit hero priority.");
 }
