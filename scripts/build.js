@@ -1795,7 +1795,7 @@ function searchPage() {
             </select>
           </label>
         </div>
-        <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchResults searchFacets" hidden>清空</button>
+        <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets" hidden>清空</button>
       </div>
       <div class="search-layout">
         <aside class="search-filter-panel" aria-label="筛选条件">

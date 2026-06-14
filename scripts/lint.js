@@ -324,6 +324,9 @@ if (!checkOutputScript.includes("must not render a visible page title block")) {
 if (!checkOutputScript.includes("must not render a visible section kicker")) {
   failures.push("Output checks must prevent visible kicker labels on collection index pages.");
 }
+if (!checkOutputScript.includes("checkAriaReferences") || !checkOutputScript.includes("controls|describedby|labelledby")) {
+  failures.push("Output checks must validate ARIA ID references.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
@@ -471,6 +474,7 @@ if (
   !buildScript.includes('id="searchStatus"') ||
   !buildScript.includes('aria-describedby="searchStatus"') ||
   !buildScript.includes('aria-controls="searchResults searchFacets"') ||
+  !buildScript.includes('aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets"') ||
   !searchScript.includes('results.setAttribute("role", "list")') ||
   !searchScript.includes('results.removeAttribute("role")')
 ) {

@@ -524,6 +524,25 @@ function checkInteractiveNames(file, html) {
   }
 }
 
+function checkAriaReferences(file, html) {
+  const relative = displayPath(file);
+  const ids = new Set(
+    [...html.matchAll(/\sid=(?:"([^"]+)"|'([^']+)'|([^\s"'=<>`]+))/g)]
+      .map((match) => match[1] ?? match[2] ?? match[3] ?? "")
+      .filter(Boolean)
+  );
+
+  for (const match of html.matchAll(/<[^>]+\saria-(?:controls|describedby|labelledby)=(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))[^>]*>/gi)) {
+    const attributeName = match[0].match(/\s(aria-(?:controls|describedby|labelledby))=/i)?.[1] || "aria reference";
+    const refs = String(match[1] ?? match[2] ?? match[3] ?? "")
+      .split(/\s+/)
+      .filter(Boolean);
+    for (const ref of refs) {
+      if (!ids.has(ref)) failures.push(`${relative} ${attributeName} references missing id: ${ref}`);
+    }
+  }
+}
+
 async function checkSitemap(sitemap) {
   if (!sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')) {
     failures.push("dist/sitemap.xml must declare the sitemap namespace.");
@@ -876,6 +895,7 @@ async function main() {
     checkImages(file, html);
     checkLinks(file, html);
     checkInteractiveNames(file, html);
+    checkAriaReferences(file, html);
     checkRobots(file, html);
     checkCanonical(file, html);
     await checkStructuredData(file, html);
