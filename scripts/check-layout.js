@@ -355,6 +355,8 @@ async function checkViewport(viewport, page) {
                 if (header.classList.contains("is-hidden")) {
                   failures.push("header did not reveal when it received keyboard focus");
                 }
+                focusTarget.blur();
+                await wait(80);
               } else {
                 failures.push("header has no focusable target");
               }

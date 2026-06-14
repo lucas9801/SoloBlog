@@ -1003,7 +1003,7 @@ pre {
 
 .series-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
   gap: 14px;
 }
 
@@ -1017,13 +1017,14 @@ pre {
 }
 
 .series-card {
-  min-height: 174px;
+  min-height: 238px;
   padding: 18px;
   display: flex;
   flex-direction: column;
 }
 
-.series-card:hover {
+.series-card:hover,
+.series-card:focus-within {
   border-color: var(--brand);
 }
 
@@ -1044,11 +1045,58 @@ pre {
   font-weight: 800;
 }
 
+.series-card-title:hover,
+.series-card-title:focus-visible {
+  color: var(--brand);
+}
+
 .series-card p {
   margin: 0 0 16px;
   color: var(--muted);
   font-size: 14px;
   line-height: 1.65;
+}
+
+.series-card-list {
+  margin: 2px 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  list-style: none;
+}
+
+.series-card-list a {
+  min-height: 34px;
+  padding: 0 10px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.series-card-list a:hover,
+.series-card-list a:focus-visible {
+  border-color: var(--brand);
+  background: var(--surface-soft);
+}
+
+.series-card-list b {
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.series-card-list span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .series-card small {

@@ -1525,13 +1525,26 @@ function seriesIndexPage(entries) {
       ${entries
         .map(([name, list]) => {
           const sorted = sortSeriesPosts(list);
-          const latest = sorted[sorted.length - 1];
-          return `<a class="series-card" href="/series/${slugify(name)}/">
+          const latest = [...list].sort(comparePostsNewestFirst)[0];
+          return `<article class="series-card">
             <span>专题</span>
-            <h2>${escapeHtml(name)}</h2>
+            <h2><a class="series-card-title" href="/series/${slugify(name)}/">${escapeHtml(name)}</a></h2>
             <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
+            <ol class="series-card-list">
+              ${sorted
+                .slice(0, 4)
+                .map(
+                  (post, index) => `<li>
+                    <a href="${post.url}">
+                      <b>${String(index + 1).padStart(2, "0")}</b>
+                      <span>${escapeHtml(post.title)}</span>
+                    </a>
+                  </li>`
+                )
+                .join("")}
+            </ol>
             <small>${list.length} 篇 · 最近 ${formatDate(latest?.date || latestPostDate(list))}</small>
-          </a>`;
+          </article>`;
         })
         .join("")}
     </section>
