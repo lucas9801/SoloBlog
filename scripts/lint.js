@@ -335,6 +335,13 @@ if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingId
 if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMailto")) {
   failures.push("Markdown links and images must validate URL schemes before rendering.");
 }
+if (
+  !buildScript.includes("data-external-link") ||
+  !buildScript.includes("在新标签页打开") ||
+  !css.includes(".article-content a[data-external-link]::after")
+) {
+  failures.push("Markdown external links must expose a visible marker and accessible new-tab label.");
+}
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (!buildScript.includes("application/feed+json")) failures.push("Page head must expose JSON Feed discovery.");

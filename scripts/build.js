@@ -339,7 +339,9 @@ function inlineMarkdown(text) {
     const safeHref = safeMarkdownUrl(href, { allowMailto: true });
     if (!safeHref) return label;
     const external = /^https?:\/\//i.test(safeHref) && !safeHref.startsWith(site.baseUrl);
-    const externalAttrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+    const externalAttrs = external
+      ? ` target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(`${label}（在新标签页打开）`)}" data-external-link`
+      : "";
     return inlineToken(tokens, `<a href="${escapeAttr(safeHref)}"${externalAttrs}>${escapeHtml(label)}</a>`);
   });
 

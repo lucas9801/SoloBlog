@@ -1317,6 +1317,13 @@ pre {
   font-weight: 600;
 }
 
+.article-content a[data-external-link]::after {
+  margin-left: 0.24em;
+  content: "↗";
+  font-size: 0.78em;
+  font-weight: 700;
+}
+
 .article-content img {
   margin: 1.4em 0;
   border: 1px solid var(--line);

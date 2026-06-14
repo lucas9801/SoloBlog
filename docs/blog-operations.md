@@ -386,6 +386,8 @@ Debug.Log("Hello");
 [Unity 官方文档](https://docs.unity3d.com/)
 ```
 
+外部链接会自动在新标签页打开，并带有外链标识。站内链接建议使用 `/posts/.../`、`/tags/.../` 这类根路径。
+
 引用：
 
 ```markdown

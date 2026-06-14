@@ -128,7 +128,7 @@ try {
   assert.match(article, /<strong>strong text<\/strong>/);
   assert.match(article, /<em>emphasis<\/em>/);
   assert.match(article, /<code>inline code<\/code>/);
-  assert.match(article, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(article, /<a href="https:\/\/example\.com\/path" target="_blank" rel="noopener noreferrer" aria-label="external（在新标签页打开）" data-external-link>external<\/a>/);
   assert.doesNotMatch(article, /javascript:alert/);
   assert.doesNotMatch(article, /href="relative-page"/);
   assert.match(article, /<img src="\/assets\/posts\/inline\.svg" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
