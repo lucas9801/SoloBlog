@@ -414,11 +414,17 @@ async function checkViewport(viewport, page) {
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
               if (clearButton.hidden) failures.push("clear button stayed hidden after search input");
 
+              const facetByValue = (type, value) =>
+                Array.from(document.querySelectorAll('[data-facet-type="' + type + '"]')).find(
+                  (button) => button.dataset.facetValue === value
+                );
               const yearFacet = document.querySelector('[data-facet-type="year"]');
               if (yearFacet instanceof HTMLButtonElement) {
+                const selectedYear = yearFacet.dataset.facetValue || "";
                 yearFacet.click();
-                await wait(120);
-                if (yearFacet.getAttribute("aria-pressed") !== "true") {
+                await waitFor(() => new URL(location.href).searchParams.get("year") === selectedYear);
+                const activeYearFacet = facetByValue("year", selectedYear);
+                if (!(activeYearFacet instanceof HTMLButtonElement) || activeYearFacet.getAttribute("aria-pressed") !== "true") {
                   failures.push("year facet did not become active after click");
                 }
                 if (!new URL(location.href).searchParams.get("year")) {
@@ -430,13 +436,23 @@ async function checkViewport(viewport, page) {
 
               const categoryFacet = document.querySelector('[data-facet-type="category"]');
               if (categoryFacet instanceof HTMLButtonElement) {
+                const selectedYear = new URL(location.href).searchParams.get("year");
+                const selectedCategory = categoryFacet.dataset.facetValue || "";
                 categoryFacet.click();
-                await wait(120);
-                if (categoryFacet.getAttribute("aria-pressed") !== "true") {
+                await waitFor(() => new URL(location.href).searchParams.get("category") === selectedCategory);
+                const activeCategoryFacet = facetByValue("category", selectedCategory);
+                if (
+                  !(activeCategoryFacet instanceof HTMLButtonElement) ||
+                  activeCategoryFacet.getAttribute("aria-pressed") !== "true"
+                ) {
                   failures.push("category facet did not become active after click");
                 }
-                if (!new URL(location.href).searchParams.get("category")) {
+                const url = new URL(location.href);
+                if (!url.searchParams.get("category")) {
                   failures.push("category facet did not update the URL");
+                }
+                if (selectedYear && url.searchParams.get("year") !== selectedYear) {
+                  failures.push("category facet did not preserve the selected year");
                 }
               } else {
                 failures.push("category facet button is missing");

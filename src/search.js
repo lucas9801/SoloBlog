@@ -134,6 +134,10 @@ function countEntries(posts, getter) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
 }
 
+function postYear(post) {
+  return post.year || String(post.date || "").slice(0, 4);
+}
+
 function availableValues(posts, getter) {
   const values = new Set();
   for (const post of posts) {
@@ -174,11 +178,18 @@ function facetButton(type, value, count) {
 
 function renderFacets(posts) {
   if (!facets) return;
-  const years = countEntries(posts, (post) => post.year || String(post.date || "").slice(0, 4)).sort(
-    (a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN")
+  const years = includeActiveFacet(
+    countEntries(facetScope(posts, "year"), postYear).sort(
+      (a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN")
+    ),
+    "year"
   );
-  const categories = countEntries(posts, (post) => post.category);
-  const tags = countEntries(posts, (post) => post.tags).slice(0, 24);
+  const categories = includeActiveFacet(countEntries(facetScope(posts, "category"), (post) => post.category), "category");
+  const tags = limitFacetEntries(
+    includeActiveFacet(countEntries(facetScope(posts, "tag"), (post) => post.tags), "tag"),
+    "tag",
+    24
+  );
 
   facets.innerHTML = `
     <div class="facet-group">
@@ -201,11 +212,33 @@ function renderFacets(posts) {
     </div>`;
 }
 
-function matchesFilters(post) {
-  const year = post.year || String(post.date || "").slice(0, 4);
-  const yearMatches = !state.year || year === state.year;
-  const categoryMatches = !state.category || post.category === state.category;
-  const tagMatches = !state.tag || (post.tags || []).includes(state.tag);
+function includeActiveFacet(entries, type) {
+  const active = state[type];
+  if (!active || entries.some(([value]) => value === active)) return entries;
+  return [...entries, [active, 0]];
+}
+
+function limitFacetEntries(entries, type, limit) {
+  const limited = entries.slice(0, limit);
+  const active = state[type];
+  if (!active || limited.some(([value]) => value === active)) return limited;
+  const activeEntry = entries.find(([value]) => value === active) || [active, 0];
+  return [...limited, activeEntry];
+}
+
+function matchesQuery(post) {
+  return !normalize(state.query) || scorePost(post, state.query).score > 0;
+}
+
+function facetScope(posts, except) {
+  return posts.filter((post) => matchesQuery(post) && matchesFilters(post, except));
+}
+
+function matchesFilters(post, except = "") {
+  const year = postYear(post);
+  const yearMatches = except === "year" || !state.year || year === state.year;
+  const categoryMatches = except === "category" || !state.category || post.category === state.category;
+  const tagMatches = except === "tag" || !state.tag || (post.tags || []).includes(state.tag);
   return yearMatches && categoryMatches && tagMatches;
 }
 
@@ -265,7 +298,7 @@ function renderCard(post, query) {
 
 function rankedPosts(posts) {
   const query = state.query;
-  const filtered = posts.filter(matchesFilters);
+  const filtered = posts.filter((post) => matchesFilters(post));
   const hasQuery = Boolean(normalize(query));
 
   if (!hasQuery) {
@@ -308,6 +341,7 @@ function render(posts) {
   const visible = showingRecent ? matched.slice(0, 6) : matched;
   const filters = selectedFilters();
 
+  renderFacets(posts);
   syncControls();
 
   if (visible.length === 0) {
@@ -334,7 +368,6 @@ async function boot() {
   const posts = await response.json();
 
   sanitizeState(posts);
-  renderFacets(posts);
   render(posts);
 
   input.addEventListener("input", () => {

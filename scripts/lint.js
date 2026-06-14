@@ -330,6 +330,14 @@ if (
 if (!searchScript.includes("fields.year") || !searchScript.includes("state.year")) {
   failures.push("Search page must index and filter post years for archive-scale discovery.");
 }
+if (
+  !searchScript.includes("facetScope(posts") ||
+  !searchScript.includes("includeActiveFacet") ||
+  !searchScript.includes("matchesQuery(post)") ||
+  !/function render\(posts\)[\s\S]*renderFacets\(posts\)[\s\S]*syncControls\(\)/.test(searchScript)
+) {
+  failures.push("Search facets must update against the current query and selected filters.");
+}
 if (!searchScript.includes('width="1200" height="675"')) {
   failures.push("Search result cover images must reserve their 1200x675 aspect ratio.");
 }
