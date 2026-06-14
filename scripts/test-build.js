@@ -199,6 +199,7 @@ try {
 
   const tagPage = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "index.html"), "utf8");
   assert.doesNotMatch(tagPage, /class="page-context"/);
+  assert.doesNotMatch(tagPage, /class="section-kicker"/);
   assert.match(tagPage, /Markdown 标签/);
   assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
@@ -232,6 +233,9 @@ try {
 
   const seriesIndex = await readFile(path.join(tempRoot, "dist", "series", "index.html"), "utf8");
   assert.doesNotMatch(seriesIndex, /class="page-context"/);
+  assert.doesNotMatch(seriesIndex, /class="section-kicker"/);
+  assert.doesNotMatch(seriesIndex, />专题<\/span>/);
+  assert.match(seriesIndex, /class="series-card-head"/);
   assert.match(seriesIndex, /class="series-card-list"/);
   assert.match(seriesIndex, /Markdown Edge Cases/);
   assert.match(seriesIndex, /Markdown Followup/);

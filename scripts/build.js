@@ -1439,10 +1439,7 @@ function tagListPage({ tag, posts, tags, page = 1, basePath }) {
       ${tagCloud(tags, tag)}
     </section>
     <section class="tag-results">
-      <header class="tag-results-head">
-        <span class="section-kicker">Articles</span>
-        <h2>${escapeHtml(tag)} 相关文章</h2>
-      </header>
+      <h2 class="sr-only">${escapeHtml(`${tag} 相关文章`)}</h2>
       <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
       ${paginationNav(basePath, currentPage, totalPages)}
     </section>
@@ -1523,12 +1520,15 @@ function seriesIndexPage(entries) {
     <h1 class="sr-only">专题索引</h1>
     <section class="series-grid">
       ${entries
-        .map(([name, list]) => {
+        .map(([name, list], entryIndex) => {
           const sorted = sortSeriesPosts(list);
           const latest = [...list].sort(comparePostsNewestFirst)[0];
           return `<article class="series-card">
-            <span>专题</span>
-            <h2><a class="series-card-title" href="/series/${slugify(name)}/">${escapeHtml(name)}</a></h2>
+            <a class="series-card-head" href="/series/${slugify(name)}/">
+              <b>${String(entryIndex + 1).padStart(2, "0")}</b>
+              <strong class="series-card-title">${escapeHtml(name)}</strong>
+              <small>${list.length} 篇 · 最近 ${formatDate(latest?.date || latestPostDate(list))}</small>
+            </a>
             <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
             <ol class="series-card-list">
               ${sorted
@@ -1543,7 +1543,6 @@ function seriesIndexPage(entries) {
                 )
                 .join("")}
             </ol>
-            <small>${list.length} 篇 · 最近 ${formatDate(latest?.date || latestPostDate(list))}</small>
           </article>`;
         })
         .join("")}

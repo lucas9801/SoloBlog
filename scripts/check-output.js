@@ -808,6 +808,9 @@ async function main() {
     if (collectionIndex && html.includes('class="page-title"')) {
       failures.push(`${relative} must not render a visible page title block.`);
     }
+    if (collectionIndex && html.includes('class="section-kicker"')) {
+      failures.push(`${relative} must not render a visible section kicker.`);
+    }
     if (relative === "dist/search/index.html" && html.includes('class="page-title"')) {
       failures.push("dist/search/index.html must not render a large visible title block.");
     }

@@ -1007,8 +1007,8 @@ pre {
 
 .series-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .series-card,
@@ -1021,10 +1021,10 @@ pre {
 }
 
 .series-card {
-  min-height: 238px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
 }
 
 .series-card:hover,
@@ -1032,7 +1032,6 @@ pre {
   border-color: var(--brand);
 }
 
-.series-card span,
 .series-panel-head span {
   color: var(--brand);
   font-size: 12px;
@@ -1041,30 +1040,64 @@ pre {
   text-transform: uppercase;
 }
 
-.series-card h2 {
-  margin: 10px 0 8px;
+.series-card-head {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) max-content;
+  gap: 12px;
+  align-items: center;
   color: var(--text);
-  font-size: 22px;
-  line-height: 1.28;
+}
+
+.series-card-head > b {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-soft);
+  color: var(--brand);
+  font-size: 13px;
   font-weight: 800;
 }
 
-.series-card-title:hover,
-.series-card-title:focus-visible {
+.series-card-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.series-card-head small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.series-card-head:hover .series-card-title,
+.series-card-head:focus-visible .series-card-title {
   color: var(--brand);
 }
 
 .series-card p {
-  margin: 0 0 16px;
+  max-width: 820px;
+  margin: 0;
   color: var(--muted);
   font-size: 14px;
   line-height: 1.65;
 }
 
 .series-card-list {
-  margin: 2px 0 16px;
+  margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 6px;
   list-style: none;
 }
@@ -1101,13 +1134,6 @@ pre {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.series-card small {
-  margin-top: auto;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
 }
 
 .series-timeline {
@@ -2133,6 +2159,16 @@ pre {
     flex: 1;
     width: auto;
     min-width: 0;
+  }
+
+  .series-card-head {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 6px 10px;
+  }
+
+  .series-card-head small {
+    grid-column: 2;
+    white-space: normal;
   }
 
   .article-hero,

@@ -272,6 +272,9 @@ if (!checkOutputScript.includes("must not render the page context title block"))
 if (!checkOutputScript.includes("must not render a visible page title block")) {
   failures.push("Output checks must prevent large visible title blocks on collection index pages.");
 }
+if (!checkOutputScript.includes("must not render a visible section kicker")) {
+  failures.push("Output checks must prevent visible kicker labels on collection index pages.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
