@@ -173,6 +173,18 @@ function pageHref(basePath, page) {
   return page === 1 ? cleanBase : `${cleanBase}page/${page}/`;
 }
 
+function slugify(value = "") {
+  const slug = String(value)
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || encodeURIComponent(String(value));
+}
+
 function paginationContext(file) {
   const currentPath = pagePathFromFile(file);
   const match = currentPath.match(/^(.*\/)page\/(\d+)\/$/);
@@ -651,6 +663,28 @@ async function checkSitemap(sitemap) {
   }
 }
 
+function checkSitemapCoverage(sitemap, searchIndex) {
+  if (!Array.isArray(searchIndex)) return;
+  const locs = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
+  const expectedPaths = new Set(["/", "/archive/", "/tags/", "/series/", "/search/"]);
+
+  for (const item of searchIndex) {
+    if (!item?.url) continue;
+    expectedPaths.add(item.url);
+    if (item.year) expectedPaths.add(`/years/${slugify(item.year)}/`);
+    if (item.category) expectedPaths.add(`/categories/${slugify(item.category)}/`);
+    if (item.series) expectedPaths.add(`/series/${slugify(item.series)}/`);
+    for (const tag of Array.isArray(item.tags) ? item.tags : []) {
+      expectedPaths.add(`/tags/${slugify(tag)}/`);
+    }
+  }
+
+  for (const pathname of expectedPaths) {
+    const url = new URL(pathname, absoluteSiteRoot).toString();
+    if (!locs.has(url)) failures.push(`dist/sitemap.xml is missing expected URL: ${url}`);
+  }
+}
+
 async function checkRss(rss) {
   if (!rss.includes('xmlns:content="http://purl.org/rss/1.0/modules/content/"')) {
     failures.push("dist/rss.xml must declare the content namespace.");
@@ -931,6 +965,7 @@ async function main() {
 
   const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8").catch(() => "");
   await checkSitemap(sitemap);
+  checkSitemapCoverage(sitemap, searchIndex);
 
   const files = await htmlFiles();
   for (const file of files) {

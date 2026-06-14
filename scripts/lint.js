@@ -346,6 +346,14 @@ if (
 ) {
   failures.push("Output checks must validate pagination prev/next head links.");
 }
+if (
+  !checkOutputScript.includes("function checkSitemapCoverage") ||
+  !checkOutputScript.includes("dist/sitemap.xml is missing expected URL") ||
+  !checkOutputScript.includes("/search/") ||
+  !checkOutputScript.includes("/categories/${slugify")
+) {
+  failures.push("Output checks must ensure sitemap covers generated public indexes.");
+}
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
