@@ -278,6 +278,12 @@ if (!checkOutputScript.includes("must not render a visible section kicker")) {
 if (css.includes(".page-context")) {
   failures.push("CSS must not keep the retired page context title block styles.");
 }
+if (/(function\s+(?:taxonomyIndexPage|listPage|postCard)\b)/.test(buildScript)) {
+  failures.push("Build must not keep retired collection page builders.");
+}
+for (const retiredClass of [".post-card", ".post-grid", ".taxonomy-card", ".taxonomy-grid", ".tag-results-head"]) {
+  if (css.includes(retiredClass)) failures.push(`CSS must not keep retired selector ${retiredClass}.`);
+}
 if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("CollectionPage")) {
   failures.push("Index pages must expose page-level structured data.");
 }

@@ -248,7 +248,6 @@ async function checkViewport(viewport, page) {
           ".content-shell",
           ".content-main",
           ".section-head",
-          ".post-grid",
           ".home-post-grid",
           ".blog-sidebar",
           ".article-index-page",

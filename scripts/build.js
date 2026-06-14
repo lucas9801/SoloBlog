@@ -912,25 +912,6 @@ function giscusComments() {
   </section>`;
 }
 
-function postCard(post, variant = "") {
-  return `<article class="post-card ${variant}">
-    <a class="thumb ${post.categorySlug}" href="${post.url}" aria-label="${escapeAttr(post.title)}">
-      ${coverImage(post.cover)}
-      <span>${escapeHtml(post.category)}</span>
-      <i></i>
-    </a>
-    <div class="post-card-body">
-      ${postMeta(post)}
-      <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
-      <p>${escapeHtml(post.summary)}</p>
-      <div class="tag-row">${post.tags
-        .slice(0, 4)
-        .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
-        .join("")}</div>
-    </div>
-  </article>`;
-}
-
 function archivePostCard(post) {
   return `<article class="archive-card">
     <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="${escapeAttr(post.title)}">
@@ -1353,38 +1334,6 @@ async function writeArchivePages({
   }
 }
 
-function taxonomyIndexPage(title, description, entries, basePath, current) {
-  const body = `<main class="page-shell narrow">
-    <header class="page-title">
-      <span class="section-kicker">${escapeHtml(title)}</span>
-      <h1>${escapeHtml(title)}</h1>
-      <p>${escapeHtml(description)}</p>
-    </header>
-    <div class="taxonomy-grid">${entries
-      .map(
-        ([name, list]) => `<a class="taxonomy-card" href="${basePath}${slugify(name)}/">
-          <span>${escapeHtml(name)}</span>
-          <b>${list.length} 篇</b>
-        </a>`
-      )
-      .join("")}</div>
-  </main>`;
-  return pageLayout({
-    title,
-    description,
-    current,
-    body,
-    canonical: current,
-    structuredData: pageSchema({
-      type: "CollectionPage",
-      name: title,
-      description,
-      url: current,
-      items: taxonomyListItems(entries, basePath)
-    })
-  });
-}
-
 function tagIndexPage(entries, posts) {
   const body = `<main class="page-shell tags-page">
     <h1 class="sr-only">标签索引</h1>
@@ -1479,31 +1428,6 @@ async function writeTagPages({ tag, posts, tags }) {
       })
     );
   }
-}
-
-function listPage({ title, description, posts, current, canonical }) {
-  const body = `<main class="page-shell">
-    <header class="page-title">
-      <span class="section-kicker">Collection</span>
-      <h1>${escapeHtml(title)}</h1>
-      <p>${escapeHtml(description)}</p>
-    </header>
-    <div class="post-grid">${posts.map((post) => postCard(post)).join("")}</div>
-  </main>`;
-  return pageLayout({
-    title,
-    description,
-    current,
-    body,
-    canonical,
-    structuredData: pageSchema({
-      type: "CollectionPage",
-      name: title,
-      description,
-      url: canonical,
-      items: postListItems(posts)
-    })
-  });
 }
 
 function sortSeriesPosts(posts) {
