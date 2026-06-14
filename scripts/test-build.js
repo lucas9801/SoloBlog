@@ -180,6 +180,7 @@ try {
   assert.match(yearPage, /href="\/archive\/2026\/图形渲染\/"/);
   assert.match(yearPage, /aria-current="page">2026 <b>3<\/b><\/a>/);
   assert.match(yearPage, /href="\/years\/2026\/page\/2\/"/);
+  assert.match(yearPage, /href="\/years\/2026\/page\/2\/" aria-label="第 2 页">2<\/a>/);
   assert.equal(
     jsonLdObjects(yearPage).find((item) => item["@type"] === "CollectionPage").url,
     "https://blog.solus.games/years/2026/"
@@ -218,6 +219,7 @@ try {
   const tagPage2 = await readFile(path.join(tempRoot, "dist", "tags", "markdown", "page", "2", "index.html"), "utf8");
   assert.match(tagPage2, /href="\/posts\/markdown-edge-cases\/"/);
   assert.match(tagPage2, /<link rel="prev" href="https:\/\/blog\.solus\.games\/tags\/markdown\/" \/>/);
+  assert.match(tagPage2, /aria-current="page" aria-label="第 2 页，当前页">2<\/span>/);
 
   const seriesPage = await readFile(path.join(tempRoot, "dist", "series", "markdown-lab", "index.html"), "utf8");
   assert.match(seriesPage, /href="\/posts\/markdown-edge-cases\/"/);

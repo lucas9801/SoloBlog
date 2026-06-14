@@ -1048,6 +1048,32 @@ function paginate(list, page, perPage) {
   };
 }
 
+function paginationItems(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+  if (currentPage <= 4) {
+    pages.add(2);
+    pages.add(3);
+    pages.add(4);
+    pages.add(5);
+  }
+  if (currentPage >= totalPages - 3) {
+    pages.add(totalPages - 1);
+    pages.add(totalPages - 2);
+    pages.add(totalPages - 3);
+    pages.add(totalPages - 4);
+  }
+
+  const sorted = [...pages].filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+  return sorted.flatMap((page, index) => {
+    const previous = sorted[index - 1];
+    return previous && page - previous > 1 ? ["gap", page] : [page];
+  });
+}
+
 function archiveFilterRow(label, ariaLabel, links) {
   return `<div class="archive-filter-row">
     <span>${escapeHtml(label)}</span>
@@ -1097,12 +1123,12 @@ function paginationNav(basePath, currentPage, totalPages) {
       : `<span class="pagination-control disabled" aria-disabled="true">下一页</span>`;
 
   const pages = Array.from(
-    { length: totalPages },
-    (_, index) => {
-      const page = index + 1;
+    paginationItems(currentPage, totalPages),
+    (page) => {
+      if (page === "gap") return `<span class="pagination-ellipsis" aria-hidden="true">...</span>`;
       return page === currentPage
-        ? `<span class="active" aria-current="page">${page}</span>`
-        : `<a href="${pageHref(basePath, page)}">${page}</a>`;
+        ? `<span class="active" aria-current="page" aria-label="第 ${page} 页，当前页">${page}</span>`
+        : `<a href="${pageHref(basePath, page)}" aria-label="第 ${page} 页">${page}</a>`;
     }
   ).join("");
 

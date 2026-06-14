@@ -1194,6 +1194,14 @@ pre {
   opacity: 0.46;
 }
 
+.pagination span.pagination-ellipsis {
+  min-width: 22px;
+  padding: 0 2px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
 .article-shell {
   width: min(1440px, calc(100% - 48px));
   display: grid;

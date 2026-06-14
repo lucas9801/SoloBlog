@@ -303,6 +303,13 @@ if (!checkLayoutScript.includes('"/about/"') || !checkLayoutScript.includes("/ca
 if (!buildScript.includes("paginationHead") || !buildScript.includes('rel="prev"') || !buildScript.includes('rel="next"')) {
   failures.push("Paginated archive pages must expose prev/next head links.");
 }
+if (
+  !buildScript.includes("function paginationItems") ||
+  !buildScript.includes("pagination-ellipsis") ||
+  !buildScript.includes('aria-label="第 ${page} 页"')
+) {
+  failures.push("Pagination must use compact, accessible page ranges for large archives.");
+}
 if (!buildScript.includes("groupByYear") || !buildScript.includes("/years/") || !css.includes(".archive-filter-stack")) {
   failures.push("Archive pages must expose year-based browsing alongside category filters.");
 }
