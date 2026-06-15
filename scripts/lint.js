@@ -676,6 +676,13 @@ if (
 if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
   failures.push("Home page must not keep template-like English kicker labels.");
 }
+if (
+  !buildScript.includes("recommendedSlugs") ||
+  !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
+  buildScript.includes("posts.filter((post) => !post.featured).slice")
+) {
+  failures.push("Home page must avoid duplicate recommendations without creating a broken latest-posts hero link.");
+}
 if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog") || rootIndex.includes("My Game Dev Blog")) {
   failures.push("Project identity must not keep initial template naming.");
 }

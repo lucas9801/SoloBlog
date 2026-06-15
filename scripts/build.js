@@ -1235,9 +1235,11 @@ async function loadPosts() {
 
 function homePage(posts, categories, tags) {
   const featuredPosts = posts.filter((post) => post.featured);
-  const latest = posts.filter((post) => !post.featured).slice(0, site.postsPerPage || 9);
   const hero = site.hero;
   const recommended = featuredPosts.slice(0, 3);
+  const recommendedSlugs = new Set(recommended.map((post) => post.slug));
+  const latest = posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, site.postsPerPage || 9);
+  const primaryActionHref = latest.length ? "#latest-posts" : "/archive/";
 
   const body = `<main>
     <section class="hero-section">
@@ -1248,7 +1250,7 @@ function homePage(posts, categories, tags) {
           <h1>${escapeHtml(hero.title)}</h1>
           <p>${escapeHtml(hero.subtitle)}</p>
           <div class="hero-actions">
-            <a class="button-link" href="#latest-posts">${escapeHtml(hero.primaryAction)}</a>
+            <a class="button-link" href="${primaryActionHref}">${escapeHtml(hero.primaryAction)}</a>
             <a class="ghost-link" href="/archive/">${escapeHtml(hero.secondaryAction)}</a>
           </div>
         </div>

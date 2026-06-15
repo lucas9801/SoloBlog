@@ -94,17 +94,17 @@ async function writeFixtureProject(target) {
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-13-markdown-edge.md"),
-    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\nupdated: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), [bad](javascript:alert(1)), and [relative](relative-page).\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
+    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\nupdated: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nfeatured: true\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), [bad](javascript:alert(1)), and [relative](relative-page).\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
     "utf8"
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-14-markdown-followup.md"),
-    `---\ntitle: "Markdown Followup"\nslug: "markdown-followup"\ndate: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 工程]\nsummary: 第二篇同标签文章用于验证标签分页和 sitemap 输出。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 2\nstatus: published\n---\n\n## Followup\n\nParagraph for the second Markdown article.\n`,
+    `---\ntitle: "Markdown Followup"\nslug: "markdown-followup"\ndate: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 工程]\nsummary: 第二篇同标签文章用于验证标签分页和 sitemap 输出。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 2\nfeatured: true\nstatus: published\n---\n\n## Followup\n\nParagraph for the second Markdown article.\n`,
     "utf8"
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-14-markdown-same-day.md"),
-    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\ncover: /assets/posts/inline.svg\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
+    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\ncover: /assets/posts/inline.svg\nfeatured: true\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
     "utf8"
   );
   await writeFile(
@@ -173,6 +173,9 @@ try {
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
+  assert.match(home, /<a class="button-link" href="\/archive\/">最新文章<\/a>/);
+  assert.doesNotMatch(home, /href="#latest-posts"/);
+  assert.match(home, /推荐阅读/);
   assert.match(home, /<h2 data-ranking-title>近期文章<\/h2>/);
   assert.match(home, /data-ranking-posts=/);
   assert.match(home, /data-ranking-posts="[^"]*&quot;date&quot;[^"]*&quot;category&quot;/);
