@@ -188,7 +188,7 @@ function sanitizeState(posts) {
 
 function facetButton(type, value, count) {
   const active = state[type] === value;
-  return `<button class="facet-button${active ? " active" : ""}" type="button" data-facet-type="${type}" data-facet-value="${escapeHtml(value)}" aria-pressed="${active}">
+  return `<button class="facet-button${active ? " active" : ""}" type="button" data-facet-type="${type}" data-facet-value="${escapeHtml(value)}" aria-pressed="${active}" aria-controls="searchResults searchStatus">
     <span>${escapeHtml(value)}</span><b>${count}</b>
   </button>`;
 }

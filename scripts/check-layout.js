@@ -515,6 +515,13 @@ async function checkViewport(viewport, page) {
               if (initialCards > 0 && results.getAttribute("role") !== "list") {
                 failures.push("search result cards must be inside a list container");
               }
+              for (const facetButton of document.querySelectorAll("[data-facet-type]")) {
+                const controls = facetButton.getAttribute("aria-controls") || "";
+                if (!controls.includes("searchResults") || !controls.includes("searchStatus")) {
+                  failures.push("search facet button does not expose controlled result regions");
+                  break;
+                }
+              }
               if (pagination && !pagination.hidden && !pagination.querySelector("[data-search-page]")) {
                 failures.push("search pagination is visible without page links");
               }

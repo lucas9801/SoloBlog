@@ -591,6 +591,7 @@ if (
   !buildScript.includes('aria-controls="searchResults searchFacets"') ||
   !buildScript.includes('aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets"') ||
   !buildScript.includes('id="searchPagination"') ||
+  !searchScript.includes('aria-controls="searchResults searchStatus"') ||
   !searchScript.includes('results.setAttribute("role", "list")') ||
   !searchScript.includes('results.removeAttribute("role")')
 ) {
