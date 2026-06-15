@@ -353,6 +353,9 @@ function checkRobots(file, html) {
   if (relative === "dist/404.html" && robots !== "noindex,follow") {
     failures.push("dist/404.html must be marked noindex,follow.");
   }
+  if (relative === "dist/404.html" && (!html.includes('class="compact-post-index"') || !html.includes("最近文章"))) {
+    failures.push("dist/404.html must expose recent posts for recovery.");
+  }
   if (relative !== "dist/404.html" && robots?.includes("noindex")) {
     failures.push(`${relative} should not be noindex.`);
   }

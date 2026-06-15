@@ -1834,7 +1834,7 @@ function searchPage() {
   });
 }
 
-function notFoundPage() {
+function notFoundPage(posts) {
   const body = `<main class="page-shell narrow">
     <header class="page-title">
       <span class="section-kicker">404</span>
@@ -1846,6 +1846,7 @@ function notFoundPage() {
         <a class="ghost-link" href="/search/">搜索文章</a>
       </div>
     </header>
+    ${compactPostIndex(posts, "最近文章")}
   </main>`;
   return pageLayout({
     title: "页面未找到",
@@ -2044,7 +2045,7 @@ await writePage("tags", tagIndexPage(tags, posts));
 await writePage("series", seriesIndexPage(seriesEntries, posts));
 await writePage("search", searchPage());
 await writePage("about", await aboutPage());
-await writeFile(path.join(dist, "404.html"), notFoundPage(), "utf8");
+await writeFile(path.join(dist, "404.html"), notFoundPage(posts), "utf8");
 
 for (const post of posts) {
   await writePage(path.join("posts", post.slug), postPage(post, posts));

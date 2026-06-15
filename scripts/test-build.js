@@ -316,6 +316,13 @@ try {
   assert.equal(markdownEdge.year, "2026");
   assert.equal(markdownEdge.cover, "/assets/posts/inline.svg");
 
+  const notFound = await readFile(path.join(tempRoot, "dist", "404.html"), "utf8");
+  assert.match(notFound, /<meta name="robots" content="noindex,follow" \/>/);
+  assert.match(notFound, /<h1>页面未找到<\/h1>/);
+  assert.match(notFound, /class="compact-post-index"/);
+  assert.match(notFound, /最近文章/);
+  assert.match(notFound, /href="\/posts\/markdown-followup\/"/);
+
   const rss = await readFile(path.join(tempRoot, "dist", "rss.xml"), "utf8");
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
   assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);

@@ -300,6 +300,9 @@ if (!buildScript.includes("comparePostsNewestFirst")) {
 if (!buildScript.includes("robots.txt")) failures.push("Build must generate robots.txt.");
 if (!buildScript.includes("404.html") || !buildScript.includes("notFoundPage")) failures.push("Build must generate a custom 404 page.");
 if (!buildScript.includes("noindex,follow")) failures.push("404 page must be marked noindex.");
+if (!buildScript.includes('notFoundPage(posts)') || !buildScript.includes('compactPostIndex(posts, "最近文章")')) {
+  failures.push("404 page must help readers recover with recent posts.");
+}
 if (!buildScript.includes("content:encoded") || !buildScript.includes("absolutizeFeedHtml")) {
   failures.push("RSS feed must include full post content with absolute local URLs.");
 }
