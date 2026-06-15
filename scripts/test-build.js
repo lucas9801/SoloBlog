@@ -178,6 +178,8 @@ try {
   assert.match(home, /data-ranking-posts="[^"]*&quot;date&quot;[^"]*&quot;category&quot;/);
   assert.match(home, /data-copy-rss-status/);
   assert.match(home, /站点地图/);
+  assert.match(home, /<button type="submit" aria-label="搜索文章">搜索<\/button>/);
+  assert.doesNotMatch(home, />⌕<\/button>/);
   assert.doesNotMatch(home, /Recommended|Latest Posts|Technical Archive/);
   assert.match(home, /<link rel="alternate" type="application\/rss\+xml" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/rss\.xml" \/>/);
   assert.match(home, /<link rel="alternate" type="application\/feed\+json" title="SOLUS Dev Notes" href="https:\/\/blog\.solus\.games\/feed\.json" \/>/);

@@ -663,9 +663,13 @@ if (!socialImageSvg.includes("SOLUS Dev Notes") || !socialImageSvg.includes("游
 if (
   buildScript.includes("SOLUS ARCHIVE") ||
   postCoverSvgs.some((source) => source.includes("SOLUS ARCHIVE")) ||
-  buildScript.includes('placeholder="搜索文章、标签"')
+  buildScript.includes('placeholder="搜索文章、标签"') ||
+  buildScript.includes(">⌕</button>")
 ) {
   failures.push("Visible generated surfaces must use current SOLUS wording.");
+}
+if (!buildScript.includes('aria-label="搜索文章">搜索</button>') || !css.includes("place-items: center")) {
+  failures.push("Header search submit must use a stable visible label.");
 }
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");
