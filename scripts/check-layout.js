@@ -607,35 +607,57 @@ async function checkViewport(viewport, page) {
             returnByValue: true,
             expression: `(() => {
               const failures = [];
-              const form = document.querySelector("[data-archive-filter-form]");
-              const yearSelect = form?.querySelector("[data-archive-year]");
-              const categorySelect = form?.querySelector("[data-archive-category]");
-              if (!(form instanceof HTMLFormElement)) failures.push("archive filter form is missing");
-              if (!(yearSelect instanceof HTMLSelectElement)) failures.push("archive year select is missing");
-              if (!(categorySelect instanceof HTMLSelectElement)) failures.push("archive category select is missing");
-              if (failures.length > 0) return failures;
+              const quickFilters = document.querySelector(".archive-filter-links");
+              const duplicateForm = document.querySelector(".archive-filter-form, [data-archive-filter-form]");
+              if (!(quickFilters instanceof HTMLDetailsElement)) failures.push("archive quick filters are missing");
+              if (quickFilters instanceof HTMLDetailsElement && !quickFilters.open) {
+                failures.push("archive quick filters are not expanded by default");
+              }
+              if (duplicateForm) failures.push("archive duplicate dropdown filters are still rendered");
+              if (failures.length > 0) return { failures };
 
-              const yearOption = Array.from(yearSelect.options).find((option) => option.value);
-              const categoryOption = Array.from(categorySelect.options).find(
-                (option) => option.value && option.dataset.categorySlug
+              const yearLink = Array.from(quickFilters.querySelectorAll("a")).find((link) =>
+                /^\\/years\\/[^/]+\\/$/.test(new URL(link.href).pathname)
               );
-              if (!yearOption) failures.push("archive year select has no selectable year");
-              if (!categoryOption) failures.push("archive category select has no selectable category");
-              if (failures.length > 0) return failures;
+              if (!yearLink) return { failures: ["archive quick filters have no year link"] };
 
-              yearSelect.value = yearOption.value;
-              categorySelect.value = categoryOption.value;
-              const targetPath = "/archive/" + yearOption.value + "/" + categoryOption.dataset.categorySlug + "/";
-              categorySelect.dispatchEvent(new Event("change", { bubbles: true }));
-              return { failures, targetPath };
+              const yearPath = decodeURIComponent(new URL(yearLink.href).pathname);
+              yearLink.click();
+              return { failures, yearPath };
             })()`
           })
         : { result: { value: [] } };
     const archiveNavigationFailures = [];
-    const archiveTargetPath = archiveRuntime.result.value?.targetPath || "";
-    if (archiveTargetPath) {
-      if (!(await waitForPathname(archiveTargetPath))) {
-        archiveNavigationFailures.push("archive combined year/category filter did not navigate to " + archiveTargetPath);
+    const archiveYearPath = archiveRuntime.result.value?.yearPath || "";
+    if (archiveYearPath) {
+      if (!(await waitForPathname(archiveYearPath))) {
+        archiveNavigationFailures.push("archive quick year filter did not navigate to " + archiveYearPath);
+      } else {
+        const combinedRuntime = await send("Runtime.evaluate", {
+          returnByValue: true,
+          expression: `(() => {
+            const failures = [];
+            const quickFilters = document.querySelector(".archive-filter-links");
+            const duplicateForm = document.querySelector(".archive-filter-form, [data-archive-filter-form]");
+            if (!(quickFilters instanceof HTMLDetailsElement)) failures.push("archive quick filters are missing on year page");
+            if (duplicateForm) failures.push("archive duplicate dropdown filters are still rendered on year page");
+            if (failures.length > 0) return { failures };
+
+            const combinedLink = Array.from(quickFilters.querySelectorAll("a")).find((link) =>
+              /^\\/archive\\/[^/]+\\/[^/]+\\/$/.test(new URL(link.href).pathname)
+            );
+            if (!combinedLink) return { failures: ["archive quick filters have no combined year/category link"] };
+
+            const combinedPath = decodeURIComponent(new URL(combinedLink.href).pathname);
+            combinedLink.click();
+            return { failures, combinedPath };
+          })()`
+        });
+        archiveNavigationFailures.push(...(combinedRuntime.result.value?.failures || []));
+        const archiveTargetPath = combinedRuntime.result.value?.combinedPath || "";
+        if (archiveTargetPath && !(await waitForPathname(archiveTargetPath))) {
+          archiveNavigationFailures.push("archive combined year/category quick filter did not navigate to " + archiveTargetPath);
+        }
       }
       await send("Page.navigate", { url: page.url });
       if (!(await waitForPathname(page.pathname))) {

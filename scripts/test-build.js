@@ -155,11 +155,14 @@ try {
   assert.doesNotMatch(archive, /class="page-context"/);
   assert.doesNotMatch(archive, /class="page-title"/);
   assert.doesNotMatch(archive, /class="section-kicker"/);
-  assert.match(archive, /class="archive-filter-form"/);
-  assert.match(archive, /aria-label="文章联合筛选"/);
-  assert.match(archive, /data-archive-year/);
-  assert.match(archive, /data-category-slug="图形渲染"/);
+  assert.doesNotMatch(archive, /class="archive-filter-form"/);
+  assert.doesNotMatch(archive, /aria-label="文章联合筛选"/);
+  assert.doesNotMatch(archive, /data-archive-year/);
+  assert.doesNotMatch(archive, /data-category-slug/);
+  assert.match(archive, /<details class="archive-filter-links" open>/);
+  assert.match(archive, /<summary>快捷筛选<\/summary>/);
   assert.match(archive, /href="\/years\/2026\/"/);
+  assert.match(archive, /href="\/categories\/图形渲染\/"/);
   assert.match(archive, />全部年份 <b>3<\/b><\/a>[\s\S]*>全部分类 <b>3<\/b><\/a>/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
@@ -210,6 +213,7 @@ try {
     "utf8"
   );
   assert.doesNotMatch(combinedArchivePage, /class="page-title"/);
+  assert.doesNotMatch(combinedArchivePage, /class="archive-filter-form"/);
   assert.match(combinedArchivePage, /href="\/posts\/markdown-followup\/"/);
   assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/">全部年份 <b>2<\/b><\/a>/);
   assert.match(combinedArchivePage, /href="\/years\/2026\/">全部分类 <b>3<\/b><\/a>/);

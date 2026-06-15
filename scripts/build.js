@@ -1101,15 +1101,6 @@ function archiveFilterRow(label, ariaLabel, links) {
   </div>`;
 }
 
-function archiveFilterSelect(label, name, options) {
-  return `<label>
-    <span>${escapeHtml(label)}</span>
-    <select name="${escapeAttr(name)}" data-archive-${escapeAttr(name)}>
-      ${options.join("")}
-    </select>
-  </label>`;
-}
-
 function archiveFilters(
   categories,
   years,
@@ -1133,28 +1124,9 @@ function archiveFilters(
       return `<a class="${activeClass}" href="${archiveSelectionPath({ category, year: activeYear })}"${ariaCurrent}>${escapeHtml(category)} <b>${list.length}</b></a>`;
     })
   ];
-  const yearOptions = [
-    `<option value=""${!activeYear ? " selected" : ""}>全部年份 (${yearTotalCount})</option>`,
-    ...years.map(([year, list]) => {
-      const active = year === activeYear ? " selected" : "";
-      return `<option value="${escapeAttr(year)}"${active}>${escapeHtml(year)} (${list.length})</option>`;
-    })
-  ];
-  const categoryOptions = [
-    `<option value="" data-category-slug=""${!activeCategory ? " selected" : ""}>全部分类 (${categoryTotalCount})</option>`,
-    ...categories.map(([category, list]) => {
-      const active = category === activeCategory ? " selected" : "";
-      return `<option value="${escapeAttr(category)}" data-category-slug="${escapeAttr(slugify(category))}"${active}>${escapeHtml(category)} (${list.length})</option>`;
-    })
-  ];
 
   return `<div class="archive-filter-stack">
-    <form class="archive-filter-form" data-archive-filter-form aria-label="文章联合筛选">
-      ${archiveFilterSelect("年份", "year", yearOptions)}
-      ${archiveFilterSelect("分类", "category", categoryOptions)}
-      <button class="secondary-button" type="submit">应用筛选</button>
-    </form>
-    <details class="archive-filter-links">
+    <details class="archive-filter-links" open>
       <summary>快捷筛选</summary>
       <div class="archive-filter-link-panel">
         ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}

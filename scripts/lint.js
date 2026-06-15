@@ -428,12 +428,19 @@ if (
   !buildScript.includes("archiveSelectionPath") ||
   !buildScript.includes("archiveSelectionRoute") ||
   !buildScript.includes("filterArchivePosts") ||
-  !buildScript.includes("archive-filter-form") ||
-  !siteScript.includes("data-archive-filter-form") ||
-  !siteScript.includes("archiveFilterTarget") ||
-  !siteScript.includes('select.addEventListener("change"')
+  !buildScript.includes("archive-filter-links") ||
+  !buildScript.includes("archiveFilterRow") ||
+  !buildScript.includes("archiveSelectionPath({ category: activeCategory, year })") ||
+  !buildScript.includes("archiveSelectionPath({ category, year: activeYear })")
 ) {
-  failures.push("Archive pages must support combined year and category filtering.");
+  failures.push("Archive pages must support quick-link combined year and category filtering.");
+}
+if (
+  buildScript.includes("archive-filter-form") ||
+  siteScript.includes("data-archive-filter-form") ||
+  siteScript.includes("archiveFilterTarget")
+) {
+  failures.push("Archive pages must not render duplicate dropdown filters above quick filters.");
 }
 if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage({ tag, posts, tags, page")) {
   failures.push("Tag result pages must be paginated.");
