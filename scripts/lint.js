@@ -586,6 +586,13 @@ if (
 if (!searchScript.includes('width="1200" height="675"')) {
   failures.push("Search result cover images must reserve their 1200x675 aspect ratio.");
 }
+if (
+  !searchScript.includes("function dateTime") ||
+  !searchScript.includes("Number.isNaN(value.getTime()) ? 0 : value.getTime()") ||
+  !/function formatDate\(date\)[\s\S]*Number\.isNaN\(value\.getTime\(\)\)[\s\S]*return ""/.test(searchScript)
+) {
+  failures.push("Search page must tolerate invalid dates when formatting and sorting client results.");
+}
 if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
   failures.push("Search page must provide clear/reset controls.");
 }

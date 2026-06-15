@@ -62,11 +62,18 @@ function highlight(value, query) {
 }
 
 function formatDate(date) {
+  const value = new Date(date);
+  if (Number.isNaN(value.getTime())) return "";
   return new Intl.DateTimeFormat("zh-CN", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit"
-  }).format(new Date(date));
+  }).format(value);
+}
+
+function dateTime(date) {
+  const value = new Date(date);
+  return Number.isNaN(value.getTime()) ? 0 : value.getTime();
 }
 
 function unique(values) {
@@ -374,13 +381,13 @@ function rankedPosts(posts) {
   const hasQuery = Boolean(normalize(query));
 
   if (!hasQuery) {
-    return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return filtered.sort((a, b) => dateTime(b.date) - dateTime(a.date));
   }
 
   return filtered
     .map((post) => ({ post, ...scorePost(post, query) }))
     .filter((item) => item.score > 0)
-    .sort((a, b) => a.tier - b.tier || b.score - a.score || new Date(b.post.date) - new Date(a.post.date))
+    .sort((a, b) => a.tier - b.tier || b.score - a.score || dateTime(b.post.date) - dateTime(a.post.date))
     .map((item) => item.post);
 }
 
