@@ -569,69 +569,68 @@ async function checkViewport(viewport, page) {
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
               if (!clearButtonIsVisible()) failures.push("clear button stayed hidden after search input");
 
-              const firstSelectValue = (select) => Array.from(select.options).find((option) => option.value)?.value || "";
-              const yearSelect = document.querySelector("#searchYearFilter");
-              if (yearSelect instanceof HTMLSelectElement) {
-                const selectedYear = firstSelectValue(yearSelect);
-                if (!selectedYear) {
-                  failures.push("year filter select has no selectable year");
-                } else {
-                  yearSelect.value = selectedYear;
-                  yearSelect.dispatchEvent(new Event("change", { bubbles: true }));
-                  await waitFor(() => new URL(location.href).searchParams.get("year") === selectedYear);
-                  if (yearSelect.value !== selectedYear) {
-                    failures.push("year filter select did not keep the selected year");
-                  }
+              const firstFacetButton = (type) =>
+                Array.from(document.querySelectorAll('[data-facet-type="' + type + '"]')).find(
+                  (button) => button.dataset.facetValue
+                );
+              const activeFacetButton = (type, value) =>
+                Array.from(document.querySelectorAll('[data-facet-type="' + type + '"]')).find(
+                  (button) => button.dataset.facetValue === value && button.classList.contains("active")
+                );
+
+              const yearButton = firstFacetButton("year");
+              let selectedYear = "";
+              if (yearButton instanceof HTMLButtonElement) {
+                selectedYear = yearButton.dataset.facetValue || "";
+                yearButton.click();
+                await waitFor(() => new URL(location.href).searchParams.get("year") === selectedYear);
+                if (!activeFacetButton("year", selectedYear)) {
+                  failures.push("year quick filter did not keep the selected year");
                 }
               } else {
-                failures.push("year filter select is missing");
+                failures.push("year quick filter has no selectable year");
               }
 
-              const categorySelect = document.querySelector("#searchCategoryFilter");
-              if (categorySelect instanceof HTMLSelectElement) {
-                const selectedYear = new URL(location.href).searchParams.get("year");
-                const selectedCategory = firstSelectValue(categorySelect);
-                if (!selectedCategory) {
-                  failures.push("category filter select has no selectable category");
-                } else {
-                  categorySelect.value = selectedCategory;
-                  categorySelect.dispatchEvent(new Event("change", { bubbles: true }));
-                  await waitFor(() => new URL(location.href).searchParams.get("category") === selectedCategory);
-                  const url = new URL(location.href);
-                  if (!url.searchParams.get("category")) {
-                    failures.push("category filter select did not update the URL");
-                  }
-                  if (selectedYear && url.searchParams.get("year") !== selectedYear) {
-                    failures.push("category filter select did not preserve the selected year");
-                  }
-                  await wait(120);
-                  const resultCards = Array.from(document.querySelectorAll(".search-result-card"));
-                  if (resultCards.length === 0) {
-                    failures.push("combined year and category filters rendered no result cards");
-                  }
-                  if (selectedYear && resultCards.some((card) => card.dataset.resultYear !== selectedYear)) {
-                    failures.push("combined search results include posts outside the selected year");
-                  }
-                  if (selectedCategory && resultCards.some((card) => card.dataset.resultCategory !== selectedCategory)) {
-                    failures.push("combined search results include posts outside the selected category");
-                  }
-                  const summaryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
-                  if (selectedYear && !summaryText.includes("年份：" + selectedYear)) {
-                    failures.push("combined search summary does not show the selected year");
-                  }
-                  if (selectedCategory && !summaryText.includes("分类：" + selectedCategory)) {
-                    failures.push("combined search summary does not show the selected category");
-                  }
+              const categoryButton = firstFacetButton("category");
+              let selectedCategory = "";
+              if (categoryButton instanceof HTMLButtonElement) {
+                selectedCategory = categoryButton.dataset.facetValue || "";
+                categoryButton.click();
+                await waitFor(() => new URL(location.href).searchParams.get("category") === selectedCategory);
+                const url = new URL(location.href);
+                if (!url.searchParams.get("category")) {
+                  failures.push("category quick filter did not update the URL");
+                }
+                if (selectedYear && url.searchParams.get("year") !== selectedYear) {
+                  failures.push("category quick filter did not preserve the selected year");
+                }
+                await wait(120);
+                const resultCards = Array.from(document.querySelectorAll(".search-result-card"));
+                if (resultCards.length === 0) {
+                  failures.push("combined year and category filters rendered no result cards");
+                }
+                if (selectedYear && resultCards.some((card) => card.dataset.resultYear !== selectedYear)) {
+                  failures.push("combined search results include posts outside the selected year");
+                }
+                if (selectedCategory && resultCards.some((card) => card.dataset.resultCategory !== selectedCategory)) {
+                  failures.push("combined search results include posts outside the selected category");
+                }
+                const summaryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
+                if (selectedYear && !summaryText.includes("年份：" + selectedYear)) {
+                  failures.push("combined search summary does not show the selected year");
+                }
+                if (selectedCategory && !summaryText.includes("分类：" + selectedCategory)) {
+                  failures.push("combined search summary does not show the selected category");
                 }
               } else {
-                failures.push("category filter select is missing");
+                failures.push("category quick filter has no selectable category");
               }
 
               clearButton.click();
               await wait(120);
               if (input.value !== "") failures.push("clear button did not empty the search input");
               if (new URL(location.href).search !== "") failures.push("clear button did not reset the URL search params");
-              if (document.querySelectorAll("[data-facet-type].active").length > 0) {
+              if (Array.from(document.querySelectorAll("[data-facet-type].active")).some((button) => button.dataset.facetValue)) {
                 failures.push("clear button did not clear active facets");
               }
               if (document.querySelectorAll(".search-result-card").length === 0) {

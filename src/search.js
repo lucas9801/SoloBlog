@@ -4,8 +4,6 @@ const status = document.querySelector("#searchStatus");
 const facets = document.querySelector("#searchFacets");
 const pagination = document.querySelector("#searchPagination");
 const clearButton = document.querySelector("[data-search-clear]");
-const yearSelect = document.querySelector("#searchYearFilter");
-const categorySelect = document.querySelector("#searchCategoryFilter");
 const params = new URLSearchParams(window.location.search);
 const SEARCH_RESULTS_PER_PAGE = 6;
 const searchRenderDelay = 160;
@@ -186,55 +184,46 @@ function sanitizeState(posts) {
   if (changed) updateUrl();
 }
 
-function facetButton(type, value, count) {
-  const active = state[type] === value;
+function facetButton(type, value, count, label = value) {
+  const active = value ? state[type] === value : !state[type];
   return `<button class="facet-button${active ? " active" : ""}" type="button" data-facet-type="${type}" data-facet-value="${escapeHtml(value)}" aria-pressed="${active}" aria-controls="searchResults searchStatus">
-    <span>${escapeHtml(value)}</span><b>${count}</b>
+    <span>${escapeHtml(label)}</span><b>${count}</b>
   </button>`;
 }
 
-function selectOption(value, count, active) {
-  return `<option value="${escapeHtml(value)}"${active ? " selected" : ""}>${escapeHtml(value)} (${count})</option>`;
-}
-
-function renderFilterSelect(select, type, label, entries) {
-  if (!select) return;
-  const active = state[type] || "";
-  select.innerHTML = [
-    `<option value=""${!active ? " selected" : ""}>${label}</option>`,
-    ...entries.map(([value, count]) => selectOption(value, count, value === active))
-  ].join("");
-  select.value = active;
-}
-
-function renderFilterSelects(posts) {
-  const years = includeActiveFacet(
-    countEntries(facetScope(posts, "year"), postYear).sort(
-      (a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN")
-    ),
-    "year"
-  );
-  const categories = includeActiveFacet(countEntries(facetScope(posts, "category"), (post) => post.category), "category");
-
-  renderFilterSelect(yearSelect, "year", "全部年份", years);
-  renderFilterSelect(categorySelect, "category", "全部分类", categories);
+function facetGroup(label, type, allLabel, allCount, entries) {
+  return `<div class="facet-group">
+    <span>${escapeHtml(label)}</span>
+    <div class="facet-list">
+      ${facetButton(type, "", allCount, allLabel)}
+      ${entries.map(([value, count]) => facetButton(type, value, count)).join("")}
+    </div>
+  </div>`;
 }
 
 function renderFacets(posts) {
   if (!facets) return;
+  const yearScope = facetScope(posts, "year");
+  const categoryScope = facetScope(posts, "category");
+  const tagScope = facetScope(posts, "tag");
+  const years = includeActiveFacet(
+    countEntries(yearScope, postYear).sort(
+      (a, b) => Number.parseInt(b[0], 10) - Number.parseInt(a[0], 10) || b[0].localeCompare(a[0], "zh-CN")
+    ),
+    "year"
+  );
+  const categories = includeActiveFacet(countEntries(categoryScope, (post) => post.category), "category");
   const tags = limitFacetEntries(
-    includeActiveFacet(countEntries(facetScope(posts, "tag"), (post) => post.tags), "tag"),
+    includeActiveFacet(countEntries(tagScope, (post) => post.tags), "tag"),
     "tag",
     24
   );
 
   facets.innerHTML = `
-    <div class="facet-group">
-      <span>标签</span>
-      <div class="facet-list">
-        ${tags.map(([tag, count]) => facetButton("tag", tag, count)).join("")}
-      </div>
-    </div>`;
+    <div class="search-facets-title">快捷筛选</div>
+    ${facetGroup("年份", "year", "全部年份", yearScope.length, years)}
+    ${facetGroup("分类", "category", "全部分类", categoryScope.length, categories)}
+    ${facetGroup("标签", "tag", "全部标签", tagScope.length, tags)}`;
 }
 
 function includeActiveFacet(entries, type) {
@@ -409,13 +398,12 @@ function updateUrl() {
 
 function syncControls() {
   if (input && input.value !== state.query) input.value = state.query;
-  if (yearSelect && yearSelect.value !== state.year) yearSelect.value = state.year;
-  if (categorySelect && categorySelect.value !== state.category) categorySelect.value = state.category;
   const hasState = hasSearchState();
   if (clearButton) clearButton.hidden = !hasState;
   for (const button of facets?.querySelectorAll("[data-facet-type]") || []) {
     const type = button.dataset.facetType;
-    const active = state[type] === button.dataset.facetValue;
+    const value = button.dataset.facetValue || "";
+    const active = value ? state[type] === value : !state[type];
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", String(active));
   }
@@ -435,7 +423,6 @@ function render(posts) {
     : matched.slice((state.page - 1) * SEARCH_RESULTS_PER_PAGE, state.page * SEARCH_RESULTS_PER_PAGE);
   const filters = selectedFilters();
 
-  renderFilterSelects(posts);
   renderFacets(posts);
   renderSearchPagination(visible.length > 0 ? totalPages : 1);
   syncControls();
@@ -531,22 +518,6 @@ async function boot() {
     event.preventDefault();
     cancelScheduledSearchRender();
     state.page = pageNumber(link.dataset.searchPage);
-    updateUrl();
-    render(posts);
-  });
-
-  yearSelect?.addEventListener("change", () => {
-    cancelScheduledSearchRender();
-    state.year = yearSelect.value;
-    state.page = 1;
-    updateUrl();
-    render(posts);
-  });
-
-  categorySelect?.addEventListener("change", () => {
-    cancelScheduledSearchRender();
-    state.category = categorySelect.value;
-    state.page = 1;
     updateUrl();
     render(posts);
   });

@@ -556,13 +556,21 @@ if (
 }
 if (
   !searchScript.includes("searchFacets") ||
-  !searchScript.includes("searchYearFilter") ||
-  !searchScript.includes("searchCategoryFilter") ||
-  !searchScript.includes("renderFilterSelects") ||
-  !searchScript.includes('facetButton("tag"') ||
-  !buildScript.includes("search-filter-selects")
+  !searchScript.includes('facetGroup("年份", "year"') ||
+  !searchScript.includes('facetGroup("分类", "category"') ||
+  !searchScript.includes('facetGroup("标签", "tag"') ||
+  !searchScript.includes("全部年份") ||
+  !searchScript.includes("全部分类")
 ) {
-  failures.push("Search page must support combined year/category filters and tag facets.");
+  failures.push("Search page must support combined year/category/tag quick filters.");
+}
+if (
+  searchScript.includes("searchYearFilter") ||
+  searchScript.includes("searchCategoryFilter") ||
+  searchScript.includes("renderFilterSelects") ||
+  buildScript.includes("search-filter-selects")
+) {
+  failures.push("Search page must not render duplicate dropdown filters above quick filters.");
 }
 if (!searchScript.includes("fields.year") || !searchScript.includes("state.year")) {
   failures.push("Search page must index and filter post years for archive-scale discovery.");
@@ -592,7 +600,7 @@ if (
   !buildScript.includes('id="searchStatus"') ||
   !buildScript.includes('aria-describedby="searchStatus"') ||
   !buildScript.includes('aria-controls="searchResults searchFacets"') ||
-  !buildScript.includes('aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets"') ||
+  !buildScript.includes('aria-controls="searchInputPage searchStatus searchResults searchFacets"') ||
   !buildScript.includes('id="searchPagination"') ||
   !searchScript.includes('aria-controls="searchResults searchStatus"') ||
   !searchScript.includes('results.setAttribute("role", "list")') ||

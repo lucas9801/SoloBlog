@@ -1786,21 +1786,7 @@ function searchPage() {
           <span class="sr-only">搜索关键词</span>
           <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" />
         </label>
-        <div class="search-filter-selects" aria-label="年份和分类筛选">
-          <label>
-            <span>年份</span>
-            <select id="searchYearFilter" aria-label="按年份筛选" aria-controls="searchResults searchStatus">
-              <option value="">全部年份</option>
-            </select>
-          </label>
-          <label>
-            <span>分类</span>
-            <select id="searchCategoryFilter" aria-label="按分类筛选" aria-controls="searchResults searchStatus">
-              <option value="">全部分类</option>
-            </select>
-          </label>
-        </div>
-        <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets" hidden>清空</button>
+        <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchStatus searchResults searchFacets" hidden>清空</button>
       </div>
       <div class="search-layout">
         <aside class="search-filter-panel" aria-label="筛选条件">
