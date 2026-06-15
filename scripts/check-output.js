@@ -1051,6 +1051,12 @@ async function main() {
     if (relative === "dist/search/index.html" && html.includes('class="section-kicker"')) {
       failures.push("dist/search/index.html must not render a visible section kicker.");
     }
+    if (
+      ["dist/about/index.html", "dist/posts/start-here/index.html"].includes(relative) &&
+      /content\/posts|npm run|构建脚本|新增文章/.test(html)
+    ) {
+      failures.push(`${relative} must not expose internal publishing instructions.`);
+    }
     if (!html.includes("/src/theme-init.js")) failures.push(`${relative} must load the external theme initializer.`);
 
     checkDocumentBasics(file, html);
