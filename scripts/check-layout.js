@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 
@@ -32,6 +32,32 @@ function pageName(pathname) {
   );
 }
 
+function frontMatterValue(markdown, name) {
+  const match = String(markdown || "").match(new RegExp(`^${name}:\\s*(.+)$`, "m"));
+  return match?.[1]?.trim().replace(/^["']|["']$/g, "") || "";
+}
+
+function hasMarkdownTable(markdown) {
+  return /\n\|.+\|\s*\r?\n\|\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|/m.test(`\n${markdown}`);
+}
+
+async function firstContentPostPath(searchIndex, predicate) {
+  const postsDir = path.join(root, "content", "posts");
+  const files = await readdir(postsDir).catch(() => []);
+  const posts = Array.isArray(searchIndex) ? searchIndex : [];
+
+  for (const file of files.filter((item) => item.endsWith(".md")).sort()) {
+    const raw = await readFile(path.join(postsDir, file), "utf8").catch(() => "");
+    if (!raw || frontMatterValue(raw, "status") === "draft" || !predicate(raw)) continue;
+
+    const slug = frontMatterValue(raw, "slug") || slugifyForPath(frontMatterValue(raw, "title") || path.basename(file, ".md"));
+    const indexed = posts.find((post) => post?.slug === slug || post?.url === `/posts/${slug}/`);
+    return indexed?.url || `/posts/${slug}/`;
+  }
+
+  return "";
+}
+
 async function defaultPaths() {
   const paths = ["/", "/archive/", "/tags/", "/series/", "/search/", "/about/", "/404.html"];
 
@@ -40,6 +66,8 @@ async function defaultPaths() {
     .catch(() => []);
   const firstPost = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.url)?.url : "";
   if (firstPost) paths.splice(1, 0, firstPost);
+  const firstTablePost = await firstContentPostPath(searchIndex, hasMarkdownTable);
+  if (firstTablePost) paths.splice(2, 0, firstTablePost);
   const firstYear = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.year)?.year : "";
   if (firstYear) paths.splice(3, 0, `/years/${firstYear}/`);
   const firstCategory = Array.isArray(searchIndex) ? searchIndex.find((post) => post?.category)?.category : "";

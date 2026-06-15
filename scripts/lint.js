@@ -398,6 +398,9 @@ if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("Collecti
 if (!checkLayoutScript.includes('"/about/"') || !checkLayoutScript.includes("/categories/${slugifyForPath(firstCategory)}/")) {
   failures.push("Layout checks must cover the about page and a category archive page by default.");
 }
+if (!checkLayoutScript.includes("hasMarkdownTable") || !checkLayoutScript.includes("firstContentPostPath(searchIndex, hasMarkdownTable)")) {
+  failures.push("Layout checks must include a real article with a Markdown table when one exists.");
+}
 if (!checkLayoutScript.includes("startPreviewIfNeeded") || !checkLayoutScript.includes("scripts/preview.js")) {
   failures.push("Layout checks must start a local preview server when CHECK_URL is not provided.");
 }
