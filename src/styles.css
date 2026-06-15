@@ -1134,7 +1134,21 @@ pre {
   white-space: nowrap;
 }
 
-.series-card-head small {
+.series-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.series-card-meta span {
+  min-height: 26px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface-soft);
   color: var(--muted);
   font-size: 12px;
   font-weight: 600;
@@ -2441,8 +2455,12 @@ pre {
     gap: 6px 10px;
   }
 
-  .series-card-head small {
+  .series-card-meta {
     grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .series-card-meta span {
     white-space: normal;
   }
 

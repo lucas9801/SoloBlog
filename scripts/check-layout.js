@@ -596,6 +596,7 @@ async function checkViewport(viewport, page) {
                 failures.push("clear button did not restore list semantics for results");
               }
               if (!clearButtonIsHidden()) failures.push("clear button stayed visible after clearing search state");
+              document.activeElement?.blur?.();
 
               return failures;
             })()`

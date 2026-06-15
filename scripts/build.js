@@ -1500,7 +1500,10 @@ function seriesIndexPage(entries, posts) {
             <a class="series-card-head" href="/series/${slugify(name)}/">
               <b>${String(entryIndex + 1).padStart(2, "0")}</b>
               <strong class="series-card-title">${escapeHtml(name)}</strong>
-              <small>${list.length} 篇 · 最近 ${formatDate(latest?.date || latestPostDate(list))}</small>
+              <span class="series-card-meta">
+                <span>${list.length} 篇</span>
+                <span>最近 ${formatDate(latest?.date || latestPostDate(list))}</span>
+              </span>
             </a>
             <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
             <ol class="series-card-list">
@@ -1781,7 +1784,7 @@ function searchPage() {
       <div class="search-controls">
         <label class="search-query-control">
           <span class="sr-only">搜索关键词</span>
-          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" autofocus />
+          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" />
         </label>
         <div class="search-filter-selects" aria-label="年份和分类筛选">
           <label>

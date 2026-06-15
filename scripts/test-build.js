@@ -271,6 +271,7 @@ try {
   assert.doesNotMatch(seriesIndex, /class="section-kicker"/);
   assert.doesNotMatch(seriesIndex, />专题<\/span>/);
   assert.match(seriesIndex, /class="series-card-head"/);
+  assert.match(seriesIndex, /class="series-card-meta"/);
   assert.match(seriesIndex, /class="series-card-list"/);
   assert.match(seriesIndex, /class="compact-post-index"/);
   assert.match(seriesIndex, /Markdown Edge Cases/);
@@ -294,6 +295,7 @@ try {
   assert.match(search, /id="searchCategoryFilter"/);
   assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类或标签"/);
   assert.match(search, /id="searchInputPage"[^>]+aria-describedby="searchStatus"[^>]+aria-controls="searchResults searchFacets"/);
+  assert.doesNotMatch(search, /autofocus/);
   assert.match(search, /data-search-clear[^>]+aria-controls="searchInputPage searchYearFilter searchCategoryFilter searchStatus searchResults searchFacets"/);
   assert.match(search, /id="searchStatus" class="search-status" role="status" aria-live="polite"/);
   assert.match(search, /id="searchResults" class="search-results" role="list"/);

@@ -587,6 +587,9 @@ if (
 ) {
   failures.push("Search page must separate live status text from the result list semantics.");
 }
+if (buildScript.includes("autofocus")) {
+  failures.push("Search page must not autofocus the query input on initial load.");
+}
 if (
   !searchScript.includes("SEARCH_RESULTS_PER_PAGE") ||
   !searchScript.includes("paginationItems") ||
