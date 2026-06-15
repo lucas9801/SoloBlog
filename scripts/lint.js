@@ -408,6 +408,9 @@ if (
 if (!checkLayoutScript.includes("footer is floating above the viewport bottom")) {
   failures.push("Layout checks must prevent short-page footers from floating mid-viewport.");
 }
+if (!checkLayoutScript.includes("const originalTheme = document.documentElement.dataset.theme")) {
+  failures.push("Layout checks must restore the article theme after testing comments.");
+}
 if (!checkAllScript.includes("scripts/test-theme-init.js")) {
   failures.push("check:all must run theme initializer tests.");
 }

@@ -758,6 +758,7 @@ async function checkViewport(viewport, page) {
               const commentsSection = document.querySelector("[data-giscus-comments]");
               const commentsButton = commentsSection?.querySelector("[data-load-comments]");
               if (commentsSection && commentsButton instanceof HTMLButtonElement) {
+                const originalTheme = document.documentElement.dataset.theme;
                 document.documentElement.dataset.theme = "dark";
                 commentsButton.click();
                 await wait(120);
@@ -766,6 +767,11 @@ async function checkViewport(viewport, page) {
                   failures.push("comments loader did not append the Giscus script");
                 } else if (commentsScript.getAttribute("data-theme") !== "dark") {
                   failures.push("comments loader did not use the current site theme");
+                }
+                if (originalTheme) {
+                  document.documentElement.dataset.theme = originalTheme;
+                } else {
+                  delete document.documentElement.dataset.theme;
                 }
               }
 
