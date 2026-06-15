@@ -520,6 +520,9 @@ if (!siteScript.includes("focusin") || !siteScript.includes("revealHeader")) {
 if (!siteScript.includes("syncGiscusTheme") || !siteScript.includes("solus-theme")) {
   failures.push("Site script must keep theme state persistent and synced with comments.");
 }
+if (!siteScript.includes("切换浅色模式") || !checkLayoutScript.includes("theme toggle aria-label is out of sync")) {
+  failures.push("Theme toggle must expose an accurate accessible label for the next action.");
+}
 if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("https://giscus.app/client.js")) {
   failures.push("Article script must lazy load Giscus comments.");
 }

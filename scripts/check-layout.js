@@ -417,6 +417,10 @@ async function checkViewport(viewport, page) {
 
               const originalTheme = document.documentElement.dataset.theme || "light";
               const expectedNext = originalTheme === "dark" ? "light" : "dark";
+              const themeLabel = (theme) => (theme === "dark" ? "切换浅色模式" : "切换深色模式");
+              if (toggle.getAttribute("aria-label") !== themeLabel(originalTheme)) {
+                failures.push("theme toggle aria-label is out of sync before toggling");
+              }
               toggle.click();
               await wait(120);
               if (document.documentElement.dataset.theme !== expectedNext) {
@@ -424,6 +428,9 @@ async function checkViewport(viewport, page) {
               }
               if (toggle.getAttribute("aria-pressed") !== String(expectedNext === "dark")) {
                 failures.push("theme toggle aria-pressed is out of sync");
+              }
+              if (toggle.getAttribute("aria-label") !== themeLabel(expectedNext)) {
+                failures.push("theme toggle aria-label is out of sync after toggling");
               }
               try {
                 if (localStorage.getItem("solus-theme") !== expectedNext) {
@@ -436,6 +443,9 @@ async function checkViewport(viewport, page) {
               await wait(120);
               if (document.documentElement.dataset.theme !== originalTheme) {
                 failures.push("theme toggle did not restore original theme");
+              }
+              if (toggle.getAttribute("aria-label") !== themeLabel(originalTheme)) {
+                failures.push("theme toggle aria-label did not restore with the original theme");
               }
 
               scrollTo(0, Math.min(520, document.documentElement.scrollHeight));

@@ -25,6 +25,7 @@ function syncGiscusTheme(theme) {
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   themeToggle?.setAttribute("aria-pressed", String(theme === "dark"));
+  themeToggle?.setAttribute("aria-label", theme === "dark" ? "切换浅色模式" : "切换深色模式");
   syncGiscusTheme(theme);
 }
 
