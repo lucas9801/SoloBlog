@@ -988,7 +988,7 @@ function archivePostCard(post) {
   </article>`;
 }
 
-function compactPostIndex(posts, title = "最近更新") {
+function compactPostIndex(posts, title = "最近文章") {
   const items = posts.slice(0, 6);
   if (!items.length) return "";
 

@@ -281,7 +281,7 @@ function snippet(post, query) {
 }
 
 function resultLabel(query, count, showingRecent) {
-  if (showingRecent) return `最近更新的 ${count} 篇文章`;
+  if (showingRecent) return `最近文章 ${count} 篇`;
   if (normalize(query)) return `匹配到 ${count} 篇文章`;
   return `筛选出 ${count} 篇文章`;
 }
