@@ -49,6 +49,11 @@
       <rect x="348" y="486" width="504" height="48" rx="8" fill="#13202b" stroke="#2dd4bf" stroke-opacity=".3"/>
       <path d="M390 510h84M528 510h130M706 510h104" stroke="#2dd4bf" stroke-width="6" stroke-linecap="round" opacity=".55"/></g>
   <g>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="#2dd4bf" stroke-opacity=".3"/>
+    <text fill="#eefcff" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">小团队游戏项目的工具链原则</tspan></text>
+    <text fill="#eefcff" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">工具链的价值不在复杂，而在减少重复劳动、降低人为错误，并让关键流程可以被复现。</tspan></text>
+  </g>
+  <g>
     <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#2dd4bf" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#eefcff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">工具链</text>
     <text x="64" y="618" fill="#eefcff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>

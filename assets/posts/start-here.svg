@@ -19,7 +19,7 @@
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="415" cy="319.2" r="260" fill="#94a3b8" opacity=".12"/>
+  <circle cx="745" cy="222" r="260" fill="#94a3b8" opacity=".12"/>
   <circle cx="982" cy="188" r="210" fill="#14b8a6" opacity=".12"/>
   <circle cx="990" cy="548" r="168" fill="#94a3b8" opacity=".08"/>
   <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#94a3b8" stroke-opacity=".16" stroke-width="3"/>
@@ -32,6 +32,11 @@
       <circle cx="824" cy="468" r="28" fill="#14b8a6" opacity=".46"/>
       <path d="M864 228h150M864 348h112M864 468h134" stroke="#f8fafc" stroke-opacity=".2" stroke-width="8" stroke-linecap="round"/>
       <path d="M196 470l82-82 82 82-82 82z" fill="#94a3b8" opacity=".42"/></g>
+  <g>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="#94a3b8" stroke-opacity=".3"/>
+    <text fill="#f8fafc" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">SOLUS 技术档案的起点</tspan></text>
+    <text fill="#f8fafc" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">SOLUS 用于沉淀游戏开发、图形渲染、工程实践和项目复盘中的长期技术笔记。</tspan></text>
+  </g>
   <g>
     <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#f8fafc" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">随笔</text>

@@ -446,10 +446,11 @@ if (
 }
 if (
   buildScript.includes("archive-filter-form") ||
+  buildScript.includes("<summary>快捷筛选</summary>") ||
   siteScript.includes("data-archive-filter-form") ||
   siteScript.includes("archiveFilterTarget")
 ) {
-  failures.push("Archive pages must not render duplicate dropdown filters above quick filters.");
+  failures.push("Archive pages must not render duplicate dropdown filters or visible quick-filter labels.");
 }
 if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage({ tag, posts, tags, page")) {
   failures.push("Tag result pages must be paginated.");
@@ -462,11 +463,19 @@ if (!buildScript.includes("series-card-list") || !css.includes(".series-card-lis
 }
 if (
   !buildScript.includes("function compactPostIndex") ||
-  !buildScript.includes("compact-post-index") ||
+  !buildScript.includes('compactPostIndex(posts, "最近文章")') ||
   !css.includes(".compact-post-list") ||
-  !testBuildScript.includes("compact-post-index")
+  !testBuildScript.includes("最近文章")
 ) {
-  failures.push("Short taxonomy index pages must expose a compact recent-post index.");
+  failures.push("404 recovery must keep a compact recent-post index without adding recent-update blocks to taxonomy indexes.");
+}
+if (
+  !buildScript.includes("seriesPanel(post, posts, { compact: true })") ||
+  !buildScript.includes("article-related-aside") ||
+  !testBuildScript.includes("series-panel compact") ||
+  !checkLayoutScript.includes("article series panel is not in the side column")
+) {
+  failures.push("Article series navigation must render in the side column instead of the article footer.");
 }
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
@@ -512,6 +521,15 @@ if (!buildScript.includes('class="updated-date" datetime=') || !checkOutputScrip
 }
 if (!buildScript.includes("coverImage") || !buildScript.includes('fetchpriority="${escapeAttr(fetchPriority)}"')) {
   failures.push("Build must render cover images with stable dimensions and explicit hero priority.");
+}
+if (
+  !buildScript.includes("function coverTextLines") ||
+  !buildScript.includes("function svgTextBlock") ||
+  !buildScript.includes("svgTextBlock(titleLines") ||
+  !buildScript.includes("svgTextBlock(summaryLines") ||
+  buildScript.includes("existingGeneratedCover")
+) {
+  failures.push("Generated post covers must include wrapped title and summary text instead of reusing stale decorative SVGs.");
 }
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!buildScript.includes("includeViewsScript") || !buildScript.includes("viewsScript: false")) {

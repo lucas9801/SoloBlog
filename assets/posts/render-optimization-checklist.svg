@@ -19,7 +19,7 @@
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="182.5" cy="294" r="260" fill="#22d3ee" opacity=".12"/>
+  <circle cx="802.5" cy="199.2" r="260" fill="#22d3ee" opacity=".12"/>
   <circle cx="982" cy="188" r="210" fill="#60a5fa" opacity=".12"/>
   <circle cx="990" cy="548" r="168" fill="#22d3ee" opacity=".08"/>
   <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#22d3ee" stroke-opacity=".16" stroke-width="3"/>
@@ -32,6 +32,11 @@
       <path d="M906 206v36M906 304v36M778 371h-64M778 273h-64M778 175h-64" stroke="#22d3ee" stroke-opacity=".38" stroke-width="4"/>
       <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
       <circle cx="974" cy="522" r="42" fill="#60a5fa" opacity=".72"/></g>
+  <g>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="#22d3ee" stroke-opacity=".3"/>
+    <text fill="#f8fafc" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">渲染优化排查清单</tspan></text>
+    <text fill="#f8fafc" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">一份用于定位渲染性能问题的实践清单，覆盖帧调试、Draw Call、Overdraw、纹理和</tspan><tspan x="96" y="534">Shader 分支。</tspan></text>
+  </g>
   <g>
     <rect x="64" y="54" width="124" height="38" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#f8fafc" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">图形渲染</text>

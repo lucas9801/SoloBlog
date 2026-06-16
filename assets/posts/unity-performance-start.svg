@@ -35,6 +35,11 @@
       <rect x="830" y="380" width="182" height="118" rx="14" fill="#151827" stroke="#8b5cf6" stroke-opacity=".32"/>
       <path d="M654 440h90M874 440h94" stroke="#eef4ff" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/></g>
   <g>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="#60a5fa" stroke-opacity=".3"/>
+    <text fill="#eef4ff" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">Unity 性能分析从哪里下手</tspan></text>
+    <text fill="#eef4ff" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">面对卡顿问题时，先建立性能预算，再用 Profiler 区分 CPU、GPU、内存和 IO</tspan><tspan x="96" y="534">的瓶颈。</tspan></text>
+  </g>
+  <g>
     <rect x="64" y="54" width="142" height="38" rx="6" fill="#0f172a" stroke="#60a5fa" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#eef4ff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">Unity</text>
     <text x="64" y="618" fill="#eef4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>

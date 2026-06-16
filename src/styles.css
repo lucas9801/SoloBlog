@@ -557,23 +557,8 @@ pre {
   background: color-mix(in srgb, var(--surface) 82%, transparent);
 }
 
-.archive-filter-links summary {
-  min-height: 36px;
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.archive-filter-links summary:hover {
-  color: var(--text);
-}
-
 .archive-filter-link-panel {
-  padding: 0 8px 8px;
+  padding: 8px;
   display: grid;
   gap: 8px;
 }
@@ -1642,6 +1627,14 @@ pre {
   background: var(--surface);
 }
 
+.article-aside .series-panel {
+  margin-top: 0;
+}
+
+.article-aside .series-panel + .sidebar-card {
+  margin-top: 12px;
+}
+
 .series-panel-head {
   display: flex;
   flex-wrap: wrap;
@@ -1685,6 +1678,12 @@ pre {
   color: var(--muted);
   font-size: 14px;
   font-weight: 700;
+}
+
+.series-panel.compact li a {
+  min-height: 34px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  font-size: 13px;
 }
 
 .series-panel li.active a,

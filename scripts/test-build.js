@@ -104,7 +104,7 @@ async function writeFixtureProject(target) {
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-14-markdown-same-day.md"),
-    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\ncover: /assets/posts/inline.svg\nfeatured: true\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
+    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\nfeatured: true\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
     "utf8"
   );
   await writeFile(
@@ -139,6 +139,8 @@ try {
   assert.match(article, /<a class="active" href="\/archive\/" aria-current="page">文章<\/a>/);
   assert.match(article, /data-copy-article-url="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/"/);
   assert.match(article, /data-copy-article-status/);
+  assert.match(article, /<aside class="article-aside article-related-aside">[\s\S]*<section class="series-panel compact" aria-labelledby="series-sidebar-title">/);
+  assert.doesNotMatch(article, /<footer class="article-footer">[\s\S]*class="series-panel"/);
   const articleJsonLd = jsonLdObjects(article);
   const techArticle = articleJsonLd.find((item) => item["@type"] === "TechArticle");
   const breadcrumb = articleJsonLd.find((item) => item["@type"] === "BreadcrumbList");
@@ -159,8 +161,8 @@ try {
   assert.doesNotMatch(archive, /aria-label="文章联合筛选"/);
   assert.doesNotMatch(archive, /data-archive-year/);
   assert.doesNotMatch(archive, /data-category-slug/);
-  assert.match(archive, /<details class="archive-filter-links" open>/);
-  assert.match(archive, /<summary>快捷筛选<\/summary>/);
+  assert.match(archive, /<div class="archive-filter-links" aria-label="文章筛选">/);
+  assert.doesNotMatch(archive, /<summary>快捷筛选<\/summary>/);
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /href="\/categories\/图形渲染\/"/);
   assert.match(archive, />全部年份 <b>3<\/b><\/a>[\s\S]*>全部分类 <b>3<\/b><\/a>/);
@@ -265,20 +267,19 @@ try {
   assert.doesNotMatch(tagIndex, /class="page-context"/);
   assert.doesNotMatch(tagIndex, /class="page-title"/);
   assert.doesNotMatch(tagIndex, /class="section-kicker"/);
-  assert.match(tagIndex, /class="compact-post-index"/);
-  assert.match(tagIndex, /href="\/archive\/">全部文章<\/a>/);
-  assert.match(tagIndex, /Markdown Followup/);
+  assert.doesNotMatch(tagIndex, /class="compact-post-index"/);
+  assert.doesNotMatch(tagIndex, /最近更新/);
   assert.equal(jsonLdObjects(tagIndex).find((item) => item["@type"] === "CollectionPage").url, "https://blog.solus.games/tags/");
 
   const seriesIndex = await readFile(path.join(tempRoot, "dist", "series", "index.html"), "utf8");
   assert.doesNotMatch(seriesIndex, /class="page-context"/);
   assert.doesNotMatch(seriesIndex, /class="page-title"/);
   assert.doesNotMatch(seriesIndex, /class="section-kicker"/);
+  assert.doesNotMatch(seriesIndex, /class="compact-post-index"/);
   assert.doesNotMatch(seriesIndex, />专题<\/span>/);
   assert.match(seriesIndex, /class="series-card-head"/);
   assert.match(seriesIndex, /class="series-card-meta"/);
   assert.match(seriesIndex, /class="series-card-list"/);
-  assert.match(seriesIndex, /class="compact-post-index"/);
   assert.match(seriesIndex, /Markdown Edge Cases/);
   assert.match(seriesIndex, /Markdown Followup/);
   assert.equal(
@@ -318,6 +319,12 @@ try {
   const markdownEdge = searchIndex.find((item) => item.slug === "markdown-edge-cases");
   assert.equal(markdownEdge.year, "2026");
   assert.equal(markdownEdge.cover, "/assets/posts/inline.svg");
+  const markdownSameDay = searchIndex.find((item) => item.slug === "markdown-same-day");
+  assert.equal(markdownSameDay.cover, "/assets/posts/markdown-same-day.svg");
+  const generatedCover = await readFile(path.join(tempRoot, "assets", "posts", "markdown-same-day.svg"), "utf8");
+  assert.match(generatedCover, /Markdown Same Day/);
+  assert.match(generatedCover, /同日文章用于验证构建输出的稳定排序。/);
+  assert.match(generatedCover, /SOLUS DEV NOTES/);
 
   const notFound = await readFile(path.join(tempRoot, "dist", "404.html"), "utf8");
   assert.match(notFound, /<meta name="robots" content="noindex,follow" \/>/);

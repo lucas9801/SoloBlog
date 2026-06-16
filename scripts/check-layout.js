@@ -325,6 +325,18 @@ async function checkViewport(viewport, page) {
       }
       return false;
     };
+    const waitForSelector = async (selector, timeoutMs = 4000) => {
+      const started = Date.now();
+      while (Date.now() - started < timeoutMs) {
+        const result = await send("Runtime.evaluate", {
+          returnByValue: true,
+          expression: `Boolean(document.querySelector(${JSON.stringify(selector)}))`
+        });
+        if (result.result.value) return true;
+        await wait(80);
+      }
+      return false;
+    };
 
     await send("Emulation.setDeviceMetricsOverride", {
       width: viewport.width,
@@ -654,10 +666,8 @@ async function checkViewport(viewport, page) {
               const failures = [];
               const quickFilters = document.querySelector(".archive-filter-links");
               const duplicateForm = document.querySelector(".archive-filter-form, [data-archive-filter-form]");
-              if (!(quickFilters instanceof HTMLDetailsElement)) failures.push("archive quick filters are missing");
-              if (quickFilters instanceof HTMLDetailsElement && !quickFilters.open) {
-                failures.push("archive quick filters are not expanded by default");
-              }
+              if (!(quickFilters instanceof HTMLElement)) failures.push("archive quick filters are missing");
+              if (quickFilters?.querySelector("summary")) failures.push("archive quick filters should not render a visible summary label");
               if (duplicateForm) failures.push("archive duplicate dropdown filters are still rendered");
               if (failures.length > 0) return { failures };
 
@@ -678,13 +688,17 @@ async function checkViewport(viewport, page) {
       if (!(await waitForPathname(archiveYearPath))) {
         archiveNavigationFailures.push("archive quick year filter did not navigate to " + archiveYearPath);
       } else {
+        if (!(await waitForSelector(".archive-filter-links"))) {
+          archiveNavigationFailures.push("archive quick filters are missing on year page");
+        }
         const combinedRuntime = await send("Runtime.evaluate", {
           returnByValue: true,
           expression: `(() => {
             const failures = [];
             const quickFilters = document.querySelector(".archive-filter-links");
             const duplicateForm = document.querySelector(".archive-filter-form, [data-archive-filter-form]");
-            if (!(quickFilters instanceof HTMLDetailsElement)) failures.push("archive quick filters are missing on year page");
+            if (!(quickFilters instanceof HTMLElement)) failures.push("archive quick filters are missing on year page");
+            if (quickFilters?.querySelector("summary")) failures.push("archive quick filters should not render a visible summary label on year page");
             if (duplicateForm) failures.push("archive duplicate dropdown filters are still rendered on year page");
             if (failures.length > 0) return { failures };
 
@@ -702,6 +716,8 @@ async function checkViewport(viewport, page) {
         const archiveTargetPath = combinedRuntime.result.value?.combinedPath || "";
         if (archiveTargetPath && !(await waitForPathname(archiveTargetPath))) {
           archiveNavigationFailures.push("archive combined year/category quick filter did not navigate to " + archiveTargetPath);
+        } else if (archiveTargetPath && !(await waitForSelector(".archive-filter-links"))) {
+          archiveNavigationFailures.push("archive quick filters are missing on combined archive page");
         }
       }
       await send("Page.navigate", { url: page.url });
@@ -793,9 +809,14 @@ async function checkViewport(viewport, page) {
               const remainingNode = document.querySelector("#readingRemaining");
               const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
               const articleContent = document.querySelector(".article-content");
+              const sidebarSeries = document.querySelector(".article-related-aside .series-panel");
+              const footerSeries = document.querySelector(".article-footer .series-panel");
+              const anySeries = document.querySelector(".series-panel");
               if (!percentNode) failures.push("reading percent node is missing");
               if (!remainingNode) failures.push("reading remaining node is missing");
               if (!articleContent) failures.push("article content is missing");
+              if (anySeries && !sidebarSeries) failures.push("article series panel is not in the side column");
+              if (footerSeries) failures.push("article series panel should not render inside the footer");
               if (tocLinks.length < 3) failures.push("article table of contents has fewer than 3 links");
               if (failures.length > 0) return failures;
 

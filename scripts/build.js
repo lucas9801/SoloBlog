@@ -234,6 +234,72 @@ function normalizeForSearch(value) {
     .trim();
 }
 
+function coverTextWidth(value) {
+  return Array.from(String(value || "")).reduce((width, char) => {
+    if (/\s/u.test(char)) return width + 0.32;
+    if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(char)) return width + 1;
+    if (/[A-Z0-9]/.test(char)) return width + 0.68;
+    if (/[.,:;!?/\\()[\]{}'"`|_-]/.test(char)) return width + 0.36;
+    return width + 0.56;
+  }, 0);
+}
+
+function cleanCoverLine(value) {
+  return String(value || "")
+    .replace(/\s+([。，、；：！？,.!?;:])/gu, "$1")
+    .replace(/([（([{])\s+/gu, "$1")
+    .replace(/\s+([）)\]}])/gu, "$1")
+    .trim();
+}
+
+function coverTextLines(value, maxWidth, maxLines) {
+  const lines = [];
+  let current = "";
+
+  for (const char of Array.from(String(value || "").replace(/\s+/g, " ").trim())) {
+    const candidate = `${current}${char}`;
+    if (current && coverTextWidth(candidate) > maxWidth) {
+      const breakAt = current.lastIndexOf(" ");
+      if (breakAt > 0) {
+        lines.push(cleanCoverLine(current.slice(0, breakAt)));
+        current = `${current.slice(breakAt + 1)}${char}`.trimStart();
+      } else {
+        lines.push(cleanCoverLine(current));
+        current = char.trim() ? char : "";
+      }
+    } else {
+      current = candidate;
+    }
+
+    while (coverTextWidth(current) > maxWidth) {
+      const chars = Array.from(current);
+      let slice = "";
+      while (chars.length && coverTextWidth(`${slice}${chars[0]}`) <= maxWidth) {
+        slice += chars.shift();
+      }
+      lines.push(cleanCoverLine(slice));
+      current = chars.join("");
+    }
+
+    if (lines.length === maxLines) break;
+  }
+
+  if (current && lines.length < maxLines) lines.push(cleanCoverLine(current));
+  if (lines.length === maxLines && coverTextWidth(lines.at(-1)) > maxWidth - 1.2) {
+    const chars = Array.from(lines.at(-1));
+    while (chars.length && coverTextWidth(`${chars.join("")}…`) > maxWidth) chars.pop();
+    lines[lines.length - 1] = `${chars.join("")}…`;
+  }
+
+  return lines.length ? lines.map(cleanCoverLine) : [""];
+}
+
+function svgTextBlock(lines, { x, y, lineHeight }) {
+  return lines
+    .map((line, index) => `<tspan x="${x}" y="${y + index * lineHeight}">${escapeHtml(line)}</tspan>`)
+    .join("");
+}
+
 async function generatedPostCover(post) {
   const dir = path.join(root, "assets", "posts");
   await mkdir(dir, { recursive: true });
@@ -250,6 +316,9 @@ async function generatedPostCover(post) {
   const glowY = 90 + Number.parseInt(seed.slice(2, 4), 16) * 1.2;
   const motif = coverMotif(post, colors);
   const dateLabel = post.date.replaceAll("-", ".");
+  const titleLines = coverTextLines(post.title, 17.2, 2);
+  const summaryLines = coverTextLines(post.summary, 38, 2);
+  const summaryY = 420 + titleLines.length * 54 + 28;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(post.title)}">
   <defs>
@@ -278,6 +347,11 @@ async function generatedPostCover(post) {
   <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".16" stroke-width="3"/>
   <g filter="url(#shadow)">${motif}</g>
   <g>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="${colors[1]}" stroke-opacity=".3"/>
+    <text fill="${colors[4]}" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(titleLines, { x: 96, y: 420, lineHeight: 54 })}</text>
+    <text fill="${colors[4]}" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(summaryLines, { x: 96, y: summaryY, lineHeight: 32 })}</text>
+  </g>
+  <g>
     <rect x="64" y="54" width="${Math.max(118, Array.from(post.category).length * 18 + 52)}" height="38" rx="6" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
     <text x="84" y="79" fill="${colors[4]}" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)}</text>
     <text x="64" y="618" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
@@ -287,19 +361,6 @@ async function generatedPostCover(post) {
 
   await writeFile(target, svg, "utf8");
   return url;
-}
-
-async function existingGeneratedCover(slug, preferredExtensions = ["webp", "png", "jpg", "jpeg", "svg"]) {
-  for (const extension of preferredExtensions) {
-    const target = path.join(root, "assets", "posts", `${slug}.${extension}`);
-    try {
-      await access(target);
-      return `/assets/posts/${slug}.${extension}`;
-    } catch {
-      // Try the next supported image format.
-    }
-  }
-  return "";
 }
 
 function safeMarkdownUrl(value, { allowMailto = false } = {}) {
@@ -1126,13 +1187,12 @@ function archiveFilters(
   ];
 
   return `<div class="archive-filter-stack">
-    <details class="archive-filter-links" open>
-      <summary>快捷筛选</summary>
+    <div class="archive-filter-links" aria-label="文章筛选">
       <div class="archive-filter-link-panel">
         ${archiveFilterRow("年份", "文章年份筛选", yearLinks)}
         ${archiveFilterRow("分类", "文章分类筛选", categoryLinks)}
       </div>
-    </details>
+    </div>
   </div>`;
 }
 
@@ -1224,8 +1284,7 @@ async function loadPosts() {
       text
     };
 
-    const generatedCover = await existingGeneratedCover(slug, ["svg"]);
-    post.cover = data.cover || generatedCover || (await generatedPostCover(post));
+    post.cover = data.cover || (await generatedPostCover(post));
 
     posts.push(post);
   }
@@ -1390,7 +1449,6 @@ function tagIndexPage(entries, posts) {
     <section class="tag-matrix-page">
       ${tagCloud(entries)}
     </section>
-    ${compactPostIndex(posts)}
   </main>`;
   return pageLayout({
     title: "标签",
@@ -1525,7 +1583,6 @@ function seriesIndexPage(entries, posts) {
         })
         .join("")}
     </section>
-    ${compactPostIndex(posts)}
   </main>`;
   return pageLayout({
     title: "专题",
@@ -1624,15 +1681,17 @@ async function writeSeriesPages({ name, posts, seriesEntries }) {
   }
 }
 
-function seriesPanel(post, posts) {
+function seriesPanel(post, posts, { compact = false } = {}) {
   if (!post.series) return "";
   const items = sortSeriesPosts(posts.filter((item) => item.series === post.series));
   if (items.length < 2) return "";
+  const titleId = compact ? "series-sidebar-title" : "series-panel-title";
+  const compactClass = compact ? " compact" : "";
 
-  return `<section class="series-panel" aria-labelledby="series-panel-title">
+  return `<section class="series-panel${compactClass}" aria-labelledby="${titleId}">
     <div class="series-panel-head">
       <span>专题</span>
-      <h2 id="series-panel-title">${escapeHtml(post.series)}</h2>
+      <h2 id="${titleId}">${escapeHtml(post.series)}</h2>
       <a href="/series/${post.seriesSlug}/">查看专题</a>
     </div>
     <ol>
@@ -1692,18 +1751,21 @@ function postPage(post, posts) {
     .map((heading) => `<a class="level-${heading.level}" href="#${heading.id}" data-toc-target="${escapeAttr(heading.id)}">${escapeHtml(heading.text)}</a>`)
     .join("");
   const showRelated = fallbackRelated.length >= 3;
+  const seriesSidebar = seriesPanel(post, posts, { compact: true });
+  const showLeftAside = Boolean(seriesSidebar || showRelated);
   const showToc = tocHeadings.length >= 3;
   const articleShellClass = [
     "article-shell",
-    showRelated ? "" : "no-related",
+    showLeftAside ? "" : "no-related",
     showToc ? "" : "no-toc"
   ]
     .filter(Boolean)
     .join(" ");
 
   const body = `<main class="${articleShellClass}">
-    ${showRelated ? `<aside class="article-aside article-related-aside">
-      <section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>
+    ${showLeftAside ? `<aside class="article-aside article-related-aside">
+      ${seriesSidebar}
+      ${showRelated ? `<section class="sidebar-card related-card"><h2>相关文章</h2>${fallbackRelated.map((item) => `<a class="related-link" href="${item.url}"><span>${escapeHtml(item.title)}</span><small>${formatDate(item.date)} · ${escapeHtml(item.category)}</small></a>`).join("")}</section>` : ""}
     </aside>` : ""}
     <article class="article-page" data-post-slug="${escapeAttr(post.slug)}">
       <header class="article-hero">
@@ -1719,7 +1781,6 @@ function postPage(post, posts) {
           <button class="secondary-button article-copy-link" type="button" data-copy-article-url="${escapeAttr(absoluteUrl(post.url))}" aria-label="复制本文链接">复制链接</button>
           <span class="sr-only" aria-live="polite" data-copy-article-status></span>
         </div>
-        ${seriesPanel(post, posts)}
         ${postNavigation(post, posts)}
       </footer>
       ${giscusComments()}

@@ -55,7 +55,7 @@ npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 
 npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 2026-06-04 --category Unity --cover /assets/posts/unity-performance-budget.svg
 ```
 
-`--cover` 只接受本地 `/assets/...` 路径，并且文件必须已经存在。不设置时构建脚本会按文章内容自动生成封面。
+`--cover` 只接受本地 `/assets/...` 路径，并且文件必须已经存在。不设置时构建脚本会按文章内容自动生成封面；自动封面会在构建时刷新，如果要保留手工设计的封面，需要把路径写进 `cover` 字段。
 
 发布前完整检查：
 
