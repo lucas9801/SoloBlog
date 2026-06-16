@@ -227,7 +227,6 @@ function renderFacets(posts) {
   );
 
   facets.innerHTML = `
-    <div class="search-facets-title">快捷筛选</div>
     ${facetGroup("年份", "year", "全部年份", yearScope.length, years)}
     ${facetGroup("分类", "category", "全部分类", categoryScope.length, categories)}
     ${facetGroup("标签", "tag", "全部标签", tagScope.length, tags)}`;

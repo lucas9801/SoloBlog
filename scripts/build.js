@@ -1562,7 +1562,7 @@ function seriesIndexPage(entries, posts) {
               <strong class="series-card-title">${escapeHtml(name)}</strong>
               <span class="series-card-meta">
                 <span>${list.length} 篇</span>
-                <span>最近 ${formatDate(latest?.date || latestPostDate(list))}</span>
+                <span>更新 ${formatDate(latest?.date || latestPostDate(list))}</span>
               </span>
             </a>
             <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
@@ -1605,44 +1605,47 @@ function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
   const seriesBasePath = basePath || `/series/${slugify(name)}/`;
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(sorted, page, perPage);
+  const relatedSeries = seriesEntries.filter(([seriesName]) => seriesName !== name).slice(0, 8);
   const body = `<main class="page-shell series-page">
     <h1 class="sr-only">${escapeHtml(name)}</h1>
-    <section class="series-timeline" aria-label="${escapeAttr(name)} 专题文章">
-      ${items
-        .map(
-          (post, index) => `<article class="series-timeline-item">
-            <span>${String((currentPage - 1) * perPage + index + 1).padStart(2, "0")}</span>
-            <div>
-              <div class="post-meta">
-                <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
-                <span>${escapeHtml(post.category)}</span>
-                <span>${escapeHtml(post.readingTime)}</span>
-                ${viewCountMeta(post)}
-              </div>
-              <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
-              <p>${escapeHtml(post.summary)}</p>
-              <div class="tag-row">${post.tags
-                .slice(0, 4)
-                .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
-                .join("")}</div>
-            </div>
-          </article>`
-        )
-        .join("")}
-    </section>
-    ${paginationNav(seriesBasePath, currentPage, totalPages)}
-    ${
-      seriesEntries.length > 1
-        ? `<section class="series-related">
-          <h2>其他专题</h2>
-          <div class="tag-cloud">${seriesEntries
-            .filter(([seriesName]) => seriesName !== name)
-            .slice(0, 8)
-            .map(([seriesName, list]) => `<a href="/series/${slugify(seriesName)}/"><span>${escapeHtml(seriesName)}</span><b>${list.length}</b></a>`)
-            .join("")}</div>
-        </section>`
-        : ""
-    }
+    <div class="series-detail-layout${relatedSeries.length ? "" : " no-related"}">
+      <div class="series-detail-main">
+        <section class="series-timeline" aria-label="${escapeAttr(name)} 专题文章">
+          ${items
+            .map(
+              (post, index) => `<article class="series-timeline-item">
+                <span>${String((currentPage - 1) * perPage + index + 1).padStart(2, "0")}</span>
+                <div>
+                  <div class="post-meta">
+                    <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
+                    <span>${escapeHtml(post.category)}</span>
+                    <span>${escapeHtml(post.readingTime)}</span>
+                    ${viewCountMeta(post)}
+                  </div>
+                  <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
+                  <p>${escapeHtml(post.summary)}</p>
+                  <div class="tag-row">${post.tags
+                    .slice(0, 4)
+                    .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+                    .join("")}</div>
+                </div>
+              </article>`
+            )
+            .join("")}
+        </section>
+        ${paginationNav(seriesBasePath, currentPage, totalPages)}
+      </div>
+      ${
+        relatedSeries.length
+          ? `<aside class="series-related" aria-label="其他专题">
+            <h2>其他专题</h2>
+            <div class="tag-cloud">${relatedSeries
+              .map(([seriesName, list]) => `<a href="/series/${slugify(seriesName)}/"><span>${escapeHtml(seriesName)}</span><b>${list.length}</b></a>`)
+              .join("")}</div>
+          </aside>`
+          : ""
+      }
+    </div>
   </main>`;
   return pageLayout({
     title: `专题：${name}`,

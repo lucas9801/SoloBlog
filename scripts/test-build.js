@@ -104,7 +104,7 @@ async function writeFixtureProject(target) {
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-14-markdown-same-day.md"),
-    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\nfeatured: true\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
+    `---\ntitle: "Markdown Same Day"\nslug: "markdown-same-day"\ndate: 2026-06-14\ncategory: Unity\ntags: [排序]\nsummary: 同日文章用于验证构建输出的稳定排序。\nseries: Unity Lab\nseriesOrder: 1\nfeatured: true\nstatus: published\n---\n\n## Same Day\n\nParagraph for deterministic ordering.\n`,
     "utf8"
   );
   await writeFile(
@@ -254,6 +254,9 @@ try {
   assert.doesNotMatch(seriesPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(seriesPage, /href="\/series\/markdown-lab\/page\/2\/"/);
   assert.match(seriesPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/series\/markdown-lab\/page\/2\/" \/>/);
+  assert.match(seriesPage, /class="series-detail-layout"/);
+  assert.match(seriesPage, /<aside class="series-related" aria-label="其他专题">/);
+  assert.match(seriesPage, /href="\/series\/unity-lab\/"/);
   assert.equal(
     jsonLdObjects(seriesPage).find((item) => item["@type"] === "CollectionPage").url,
     "https://blog.solus.games/series/markdown-lab/"
@@ -277,8 +280,10 @@ try {
   assert.doesNotMatch(seriesIndex, /class="section-kicker"/);
   assert.doesNotMatch(seriesIndex, /class="compact-post-index"/);
   assert.doesNotMatch(seriesIndex, />专题<\/span>/);
+  assert.doesNotMatch(seriesIndex, /最近 \d{4}/);
   assert.match(seriesIndex, /class="series-card-head"/);
   assert.match(seriesIndex, /class="series-card-meta"/);
+  assert.match(seriesIndex, /更新 2026\/06\/14/);
   assert.match(seriesIndex, /class="series-card-list"/);
   assert.match(seriesIndex, /Markdown Edge Cases/);
   assert.match(seriesIndex, /Markdown Followup/);

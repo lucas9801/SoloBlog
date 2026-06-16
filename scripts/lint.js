@@ -461,6 +461,17 @@ if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPa
 if (!buildScript.includes("series-card-list") || !css.includes(".series-card-list")) {
   failures.push("Series index cards must preview posts inside each series.");
 }
+if (buildScript.includes("<span>最近 ${formatDate") || !buildScript.includes("<span>更新 ${formatDate")) {
+  failures.push("Series index cards must use archival update wording instead of recent-update wording.");
+}
+if (
+  !buildScript.includes("series-detail-layout") ||
+  !buildScript.includes('<aside class="series-related" aria-label="其他专题">') ||
+  !css.includes(".series-detail-layout") ||
+  !testBuildScript.includes('class="series-detail-layout"')
+) {
+  failures.push("Series detail pages must place related series in a side column when available.");
+}
 if (
   !buildScript.includes("function compactPostIndex") ||
   !buildScript.includes('compactPostIndex(posts, "最近文章")') ||
@@ -589,6 +600,9 @@ if (
   buildScript.includes("search-filter-selects")
 ) {
   failures.push("Search page must not render duplicate dropdown filters above quick filters.");
+}
+if (searchScript.includes("search-facets-title") || css.includes(".search-facets-title")) {
+  failures.push("Search page must not render a visible quick-filter title above the facet groups.");
 }
 if (!searchScript.includes("fields.year") || !searchScript.includes("state.year")) {
   failures.push("Search page must index and filter post years for archive-scale discovery.");
