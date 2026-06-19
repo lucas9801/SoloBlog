@@ -87,7 +87,7 @@ function setActiveToc(id) {
     const active = link.dataset.tocTarget === id;
     link.classList.toggle("active", active);
     if (active) {
-      link.setAttribute("aria-current", "true");
+      link.setAttribute("aria-current", "location");
     } else {
       link.removeAttribute("aria-current");
     }

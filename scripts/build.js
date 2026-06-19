@@ -1790,7 +1790,7 @@ function postPage(post, posts) {
       ${giscusComments()}
     </article>
     ${showToc ? `<aside class="article-aside article-toc-aside">
-      <section class="sidebar-card toc"><h2>目录</h2>${toc}</section>
+      <nav class="sidebar-card toc" aria-labelledby="article-toc-title"><h2 id="article-toc-title">目录</h2>${toc}</nav>
     </aside>` : ""}
   </main>
   <div class="reading-pill" data-post-slug="${escapeAttr(post.slug)}" data-reading-minutes="${Number.parseInt(post.readingTime, 10) || 1}" aria-label="阅读进度"><span id="readingPercent">0%</span><span id="readingRemaining">剩余 ≈ ${escapeHtml(post.readingTime)}</span></div>

@@ -923,22 +923,30 @@ async function checkViewport(viewport, page) {
               await instantScrollTo(0);
               await wait(180);
               const topPercent = readPercent();
-              const topActive = document.querySelector("[data-toc-target].active")?.dataset.tocTarget || "";
+              const topActiveLink = document.querySelector("[data-toc-target].active");
+              const topActive = topActiveLink?.dataset.tocTarget || "";
               if (topPercent > 20) failures.push("reading progress starts too high");
               if (window.scrollY > 2) failures.push("article page did not settle at the top before the top progress check");
               if (tocLinks.length > 0 && topActive !== tocLinks[0].dataset.tocTarget) {
                 failures.push("first toc entry is not active near the top");
               }
+              if (topActiveLink?.getAttribute("aria-current") !== "location") {
+                failures.push("active toc entry must mark the current reading location");
+              }
 
               await instantScrollTo(Math.max(0, document.documentElement.scrollHeight - window.innerHeight));
               await wait(260);
               const bottomPercent = readPercent();
-              const bottomActive = document.querySelector("[data-toc-target].active")?.dataset.tocTarget || "";
+              const bottomActiveLink = document.querySelector("[data-toc-target].active");
+              const bottomActive = bottomActiveLink?.dataset.tocTarget || "";
               const lastToc = tocLinks[tocLinks.length - 1]?.dataset.tocTarget || "";
               if (bottomPercent <= topPercent) failures.push("reading progress did not increase after scrolling");
               if (bottomPercent < 90) failures.push("reading progress did not approach completion at the bottom");
               if (!remainingNode.textContent) failures.push("reading remaining text is empty");
               if (lastToc && bottomActive !== lastToc) failures.push("last toc entry is not active near the bottom");
+              if (bottomActiveLink?.getAttribute("aria-current") !== "location") {
+                failures.push("bottom toc entry must mark the current reading location");
+              }
 
               await instantScrollTo(0);
               await wait(140);

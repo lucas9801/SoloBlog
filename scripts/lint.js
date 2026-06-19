@@ -494,6 +494,13 @@ if (
 ) {
   failures.push("Article series navigation must render in the side column instead of the article footer.");
 }
+if (
+  !buildScript.includes('<nav class="sidebar-card toc" aria-labelledby="article-toc-title">') ||
+  !articleScript.includes('aria-current", "location"') ||
+  !checkLayoutScript.includes("active toc entry must mark the current reading location")
+) {
+  failures.push("Article table of contents must be a navigation landmark with current-location state.");
+}
 if (!buildScript.includes("uniqueHeadingId") || !buildScript.includes("headingIds")) {
   failures.push("Markdown heading IDs must be stable and unique within each post.");
 }
