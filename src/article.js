@@ -262,7 +262,8 @@ updateViewCount().catch(() => {
 });
 
 article?.addEventListener("click", async (event) => {
-  const articleLinkButton = event.target.closest("[data-copy-article-url]");
+  const target = event.target instanceof Element ? event.target : null;
+  const articleLinkButton = target?.closest("[data-copy-article-url]");
   if (articleLinkButton) {
     const status = articleLinkButton.parentElement?.querySelector("[data-copy-article-status]");
     const previousText = articleLinkButton.textContent;
@@ -291,7 +292,7 @@ article?.addEventListener("click", async (event) => {
     return;
   }
 
-  const button = event.target.closest("[data-copy-code]");
+  const button = target?.closest("[data-copy-code]");
   if (!button) return;
 
   const block = button.closest("pre");

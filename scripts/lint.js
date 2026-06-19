@@ -592,7 +592,8 @@ if (
   !buildScript.includes("data-copy-article-status") ||
   !articleScript.includes("data-copy-article-url") ||
   !articleScript.includes("本文链接已复制") ||
-  !css.includes(".article-footer-tools")
+  !css.includes(".article-footer-tools") ||
+  !articleScript.includes("event.target instanceof Element")
 ) {
   failures.push("Article pages must expose an accessible permalink copy action.");
 }
