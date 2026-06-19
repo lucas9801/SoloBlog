@@ -59,6 +59,7 @@ const [
   newPostScript,
   previewScript,
   testBuildScript,
+  testNewPostScript,
   testPreviewScript,
   checkAllScript,
   checkLayoutScript,
@@ -89,6 +90,7 @@ const [
   readFile(path.join(root, "scripts/new-post.js"), "utf8"),
   readFile(path.join(root, "scripts/preview.js"), "utf8"),
   readFile(path.join(root, "scripts/test-build.js"), "utf8"),
+  readFile(path.join(root, "scripts/test-new-post.js"), "utf8"),
   readFile(path.join(root, "scripts/test-preview.js"), "utf8"),
   readFile(path.join(root, "scripts/check-all.js"), "utf8"),
   readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
@@ -907,6 +909,9 @@ if (
   !newPostScript.includes("isValidDate") ||
   !newPostScript.includes("isAssetPath") ||
   !newPostScript.includes("localAssetExists") ||
+  !newPostScript.includes("knownCategoryNames[0]") ||
+  !newPostScript.includes("const category = options.category || defaultCategory") ||
+  !testNewPostScript.includes('parseJsonString(frontMatterValue(post, "category")), "Unity"') ||
   !blogOperationsDocs.includes("--slug unity-performance")
 ) {
   failures.push("New post workflow must support explicit canonical slugs, dates, and covers.");

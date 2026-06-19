@@ -90,7 +90,7 @@ try {
   for (const post of bySlug.values()) {
     assert.equal(parseJsonString(frontMatterValue(post, "title")), title);
     assert.equal(frontMatterValue(post, "status"), "draft");
-    assert.equal(frontMatterValue(post, "category"), "未分类");
+    assert.equal(parseJsonString(frontMatterValue(post, "category")), "Unity");
     assert.match(post, /## 小标题/);
   }
 

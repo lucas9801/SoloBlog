@@ -3,7 +3,7 @@ import path from "node:path";
 
 const args = process.argv.slice(2);
 const options = {
-  category: "未分类",
+  category: "",
   tags: [],
   summary: "这里写一句文章摘要。",
   series: "",
@@ -232,18 +232,25 @@ if (options.cover && !(await localAssetExists(options.cover))) {
 }
 const postsDir = path.join(process.cwd(), "content", "posts");
 const siteConfigPath = path.join(process.cwd(), "content", "site.json");
-const knownCategories = await readFile(siteConfigPath, "utf8")
-  .then((raw) => new Set(Object.keys(JSON.parse(raw).categoryCovers || {})))
-  .catch(() => new Set());
+const knownCategoryNames = await readFile(siteConfigPath, "utf8")
+  .then((raw) => Object.keys(JSON.parse(raw).categoryCovers || {}))
+  .catch(() => []);
+const knownCategories = new Set(knownCategoryNames);
+const defaultCategory = knownCategoryNames[0] || "未分类";
+const category = options.category || defaultCategory;
+
+if (!options.category && defaultCategory === "未分类") {
+  console.warn("No categories are configured; using 未分类.");
+}
 
 if (
-  options.category &&
-  options.category !== "未分类" &&
+  category &&
+  category !== "未分类" &&
   knownCategories.size > 0 &&
-  !knownCategories.has(options.category)
+  !knownCategories.has(category)
 ) {
-  console.error(`Unknown category: ${options.category}`);
-  console.error(`Known categories: ${[...knownCategories].join(", ")}`);
+  console.error(`Unknown category: ${category}`);
+  console.error(`Known categories: ${knownCategoryNames.join(", ")}`);
   process.exit(1);
 }
 
@@ -276,7 +283,7 @@ const frontMatter = [
   `slug: ${yamlString(slug)}`,
   `date: ${date}`,
   options.updated ? `updated: ${options.updated}` : "",
-  `category: ${options.category === "未分类" ? options.category : yamlString(options.category)}`,
+  `category: ${category === "未分类" ? category : yamlString(category)}`,
   `tags: ${yamlArray(options.tags)}`,
   options.series ? `series: ${yamlString(options.series)}` : "# series: 专题名称",
   options.seriesOrder ? `seriesOrder: ${Number.parseInt(options.seriesOrder, 10)}` : "# seriesOrder: 1",
