@@ -309,8 +309,14 @@ if (!buildScript.includes("content:encoded") || !buildScript.includes("absolutiz
 if (!buildScript.includes('value.startsWith("#")') || !checkOutputScript.includes("fragment-only heading links")) {
   failures.push("RSS and JSON Feed content must absolutize article heading fragment links.");
 }
-if (!buildScript.includes("https://jsonfeed.org/version/1.1") || !buildScript.includes("content_html")) {
-  failures.push("JSON Feed must include full HTML content using JSON Feed 1.1.");
+if (
+  !buildScript.includes("https://jsonfeed.org/version/1.1") ||
+  !buildScript.includes("content_html") ||
+  !buildScript.includes("favicon: absoluteUrl") ||
+  !buildScript.includes("authors: [{ name: site.brand || site.title }]") ||
+  !checkOutputScript.includes("dist/feed.json item must include tags")
+) {
+  failures.push("JSON Feed must include full HTML content and metadata using JSON Feed 1.1.");
 }
 if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
 if (!buildScript.includes('name="robots"')) failures.push("Page head must define robots indexing policy.");

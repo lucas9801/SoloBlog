@@ -353,10 +353,19 @@ try {
 
   const jsonFeed = JSON.parse(await readFile(path.join(tempRoot, "dist", "feed.json"), "utf8"));
   assert.equal(jsonFeed.version, "https://jsonfeed.org/version/1.1");
+  assert.equal(jsonFeed.title, "SOLUS Dev Notes");
+  assert.equal(jsonFeed.description, "测试博客。");
+  assert.equal(jsonFeed.language, "zh-CN");
   assert.equal(jsonFeed.home_page_url, "https://blog.solus.games/");
   assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
+  assert.equal(jsonFeed.favicon, "https://blog.solus.games/favicon.svg");
+  assert.equal(jsonFeed.authors[0].name, "SOLUS");
   assert.equal(jsonFeed.items.length, 3);
   assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-followup/");
+  assert.equal(jsonFeed.items[0].summary, "第二篇同标签文章用于验证标签分页和 sitemap 输出。");
+  assert.equal(jsonFeed.items[0].tags.includes("图形渲染"), true);
+  assert.equal(jsonFeed.items[0].authors[0].name, "SOLUS");
+  assert.equal(jsonFeed.items[0].image, "https://blog.solus.games/assets/posts/inline.svg");
   assert.equal(jsonFeed.items.some((item) => item.url.includes("/draft-only/")), false);
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);

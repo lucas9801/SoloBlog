@@ -858,6 +858,12 @@ async function checkJsonFeed(feed) {
   if (feed.version !== "https://jsonfeed.org/version/1.1") {
     failures.push("dist/feed.json must use JSON Feed 1.1.");
   }
+  if (!feed.title?.trim()) failures.push("dist/feed.json must include a title.");
+  if (!feed.description?.trim()) failures.push("dist/feed.json must include a description.");
+  if (!feed.language?.trim()) failures.push("dist/feed.json must include a language.");
+  if (!Array.isArray(feed.authors) || !feed.authors.some((author) => author?.name?.trim())) {
+    failures.push("dist/feed.json must include feed authors.");
+  }
 
   const home = checkSiteUrl("dist/feed.json home_page_url", feed.home_page_url || "");
   if (home?.pathname !== "/") failures.push("dist/feed.json home_page_url must point to the site root.");
@@ -865,6 +871,16 @@ async function checkJsonFeed(feed) {
   const self = checkSiteUrl("dist/feed.json feed_url", feed.feed_url || "");
   const expectedSelf = new URL("/feed.json", absoluteSiteRoot).toString();
   if (self?.toString() !== expectedSelf) failures.push(`dist/feed.json feed_url must be ${expectedSelf}.`);
+
+  for (const [label, value] of [
+    ["favicon", feed.favicon],
+    ["icon", feed.icon]
+  ]) {
+    const url = checkSiteUrl(`dist/feed.json ${label}`, value || "");
+    if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
+      failures.push(`dist/feed.json ${label} references missing local target: ${value}`);
+    }
+  }
 
   if (!Array.isArray(feed.items) || feed.items.length === 0) {
     failures.push("dist/feed.json must contain at least one item.");
@@ -883,10 +899,21 @@ async function checkJsonFeed(feed) {
     }
     if (seen.has(item.id)) failures.push(`dist/feed.json contains duplicate item id: ${item.id}`);
     seen.add(item.id);
+    if (!item.summary?.trim()) failures.push(`dist/feed.json item must include a summary: ${item.id}`);
+    if (!Array.isArray(item.tags) || item.tags.length === 0) {
+      failures.push(`dist/feed.json item must include tags: ${item.id}`);
+    }
+    if (!Array.isArray(item.authors) || !item.authors.some((author) => author?.name?.trim())) {
+      failures.push(`dist/feed.json item must include authors: ${item.id}`);
+    }
 
     const url = checkSiteUrl("dist/feed.json item URL", item.url);
     if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
       failures.push(`dist/feed.json item references missing local target: ${item.url}`);
+    }
+    const image = checkSiteUrl("dist/feed.json item image", item.image || "");
+    if (image?.origin === siteOrigin && !(await localTargetExists(image.pathname))) {
+      failures.push(`dist/feed.json item image references missing local target: ${item.image}`);
     }
     if (!isValidDate(item.date_published)) failures.push(`dist/feed.json item has invalid published date: ${item.id}`);
     if (previousDate && new Date(item.date_published) > new Date(previousDate)) {
