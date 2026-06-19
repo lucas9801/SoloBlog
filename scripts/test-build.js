@@ -108,6 +108,11 @@ async function writeFixtureProject(target) {
     "utf8"
   );
   await writeFile(
+    path.join(target, "content", "posts", "2026-06-12-archive-latest.md"),
+    `---\ntitle: "Archive Latest"\nslug: "archive-latest"\ndate: 2026-06-12\ncategory: 工具链\ntags: [归档]\nsummary: 非精选文章用于验证首页最新文章锚点。\nstatus: published\n---\n\n## Latest\n\nParagraph for the latest section.\n`,
+    "utf8"
+  );
+  await writeFile(
     path.join(target, "content", "posts", "2026-06-15-draft-only.md"),
     `---\ntitle: "Draft Only"\nslug: "draft-only"\ndate: 2026-06-15\ncategory: Unity\ntags: [草稿]\nsummary: 这篇草稿用于验证未发布内容不会进入公开输出。\ncover: /assets/posts/inline.svg\nstatus: draft\n---\n\n## Draft\n\nThis draft must never be published by the build.\n`,
     "utf8"
@@ -120,7 +125,7 @@ try {
   await writeFixtureProject(tempRoot);
   const result = await runBuild(tempRoot);
   assert.equal(result.code, 0, result.stderr || result.stdout);
-  assert.match(result.stdout, /Built 3 posts into dist\//);
+  assert.match(result.stdout, /Built 4 posts into dist\//);
 
   const article = await readFile(path.join(tempRoot, "dist", "posts", "markdown-edge-cases", "index.html"), "utf8");
   assert.match(article, /<h2 id="repeat">Repeat <a class="heading-anchor" href="#repeat" aria-label="章节链接：Repeat">#<\/a><\/h2>/);
@@ -165,7 +170,7 @@ try {
   assert.doesNotMatch(archive, /<summary>快捷筛选<\/summary>/);
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /href="\/categories\/图形渲染\/"/);
-  assert.match(archive, />全部年份 <b>3<\/b><\/a>[\s\S]*>全部分类 <b>3<\/b><\/a>/);
+  assert.match(archive, />全部年份 <b>4<\/b><\/a>[\s\S]*>全部分类 <b>4<\/b><\/a>/);
   assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
   const archiveCollection = jsonLdObjects(archive).find((item) => item["@type"] === "CollectionPage");
@@ -175,9 +180,10 @@ try {
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
-  assert.match(home, /<a class="button-link" href="\/archive\/">最新文章<\/a>/);
-  assert.doesNotMatch(home, /href="#latest-posts"/);
+  assert.match(home, /<a class="button-link" href="#latest-posts">最新文章<\/a>/);
+  assert.match(home, /<section id="latest-posts" class="section-block">/);
   assert.match(home, /推荐阅读/);
+  assert.match(home, /Archive Latest/);
   assert.match(home, /<h2 data-ranking-title>阅读排行<\/h2>/);
   assert.match(home, /data-ranking-posts=/);
   assert.match(home, /data-ranking-posts="[^"]*&quot;date&quot;[^"]*&quot;category&quot;/);
@@ -206,7 +212,7 @@ try {
   assert.match(yearPage, /2026 年文章/);
   assert.match(yearPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(yearPage, /href="\/archive\/2026\/图形渲染\/"/);
-  assert.match(yearPage, /aria-current="page">2026 <b>3<\/b><\/a>/);
+  assert.match(yearPage, /aria-current="page">2026 <b>4<\/b><\/a>/);
   assert.match(yearPage, /href="\/years\/2026\/page\/2\/"/);
   assert.match(yearPage, /href="\/years\/2026\/page\/2\/" aria-label="第 2 页">2<\/a>/);
   assert.equal(
@@ -226,7 +232,7 @@ try {
   assert.doesNotMatch(combinedArchivePage, /class="archive-filter-form"/);
   assert.match(combinedArchivePage, /href="\/posts\/markdown-followup\/"/);
   assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/">全部年份 <b>2<\/b><\/a>/);
-  assert.match(combinedArchivePage, /href="\/years\/2026\/">全部分类 <b>3<\/b><\/a>/);
+  assert.match(combinedArchivePage, /href="\/years\/2026\/">全部分类 <b>4<\/b><\/a>/);
   assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/"/);
   assert.match(combinedArchivePage, /aria-current="page">图形渲染 <b>2<\/b><\/a>/);
   assert.match(combinedArchivePage, /aria-current="page">2026 <b>2<\/b><\/a>/);
@@ -320,7 +326,7 @@ try {
   );
 
   const searchIndex = JSON.parse(await readFile(path.join(tempRoot, "dist", "search-index.json"), "utf8"));
-  assert.equal(searchIndex.length, 3);
+  assert.equal(searchIndex.length, 4);
   assert.equal(searchIndex[0].slug, "markdown-followup");
   assert.equal(searchIndex[1].slug, "markdown-same-day");
   assert.equal(searchIndex.some((item) => item.slug === "draft-only"), false);
@@ -347,7 +353,7 @@ try {
   assert.match(rss, /href="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/#repeat"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
   assert.doesNotMatch(rss, /\shref="#/);
-  assert.equal((rss.match(/<item>/g) || []).length, 3);
+  assert.equal((rss.match(/<item>/g) || []).length, 4);
   assert.ok(rss.indexOf("https://blog.solus.games/posts/markdown-followup/") < rss.indexOf("https://blog.solus.games/posts/markdown-edge-cases/"));
   assert.doesNotMatch(rss, /draft-only|Draft Only/);
 
@@ -360,7 +366,7 @@ try {
   assert.equal(jsonFeed.feed_url, "https://blog.solus.games/feed.json");
   assert.equal(jsonFeed.favicon, "https://blog.solus.games/favicon.svg");
   assert.equal(jsonFeed.authors[0].name, "SOLUS");
-  assert.equal(jsonFeed.items.length, 3);
+  assert.equal(jsonFeed.items.length, 4);
   assert.equal(jsonFeed.items[0].url, "https://blog.solus.games/posts/markdown-followup/");
   assert.equal(jsonFeed.items[0].summary, "第二篇同标签文章用于验证标签分页和 sitemap 输出。");
   assert.equal(jsonFeed.items[0].tags.includes("图形渲染"), true);

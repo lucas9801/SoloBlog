@@ -723,7 +723,9 @@ if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?
 if (
   !buildScript.includes("recommendedSlugs") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
-  buildScript.includes("posts.filter((post) => !post.featured).slice")
+  buildScript.includes("posts.filter((post) => !post.featured).slice") ||
+  !testBuildScript.includes('href="#latest-posts"') ||
+  !checkLayoutScript.includes("home hero latest-posts link points to a missing section")
 ) {
   failures.push("Home page must avoid duplicate recommendations without creating a broken latest-posts hero link.");
 }

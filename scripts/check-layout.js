@@ -440,10 +440,14 @@ async function checkViewport(viewport, page) {
               const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
               const header = document.querySelector(".site-header");
               const hero = document.querySelector(".hero-inner");
+              const primaryHeroLink = document.querySelector(".hero-actions .button-link");
               const toggle = document.querySelector("[data-theme-toggle]");
               const rankingTitle = document.querySelector("[data-ranking-title]");
               if (!header) failures.push("site header is missing");
               if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
+              if (primaryHeroLink?.getAttribute("href") === "#latest-posts" && !document.querySelector("#latest-posts")) {
+                failures.push("home hero latest-posts link points to a missing section");
+              }
               if (rankingTitle && rankingTitle.textContent.trim() !== "阅读排行") {
                 failures.push("ranking title should stay reading-rank oriented before view data loads");
               }
