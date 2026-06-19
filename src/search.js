@@ -478,6 +478,15 @@ function scheduleSearchRender(posts) {
   }, searchRenderDelay);
 }
 
+function resetSearchState() {
+  state.query = "";
+  state.year = "";
+  state.category = "";
+  state.tag = "";
+  state.page = 1;
+  if (input) input.value = "";
+}
+
 async function boot() {
   if (!input || !results) return;
 
@@ -499,9 +508,7 @@ async function boot() {
   input.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
     cancelScheduledSearchRender();
-    state.query = "";
-    state.page = 1;
-    input.value = "";
+    resetSearchState();
     updateUrl();
     render(posts);
   });
@@ -533,11 +540,7 @@ async function boot() {
 
   clearButton?.addEventListener("click", () => {
     cancelScheduledSearchRender();
-    state.query = "";
-    state.year = "";
-    state.category = "";
-    state.tag = "";
-    state.page = 1;
+    resetSearchState();
     updateUrl();
     render(posts);
     input.focus();

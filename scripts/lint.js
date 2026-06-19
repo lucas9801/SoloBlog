@@ -605,7 +605,9 @@ if (
   !searchScript.includes("全部年份") ||
   !searchScript.includes("全部分类") ||
   !searchScript.includes("event.target instanceof Element") ||
-  !searchScript.includes('["year", "category", "tag"].includes(type)')
+  !searchScript.includes('["year", "category", "tag"].includes(type)') ||
+  !searchScript.includes("function resetSearchState") ||
+  !checkLayoutScript.includes("Escape did not clear active facets")
 ) {
   failures.push("Search page must support combined year/category/tag quick filters.");
 }

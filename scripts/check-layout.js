@@ -717,6 +717,17 @@ async function checkViewport(viewport, page) {
               }
               invalidFacetButton.remove();
 
+              input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+              await wait(160);
+              if (input.value !== "") failures.push("Escape did not empty the search input");
+              if (new URL(location.href).search !== "") failures.push("Escape did not reset the URL search params");
+              if (Array.from(document.querySelectorAll("[data-facet-type].active")).some((button) => button.dataset.facetValue)) {
+                failures.push("Escape did not clear active facets");
+              }
+              input.value = "Unity";
+              input.dispatchEvent(new Event("input", { bubbles: true }));
+              await waitFor(() => new URL(location.href).searchParams.get("q"));
+
               clearButton.click();
               await wait(120);
               if (input.value !== "") failures.push("clear button did not empty the search input");
