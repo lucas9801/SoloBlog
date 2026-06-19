@@ -614,11 +614,14 @@ npm run build
 
 当前版本是文件驱动，需要编辑 Markdown 文件。以后可以接入 CMS，比如 Decap CMS，让你在网页后台写文章。
 
-### 可以添加评论、点赞、浏览量吗？
+### 评论、浏览量和点赞怎么处理？
 
-可以，但需要额外接动态能力，例如 Cloudflare Pages Functions + D1/KV，或者第三方评论系统。
+当前博客已经支持阅读量和评论：
 
-当前版本优先保证博客内容、分类、标签、归档、搜索、订阅源和部署流程稳定。
+- 阅读量使用 Cloudflare Pages Functions + D1，接口路径是 `/api/views`。
+- 评论使用 Giscus，数据存放在 GitHub Discussions。
+
+具体配置步骤见 [阅读量和评论配置](dynamic-features.md)。点赞功能目前没有内置，后续可以基于 D1/KV 单独扩展。
 
 ## 推荐日常流程
 

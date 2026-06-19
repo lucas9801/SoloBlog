@@ -744,6 +744,13 @@ if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integr
 if (blogOperationsDocs.includes("分类页和默认封面会保持一致")) {
   failures.push("Project docs must not claim category covers drive generated article covers.");
 }
+if (
+  blogOperationsDocs.includes("可以，但需要额外接动态能力") ||
+  !blogOperationsDocs.includes("当前博客已经支持阅读量和评论") ||
+  !blogOperationsDocs.includes("[阅读量和评论配置](dynamic-features.md)")
+) {
+  failures.push("Blog operations docs must describe the implemented views/comments features instead of an old future-plan note.");
+}
 if (buildScript.includes('<span class="section-kicker">About</span>')) {
   failures.push("About page must not expose an English template kicker.");
 }
