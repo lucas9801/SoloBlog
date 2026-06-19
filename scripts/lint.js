@@ -940,12 +940,15 @@ if (
   !newPostScript.includes("--updated <YYYY-MM-DD>") ||
   !newPostScript.includes("--cover <path>") ||
   !newPostScript.includes("isCanonicalSlug") ||
+  !newPostScript.includes('Cannot derive a URL slug from the title') ||
+  !newPostScript.includes(".replace(/[^a-z0-9]+/g, \"-\")") ||
   !newPostScript.includes("isValidDate") ||
   !newPostScript.includes("isAssetPath") ||
   !newPostScript.includes("localAssetExists") ||
   !newPostScript.includes("defaultPostCategory") ||
   !newPostScript.includes("const category = options.category || defaultCategory") ||
   !testNewPostScript.includes('defaultPostCategory: "工具链"') ||
+  !testNewPostScript.includes("manual-chinese-title") ||
   !blogOperationsDocs.includes("`defaultPostCategory`") ||
   !blogOperationsDocs.includes("--slug unity-performance")
 ) {

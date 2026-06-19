@@ -76,24 +76,33 @@ try {
   assert.equal(result.code, 0);
   assert.match(result.stdout, /npm run check:all/);
 
+  result = await runNewPost(tempRoot, ["中文标题"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Cannot derive a URL slug/);
+
+  result = await runNewPost(tempRoot, ["中文标题", "--slug", "manual-chinese-title"]);
+  assert.equal(result.code, 0);
+
   result = await runNewPost(tempRoot, [title]);
   assert.equal(result.code, 0);
 
   const postsDir = path.join(tempRoot, "content", "posts");
   const files = (await readdir(postsDir)).filter((file) => file.endsWith(".md")).sort();
-  assert.equal(files.length, 2);
+  assert.equal(files.length, 3);
   assert.notEqual(files[0], files[1]);
 
   const posts = await Promise.all(files.map((file) => readFile(path.join(postsDir, file), "utf8")));
   const bySlug = new Map(posts.map((post) => [parseJsonString(frontMatterValue(post, "slug")), post]));
-  assert.deepEqual([...bySlug.keys()].sort(), ["unity-render-a-b-1", "unity-render-a-b-1-2"]);
+  assert.deepEqual([...bySlug.keys()].sort(), ["manual-chinese-title", "unity-render-a-b-1", "unity-render-a-b-1-2"]);
 
-  for (const post of bySlug.values()) {
+  for (const slug of ["unity-render-a-b-1", "unity-render-a-b-1-2"]) {
+    const post = bySlug.get(slug);
     assert.equal(parseJsonString(frontMatterValue(post, "title")), title);
     assert.equal(frontMatterValue(post, "status"), "draft");
     assert.equal(parseJsonString(frontMatterValue(post, "category")), "工具链");
     assert.match(post, /## 小标题/);
   }
+  assert.equal(parseJsonString(frontMatterValue(bySlug.get("manual-chinese-title"), "title")), "中文标题");
 
   result = await runNewPost(tempRoot, [
     "Unity 性能预算",
@@ -120,7 +129,7 @@ try {
   assert.equal(result.code, 0);
 
   const updatedFiles = (await readdir(postsDir)).filter((file) => file.endsWith(".md")).sort();
-  assert.equal(updatedFiles.length, 3);
+  assert.equal(updatedFiles.length, 4);
   const optionPost = (
     await Promise.all(updatedFiles.map((file) => readFile(path.join(postsDir, file), "utf8")))
   ).find((post) => parseJsonString(frontMatterValue(post, "title")) === "Unity 性能预算");

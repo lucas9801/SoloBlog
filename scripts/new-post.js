@@ -144,8 +144,8 @@ function slugify(value) {
     .toLowerCase()
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
-    .replace(/^-+|-+$/g, "") || "new-post";
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function isCanonicalSlug(value) {
@@ -277,6 +277,10 @@ const usedSlugs = await existingSlugs(postsDir);
 const baseSlug = options.slug || slugify(title);
 if (options.slug && !isCanonicalSlug(options.slug)) {
   console.error("--slug must use lowercase English letters, numbers, and single hyphens.");
+  process.exit(1);
+}
+if (!baseSlug || !isCanonicalSlug(baseSlug)) {
+  console.error('Cannot derive a URL slug from the title. Please pass --slug, for example: --slug unity-performance-notes');
   process.exit(1);
 }
 if (options.slug && usedSlugs.has(options.slug)) {
