@@ -310,6 +310,14 @@ function svgTextBlock(lines, { x, y, lineHeight }) {
     .join("");
 }
 
+function coverVisualSeed(post) {
+  return crypto
+    .createHash("sha1")
+    .update([post.slug, post.category, post.date].join("\n"))
+    .digest("hex")
+    .slice(0, 12);
+}
+
 async function generatedPostCover(post) {
   const dir = path.join(root, "assets", "posts");
   await mkdir(dir, { recursive: true });
@@ -317,11 +325,7 @@ async function generatedPostCover(post) {
   const target = path.join(dir, `${post.slug}.svg`);
   const url = `/assets/posts/${post.slug}.svg`;
   const colors = coverPalette(post);
-  const seed = crypto
-    .createHash("sha1")
-    .update([post.title, post.summary, post.category, post.tags.join(","), post.text].join("\n"))
-    .digest("hex")
-    .slice(0, 12);
+  const seed = coverVisualSeed(post);
   const glowX = 180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5;
   const glowY = 90 + Number.parseInt(seed.slice(2, 4), 16) * 1.2;
   const motif = coverMotif(post, colors);

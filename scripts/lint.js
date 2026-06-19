@@ -778,6 +778,13 @@ if (
   failures.push("Visible generated surfaces must use current SOLUS wording.");
 }
 if (
+  !buildScript.includes("function coverVisualSeed") ||
+  !buildScript.includes(".update([post.slug, post.category, post.date].join(\"\\n\"))") ||
+  /const seed = crypto[\s\S]*?post\.text/.test(buildScript)
+) {
+  failures.push("Generated cover visual seeds must stay stable across body and summary text changes.");
+}
+if (
   buildScript.includes('aria-label="搜索文章">搜索</button>') ||
   !buildScript.includes('aria-label="搜索文章"><span class="sr-only">搜索文章</span></button>') ||
   !css.includes(".site-search button::before") ||

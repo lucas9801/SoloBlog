@@ -19,7 +19,7 @@
   </defs>
   <rect width="1200" height="675" fill="url(#bg)"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="332.5" cy="304.79999999999995" r="260" fill="#2dd4bf" opacity=".12"/>
+  <circle cx="597.5" cy="204" r="260" fill="#2dd4bf" opacity=".12"/>
   <circle cx="982" cy="188" r="210" fill="#38bdf8" opacity=".12"/>
   <circle cx="990" cy="548" r="168" fill="#2dd4bf" opacity=".08"/>
   <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#2dd4bf" stroke-opacity=".16" stroke-width="3"/>
