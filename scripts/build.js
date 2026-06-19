@@ -1044,7 +1044,7 @@ function sidebar(posts, categories, tags) {
         .join("")}</div>
     </section>
     <section class="sidebar-card ranking-card">
-      <h2 data-ranking-title>近期文章</h2>
+      <h2 data-ranking-title>阅读排行</h2>
       <div class="ranking-list" data-ranking-posts="${rankingPayload(posts)}">${fallbackRanking
         .map(
           (post, index) =>

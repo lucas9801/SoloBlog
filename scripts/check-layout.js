@@ -444,8 +444,8 @@ async function checkViewport(viewport, page) {
               const rankingTitle = document.querySelector("[data-ranking-title]");
               if (!header) failures.push("site header is missing");
               if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
-              if (rankingTitle && rankingTitle.textContent.trim() !== "近期文章") {
-                failures.push("ranking fallback title should be recent posts before view data loads");
+              if (rankingTitle && rankingTitle.textContent.trim() !== "阅读排行") {
+                failures.push("ranking title should stay reading-rank oriented before view data loads");
               }
               if (failures.length > 0) return failures;
 

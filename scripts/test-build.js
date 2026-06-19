@@ -178,7 +178,7 @@ try {
   assert.match(home, /<a class="button-link" href="\/archive\/">最新文章<\/a>/);
   assert.doesNotMatch(home, /href="#latest-posts"/);
   assert.match(home, /推荐阅读/);
-  assert.match(home, /<h2 data-ranking-title>近期文章<\/h2>/);
+  assert.match(home, /<h2 data-ranking-title>阅读排行<\/h2>/);
   assert.match(home, /data-ranking-posts=/);
   assert.match(home, /data-ranking-posts="[^"]*&quot;date&quot;[^"]*&quot;category&quot;/);
   assert.match(home, /data-copy-rss-status/);

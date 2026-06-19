@@ -693,8 +693,11 @@ if (!viewsFunction.includes("storageError") || !viewsFunction.includes("View cou
 if (!viewsFunction.includes("idx_post_views_ranking") || !viewsMigration.includes("idx_post_views_ranking")) {
   failures.push("Views API and migration must create an index for reading ranking queries.");
 }
-if (!buildScript.includes("data-ranking-title") || !viewsClientScript.includes("rankingTitle.textContent = \"阅读排行\"")) {
-  failures.push("Reading ranking must clearly distinguish fallback recent posts from loaded view rankings.");
+if (
+  !buildScript.includes("<h2 data-ranking-title>阅读排行</h2>") ||
+  !viewsClientScript.includes("rankingTitle.textContent = \"阅读排行\"")
+) {
+  failures.push("Reading ranking must use reading-rank wording in both static and loaded states.");
 }
 if (
   !viewsClientScript.includes("function rankingItems") ||

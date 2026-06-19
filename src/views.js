@@ -102,7 +102,7 @@ function renderRanking(ranking, posts) {
       (item, index) => {
         const meta = item.ranked
           ? `阅读 ${formatter.format(item.views)}`
-          : [formatDate(item.date), escapeHtml(item.category || "近期文章")].filter(Boolean).join(" · ");
+          : [formatDate(item.date), escapeHtml(item.category || "技术笔记")].filter(Boolean).join(" · ");
         return `<a class="ranking-link" href="${escapeHtml(item.url)}"><b>${index + 1}</b><span>${escapeHtml(item.title)}</span><small>${meta}</small></a>`;
       }
     )
