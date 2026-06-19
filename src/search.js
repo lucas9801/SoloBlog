@@ -279,9 +279,9 @@ function snippet(post, query) {
   return truncate(matched || post.summary || post.text || "");
 }
 
-function resultLabel(query, count, showingRecent) {
-  if (showingRecent) return `最近文章 ${count} 篇`;
+function resultLabel(query, count) {
   if (normalize(query)) return `匹配到 ${count} 篇文章`;
+  if (!hasSearchState()) return `全部文章 ${count} 篇`;
   return `筛选出 ${count} 篇文章`;
 }
 
@@ -416,17 +416,14 @@ function syncControls() {
 }
 
 function render(posts) {
-  const showingRecent = !hasSearchState();
   const matched = rankedPosts(posts);
-  const totalPages = showingRecent ? 1 : Math.max(1, Math.ceil(matched.length / SEARCH_RESULTS_PER_PAGE));
-  const nextPage = showingRecent ? 1 : Math.min(state.page, totalPages);
+  const totalPages = Math.max(1, Math.ceil(matched.length / SEARCH_RESULTS_PER_PAGE));
+  const nextPage = Math.min(state.page, totalPages);
   if (state.page !== nextPage) {
     state.page = nextPage;
     updateUrl();
   }
-  const visible = showingRecent
-    ? matched.slice(0, SEARCH_RESULTS_PER_PAGE)
-    : matched.slice((state.page - 1) * SEARCH_RESULTS_PER_PAGE, state.page * SEARCH_RESULTS_PER_PAGE);
+  const visible = matched.slice((state.page - 1) * SEARCH_RESULTS_PER_PAGE, state.page * SEARCH_RESULTS_PER_PAGE);
   const filters = selectedFilters();
 
   renderFacets(posts);
@@ -451,9 +448,8 @@ function render(posts) {
 
   results.setAttribute("role", "list");
   if (status) {
-    const resultCount = showingRecent ? visible.length : matched.length;
     status.innerHTML = `<div class="search-summary">
-    <p class="search-count">${resultLabel(state.query, resultCount, showingRecent)}</p>
+    <p class="search-count">${resultLabel(state.query, matched.length)}</p>
     ${[filters, totalPages > 1 ? `第 ${state.page}/${totalPages} 页` : ""]
       .filter(Boolean)
       .map((item) => `<span>${escapeHtml(item)}</span>`)

@@ -700,7 +700,11 @@ if (
   !searchScript.includes("paginationItems") ||
   !searchScript.includes("data-search-page") ||
   !searchScript.includes('next.set("page", String(state.page))') ||
-  !searchScript.includes("renderSearchPagination")
+  !searchScript.includes("renderSearchPagination") ||
+  !searchScript.includes("全部文章 ${count} 篇") ||
+  searchScript.includes("showingRecent") ||
+  searchScript.includes("最近文章 ${count} 篇") ||
+  !checkLayoutScript.includes("search page initial status must describe all posts")
 ) {
   failures.push("Search results must paginate long result sets and preserve page state in the URL.");
 }

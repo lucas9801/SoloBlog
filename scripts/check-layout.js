@@ -605,7 +605,8 @@ async function checkViewport(viewport, page) {
               await waitFor(() => document.querySelectorAll(".search-result-card").length > 0 || document.querySelector(".search-empty"));
               const initialCards = document.querySelectorAll(".search-result-card").length;
               const facetButtons = document.querySelectorAll("[data-facet-type]").length;
-              if (initialCards === 0) failures.push("search page did not render initial recent posts");
+              if (initialCards === 0) failures.push("search page did not render initial all-post results");
+              if (!(status.textContent || "").includes("全部文章")) failures.push("search page initial status must describe all posts");
               if (initialCards > 0 && results.getAttribute("role") !== "list") {
                 failures.push("search result cards must be inside a list container");
               }
