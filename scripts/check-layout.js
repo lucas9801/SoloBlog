@@ -645,6 +645,14 @@ async function checkViewport(viewport, page) {
               if (invalidFacetUrl && new URL(location.href).search !== "") {
                 failures.push("search page did not remove invalid facet URL params");
               }
+              const defaultPageLink = pagination?.querySelector('[data-search-page="2"]');
+              if (defaultPageLink instanceof HTMLAnchorElement) {
+                defaultPageLink.click();
+                await waitFor(() => new URL(location.href).searchParams.get("page") === "2");
+                if (new URL(location.href).searchParams.get("page") !== "2") {
+                  failures.push("default all-post search pagination did not preserve page in the URL");
+                }
+              }
 
               input.value = "Unity";
               input.dispatchEvent(new Event("input", { bubbles: true }));

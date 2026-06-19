@@ -699,7 +699,9 @@ if (
   !searchScript.includes("SEARCH_RESULTS_PER_PAGE") ||
   !searchScript.includes("paginationItems") ||
   !searchScript.includes("data-search-page") ||
-  !searchScript.includes('next.set("page", String(state.page))') ||
+  !searchScript.includes("function searchParamsForState") ||
+  !searchScript.includes("const next = searchParamsForState();") ||
+  searchScript.includes("hasSearchState() && state.page > 1") ||
   !searchScript.includes("renderSearchPagination") ||
   !searchScript.includes("全部文章 ${count} 篇") ||
   searchScript.includes("showingRecent") ||

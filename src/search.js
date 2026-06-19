@@ -310,14 +310,19 @@ function paginationItems(currentPage, totalPages) {
     });
 }
 
-function searchHref(page) {
-  const url = new URL(window.location.href);
+function searchParamsForState(page = state.page) {
   const next = new URLSearchParams();
   if (normalize(state.query)) next.set("q", state.query.trim());
   if (state.year) next.set("year", state.year);
   if (state.category) next.set("category", state.category);
   if (state.tag) next.set("tag", state.tag);
   if (page > 1) next.set("page", String(page));
+  return next;
+}
+
+function searchHref(page) {
+  const url = new URL(window.location.href);
+  const next = searchParamsForState(page);
   url.search = next.toString();
   return `${url.pathname}${url.search}`;
 }
@@ -392,12 +397,7 @@ function rankedPosts(posts) {
 
 function updateUrl() {
   const url = new URL(window.location.href);
-  const next = new URLSearchParams();
-  if (normalize(state.query)) next.set("q", state.query.trim());
-  if (state.year) next.set("year", state.year);
-  if (state.category) next.set("category", state.category);
-  if (state.tag) next.set("tag", state.tag);
-  if (hasSearchState() && state.page > 1) next.set("page", String(state.page));
+  const next = searchParamsForState();
   url.search = next.toString();
   window.history.replaceState({}, "", url);
 }
