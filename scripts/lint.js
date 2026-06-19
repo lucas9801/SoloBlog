@@ -603,7 +603,9 @@ if (
   !searchScript.includes('facetGroup("分类", "category"') ||
   !searchScript.includes('facetGroup("标签", "tag"') ||
   !searchScript.includes("全部年份") ||
-  !searchScript.includes("全部分类")
+  !searchScript.includes("全部分类") ||
+  !searchScript.includes("event.target instanceof Element") ||
+  !searchScript.includes('["year", "category", "tag"].includes(type)')
 ) {
   failures.push("Search page must support combined year/category/tag quick filters.");
 }

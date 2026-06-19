@@ -507,10 +507,12 @@ async function boot() {
   });
 
   facets?.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-facet-type]");
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest("[data-facet-type]");
     if (!button) return;
     cancelScheduledSearchRender();
     const type = button.dataset.facetType;
+    if (!["year", "category", "tag"].includes(type)) return;
     const value = button.dataset.facetValue || "";
     state[type] = state[type] === value ? "" : value;
     state.page = 1;
@@ -519,7 +521,8 @@ async function boot() {
   });
 
   pagination?.addEventListener("click", (event) => {
-    const link = event.target.closest("[data-search-page]");
+    const target = event.target instanceof Element ? event.target : null;
+    const link = target?.closest("[data-search-page]");
     if (!link) return;
     event.preventDefault();
     cancelScheduledSearchRender();

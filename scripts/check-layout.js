@@ -704,6 +704,19 @@ async function checkViewport(viewport, page) {
                 failures.push("category quick filter has no selectable category");
               }
 
+              const pollutedUrlBefore = location.href;
+              const invalidFacetButton = document.createElement("button");
+              invalidFacetButton.type = "button";
+              invalidFacetButton.dataset.facetType = "invalid";
+              invalidFacetButton.dataset.facetValue = "polluted";
+              facets.append(invalidFacetButton);
+              invalidFacetButton.click();
+              await wait(120);
+              if (location.href !== pollutedUrlBefore || new URL(location.href).searchParams.has("invalid")) {
+                failures.push("search quick filters accepted an unknown facet type");
+              }
+              invalidFacetButton.remove();
+
               clearButton.click();
               await wait(120);
               if (input.value !== "") failures.push("clear button did not empty the search input");
