@@ -881,7 +881,7 @@ function pageLayout({
           <span class="sr-only">搜索文章</span>
           <input name="q" type="search" placeholder="搜索文章、年份、分类、标签" />
         </label>
-        <button type="submit" aria-label="搜索文章">搜索</button>
+        <button type="submit" aria-label="搜索文章"><span class="sr-only">搜索文章</span></button>
       </form>
       <button class="theme-toggle" type="button" aria-label="切换深色模式" aria-pressed="false" data-theme-toggle>
         <span aria-hidden="true"></span>

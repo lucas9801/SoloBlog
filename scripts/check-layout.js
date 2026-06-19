@@ -444,9 +444,11 @@ async function checkViewport(viewport, page) {
               const toggle = document.querySelector("[data-theme-toggle]");
               const rankingTitle = document.querySelector("[data-ranking-title]");
               const rssCopyButton = document.querySelector("[data-copy-rss]");
+              const headerSearchButton = document.querySelector(".site-search button[type='submit']");
               if (!header) failures.push("site header is missing");
               if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
               if (!(rssCopyButton instanceof HTMLButtonElement)) failures.push("RSS copy button is missing");
+              if (!(headerSearchButton instanceof HTMLButtonElement)) failures.push("header search button is missing");
               if (primaryHeroLink?.getAttribute("href") === "#latest-posts" && !document.querySelector("#latest-posts")) {
                 failures.push("home hero latest-posts link points to a missing section");
               }
@@ -460,6 +462,16 @@ async function checkViewport(viewport, page) {
                 if (heroHeight > 286) {
                   failures.push("mobile hero is too tall for an index-first home page");
                 }
+              }
+              if (headerSearchButton.getAttribute("aria-label") !== "搜索文章") {
+                failures.push("header search icon button is missing its accessible label");
+              }
+              if (headerSearchButton.childNodes.length !== 1 || headerSearchButton.textContent.trim() !== "搜索文章") {
+                failures.push("header search icon button should expose text only through sr-only content");
+              }
+              const hiddenSearchLabel = headerSearchButton.querySelector(".sr-only");
+              if (!hiddenSearchLabel || getComputedStyle(hiddenSearchLabel).position !== "absolute") {
+                failures.push("header search icon button hidden label is not visually hidden");
               }
 
               const originalTheme = document.documentElement.dataset.theme || "light";

@@ -263,6 +263,7 @@ pre {
 }
 
 .site-search button {
+  position: relative;
   min-width: 0;
   padding: 0;
   display: grid;
@@ -275,6 +276,26 @@ pre {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.site-search button::before {
+  width: 14px;
+  aspect-ratio: 1;
+  display: block;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  content: "";
+}
+
+.site-search button::after {
+  position: absolute;
+  width: 7px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  content: "";
+  transform: translate(8px, 8px) rotate(45deg);
+  transform-origin: center;
 }
 
 .theme-toggle {

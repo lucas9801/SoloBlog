@@ -746,8 +746,13 @@ if (
 ) {
   failures.push("Visible generated surfaces must use current SOLUS wording.");
 }
-if (!buildScript.includes('aria-label="搜索文章">搜索</button>') || !css.includes("place-items: center")) {
-  failures.push("Header search submit must use a stable visible label.");
+if (
+  buildScript.includes('aria-label="搜索文章">搜索</button>') ||
+  !buildScript.includes('aria-label="搜索文章"><span class="sr-only">搜索文章</span></button>') ||
+  !css.includes(".site-search button::before") ||
+  !css.includes(".site-search button::after")
+) {
+  failures.push("Header search submit must use a compact accessible icon button.");
 }
 if (
   buildScript.includes('<a class="archive-card-thumb') ||
