@@ -751,6 +751,7 @@ if (
   !buildScript.includes("data-copy-rss-status") ||
   !buildScript.includes('href="/feed.json">JSON Feed</a>') ||
   !buildScript.includes(">复制 RSS</button>") ||
+  site.subscribe?.description !== "通过 RSS 或 JSON Feed 跟踪最新文章。" ||
   !siteScript.includes("RSS 链接已复制") ||
   !siteScript.includes("async function copyText") ||
   !siteScript.includes('document.execCommand("copy")')

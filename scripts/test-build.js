@@ -83,7 +83,7 @@ async function writeFixtureProject(target) {
         ],
         subscribe: {
           title: "订阅更新",
-          description: "通过 RSS 跟踪最新文章。",
+          description: "通过 RSS 或 JSON Feed 跟踪最新文章。",
           rss: "/rss.xml"
         }
       },
