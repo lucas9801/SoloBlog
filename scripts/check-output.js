@@ -590,6 +590,21 @@ function checkLinks(file, html) {
   }
 }
 
+function checkCardThumbs(file, html) {
+  const relative = displayPath(file);
+
+  if (/<a\b[^>]*class="[^"]*(?:archive-card-thumb|search-result-thumb)[^"]*"/i.test(html)) {
+    failures.push(`${relative} card thumbnails must not be duplicate article links.`);
+  }
+
+  for (const match of html.matchAll(/<div\b[^>]*class="[^"]*(?:archive-card-thumb|search-result-thumb)[^"]*"[^>]*>/gi)) {
+    const attrs = tagAttributes(match[0]);
+    if (attrs.get("aria-hidden") !== "true") {
+      failures.push(`${relative} card thumbnails must be hidden from the accessibility tree.`);
+    }
+  }
+}
+
 function stripTags(value = "") {
   return String(value)
     .replace(/<script\b[\s\S]*?<\/script>/gi, "")
@@ -1094,6 +1109,7 @@ async function main() {
     checkInlineScripts(file, html);
     checkImages(file, html);
     checkLinks(file, html);
+    checkCardThumbs(file, html);
     checkInteractiveNames(file, html);
     checkAriaReferences(file, html);
     checkContentLandmarks(file, html);

@@ -171,7 +171,8 @@ try {
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /href="\/categories\/图形渲染\/"/);
   assert.match(archive, />全部年份 <b>4<\/b><\/a>[\s\S]*>全部分类 <b>4<\/b><\/a>/);
-  assert.match(archive, /<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
+  assert.match(archive, /<div class="archive-card-thumb 图形渲染" aria-hidden="true">\s*<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
+  assert.doesNotMatch(archive, /<a class="archive-card-thumb/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
   const archiveCollection = jsonLdObjects(archive).find((item) => item["@type"] === "CollectionPage");
   assert.equal(archiveCollection.url, "https://blog.solus.games/archive/");

@@ -597,6 +597,17 @@ async function checkViewport(viewport, page) {
               if (initialCards > 0 && results.getAttribute("role") !== "list") {
                 failures.push("search result cards must be inside a list container");
               }
+              for (const card of document.querySelectorAll(".search-result-card")) {
+                if (card.querySelector("a.search-result-thumb")) {
+                  failures.push("search result thumbnail is a duplicate article link");
+                  break;
+                }
+                const titleLink = card.querySelector(".search-result-body h2 a");
+                if (!(titleLink instanceof HTMLAnchorElement)) {
+                  failures.push("search result card is missing a title article link");
+                  break;
+                }
+              }
               for (const facetButton of document.querySelectorAll("[data-facet-type]")) {
                 const controls = facetButton.getAttribute("aria-controls") || "";
                 if (!controls.includes("searchResults") || !controls.includes("searchStatus")) {

@@ -749,6 +749,15 @@ if (
 if (!buildScript.includes('aria-label="搜索文章">搜索</button>') || !css.includes("place-items: center")) {
   failures.push("Header search submit must use a stable visible label.");
 }
+if (
+  buildScript.includes('<a class="archive-card-thumb') ||
+  searchScript.includes('<a class="search-result-thumb') ||
+  !buildScript.includes('<div class="archive-card-thumb ${post.categorySlug}" aria-hidden="true">') ||
+  !searchScript.includes('<div class="search-result-thumb" aria-hidden="true">') ||
+  !checkOutputScript.includes("card thumbnails must not be duplicate article links")
+) {
+  failures.push("Article card thumbnails must be visual identifiers, with article titles as the primary links.");
+}
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");
 }

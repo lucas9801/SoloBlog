@@ -355,10 +355,10 @@ function renderSearchPagination(totalPages) {
 
 function renderCard(post, query) {
   return `<article class="search-result-card" role="listitem" data-result-year="${escapeHtml(postYear(post))}" data-result-category="${escapeHtml(post.category)}">
-    <a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="${escapeHtml(post.title)}">
+    <div class="search-result-thumb" aria-hidden="true">
       <img src="${escapeHtml(post.cover || "/assets/posts/start-here.svg")}" alt="" width="1200" height="675" loading="lazy" decoding="async" />
       <span>${escapeHtml(post.category)}</span>
-    </a>
+    </div>
     <div class="search-result-body">
       <div class="post-meta">
         <time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time>
