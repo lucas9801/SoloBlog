@@ -951,6 +951,15 @@ if (
 ) {
   failures.push("New post workflow must support explicit canonical slugs, dates, and covers.");
 }
+if (
+  !newPostScript.includes(".replace(/^#+/, \"\")") ||
+  !newPostScript.includes("item.normalize(\"NFKC\").toLowerCase()") ||
+  !newPostScript.includes("--series-order requires --series.") ||
+  !testNewPostScript.includes("#Unity, 性能，Profiler, unity") ||
+  !testNewPostScript.includes("Series Order Without Series")
+) {
+  failures.push("New post workflow must sanitize tags and reject seriesOrder without series.");
+}
 if (site.comments?.enabled) {
   for (const key of ["provider", "repo", "repoId", "category", "categoryId"]) {
     if (!site.comments[key]) failures.push(`comments.${key} is required when comments are enabled.`);

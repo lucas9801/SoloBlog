@@ -100,7 +100,7 @@ try {
     "--category",
     "Unity",
     "--tags",
-    "Unity, 性能，Profiler",
+    "#Unity, 性能，Profiler, unity",
     "--summary",
     "建立 Unity 性能分析入口。",
     "--slug",
@@ -144,6 +144,10 @@ try {
   result = await runNewPost(tempRoot, ["Bad Series", "--series-order", "0"]);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /positive integer/);
+
+  result = await runNewPost(tempRoot, ["Series Order Without Series", "--series-order", "1"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /requires --series/);
 
   result = await runNewPost(tempRoot, ["Bad Slug", "--slug", "Bad Slug"]);
   assert.equal(result.code, 1);

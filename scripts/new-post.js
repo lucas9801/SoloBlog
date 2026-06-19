@@ -43,10 +43,17 @@ function readOptionValue(flag, index) {
 }
 
 function splitList(value) {
-  return String(value || "")
+  const seen = new Set();
+  const items = String(value || "")
     .split(/[，,;；]/)
-    .map((item) => item.trim())
+    .map((item) => item.trim().replace(/^#+/, "").trim())
     .filter(Boolean);
+  return items.filter((item) => {
+    const key = item.normalize("NFKC").toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 for (let index = 0; index < args.length; index += 1) {
@@ -124,6 +131,10 @@ if (!title) {
 
 if (options.seriesOrder && (!/^\d+$/.test(options.seriesOrder) || Number.parseInt(options.seriesOrder, 10) <= 0)) {
   console.error("--series-order must be a positive integer.");
+  process.exit(1);
+}
+if (options.seriesOrder && !options.series) {
+  console.error("--series-order requires --series.");
   process.exit(1);
 }
 
