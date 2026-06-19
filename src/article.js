@@ -13,6 +13,7 @@ const viewNodes = Array.from(document.querySelectorAll("[data-view-slug]")).filt
   (node) => node.dataset.viewSlug === postSlug
 );
 const commentsSection = document.querySelector("[data-giscus-comments]");
+let metricsUpdateQueued = false;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -109,6 +110,20 @@ function updateActiveToc() {
   }
 
   setActiveToc(activeId);
+}
+
+function updateArticleMetrics() {
+  updateReadingProgress();
+  updateActiveToc();
+}
+
+function scheduleArticleMetricsUpdate() {
+  if (metricsUpdateQueued) return;
+  metricsUpdateQueued = true;
+  window.requestAnimationFrame(() => {
+    metricsUpdateQueued = false;
+    updateArticleMetrics();
+  });
 }
 
 function viewedTodayKey() {
@@ -254,8 +269,7 @@ function prepareComments() {
   observer.observe(commentsSection);
 }
 
-updateReadingProgress();
-updateActiveToc();
+updateArticleMetrics();
 prepareComments();
 updateViewCount().catch(() => {
   for (const node of viewNodes) node.hidden = true;
@@ -324,7 +338,5 @@ article?.addEventListener("click", async (event) => {
   }, 1400);
 });
 
-window.addEventListener("scroll", updateReadingProgress, { passive: true });
-window.addEventListener("scroll", updateActiveToc, { passive: true });
-window.addEventListener("resize", updateReadingProgress);
-window.addEventListener("resize", updateActiveToc);
+window.addEventListener("scroll", scheduleArticleMetricsUpdate, { passive: true });
+window.addEventListener("resize", scheduleArticleMetricsUpdate);

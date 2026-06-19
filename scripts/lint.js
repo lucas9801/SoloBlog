@@ -580,6 +580,15 @@ if (!articleScript.includes("readingTarget") || !articleScript.includes(".articl
   failures.push("Article reading progress must be based on article content, not the whole document.");
 }
 if (
+  !articleScript.includes("function scheduleArticleMetricsUpdate") ||
+  !articleScript.includes("window.requestAnimationFrame") ||
+  !articleScript.includes('window.addEventListener("scroll", scheduleArticleMetricsUpdate') ||
+  articleScript.includes('window.addEventListener("scroll", updateReadingProgress') ||
+  articleScript.includes('window.addEventListener("scroll", updateActiveToc')
+) {
+  failures.push("Article scroll metrics must be coalesced into a single requestAnimationFrame update.");
+}
+if (
   !buildScript.includes("data-copy-code-status") ||
   !buildScript.includes('aria-label="复制代码"') ||
   !buildScript.includes('tabindex="0" aria-label="${escapeAttr(scrollLabel)}"') ||
