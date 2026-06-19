@@ -579,6 +579,7 @@ async function checkViewport(viewport, page) {
               const queryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
               if (queryCards === 0) failures.push("search query did not render result cards");
               if (!queryText.toLowerCase().includes("unity")) failures.push("search query results do not mention Unity");
+              if (!results.querySelector("mark")) failures.push("search query results did not highlight matched terms");
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
               if (!clearButtonIsVisible()) failures.push("clear button stayed hidden after search input");
 

@@ -628,6 +628,9 @@ if (
 if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escape")) {
   failures.push("Search page must provide clear/reset controls.");
 }
+if (!searchScript.includes("function highlight") || !searchScript.includes("<mark>$&</mark>") || !css.includes(".search-result-card mark")) {
+  failures.push("Search results must highlight matched query terms.");
+}
 if (
   !searchScript.includes("scheduleSearchRender") ||
   !searchScript.includes("cancelScheduledSearchRender") ||
