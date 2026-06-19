@@ -159,6 +159,13 @@ function checkDocumentBasics(file, html) {
     failures.push(`${relative} theme-color meta tags must match the SOLUS light and dark backgrounds.`);
   }
 
+  const appleTouchIcons = [...html.matchAll(/<link\s+rel="apple-touch-icon"\s+href="([^"]+)"/gi)].map((match) => match[1]);
+  if (appleTouchIcons.length !== 1) {
+    failures.push(`${relative} must contain exactly one apple-touch-icon link.`);
+  } else if (appleTouchIcons[0] !== "/icon-192.png") {
+    failures.push(`${relative} apple-touch-icon must point to /icon-192.png.`);
+  }
+
   const h1Count = [...html.matchAll(/<h1\b[^>]*>/gi)].length;
   if (h1Count !== 1) failures.push(`${relative} must contain exactly one h1 element.`);
 }
@@ -1015,7 +1022,7 @@ async function main() {
     throw new Error("dist/ does not exist. Run npm run build first.");
   }
 
-  const requiredFiles = ["404.html", "_headers", "_redirects", "robots.txt", "rss.xml", "feed.json", "sitemap.xml", "opensearch.xml", "search-index.json"];
+  const requiredFiles = ["404.html", "_headers", "_redirects", "robots.txt", "rss.xml", "feed.json", "sitemap.xml", "opensearch.xml", "search-index.json", "icon-192.png", "icon-512.png"];
   for (const file of requiredFiles) {
     if (!(await exists(path.join(dist, file)))) failures.push(`Missing dist/${file}`);
   }

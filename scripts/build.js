@@ -875,6 +875,7 @@ function pageLayout({
     <link rel="alternate" type="application/feed+json" title="${escapeAttr(site.title)}" href="${escapeAttr(absoluteUrl("/feed.json"))}" />
     <link rel="search" type="application/opensearchdescription+xml" title="${escapeAttr(site.title)}" href="/opensearch.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/site.webmanifest" />
     ${extraHead}
     ${jsonLdScripts(structuredData)}

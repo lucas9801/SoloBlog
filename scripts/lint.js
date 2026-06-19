@@ -27,6 +27,8 @@ const requiredFiles = [
   "public/_headers",
   "public/_redirects",
   "public/favicon.svg",
+  "public/icon-192.png",
+  "public/icon-512.png",
   "public/site.webmanifest",
   "wrangler.toml",
   ".node-version",
@@ -528,6 +530,9 @@ if (
   failures.push("Markdown external links must expose a visible marker and accessible new-tab label.");
 }
 if (!buildScript.includes("/favicon.svg")) failures.push("Page head must link favicon.svg.");
+if (!buildScript.includes('rel="apple-touch-icon"') || !buildScript.includes("/icon-192.png")) {
+  failures.push("Page head must link a PNG apple-touch-icon.");
+}
 if (!buildScript.includes("/site.webmanifest")) failures.push("Page head must link site.webmanifest.");
 if (
   !buildScript.includes('name="theme-color"') ||
@@ -870,6 +875,9 @@ for (const requiredHeader of [
   if (!headers.includes(requiredHeader)) failures.push(`Cloudflare headers must include ${requiredHeader}.`);
 }
 if (!headers.includes("/favicon.svg")) failures.push("Cloudflare headers must cache favicon.svg.");
+if (!headers.includes("/icon-192.png") || !headers.includes("/icon-512.png")) {
+  failures.push("Cloudflare headers must cache PNG app icons.");
+}
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
 if (!headers.includes("/feed.json")) failures.push("Cloudflare headers must cache feed.json.");
 if (!headers.includes("/opensearch.xml")) failures.push("Cloudflare headers must cache opensearch.xml.");
@@ -899,6 +907,13 @@ if (manifest.start_url !== "/" || manifest.scope !== "/") failures.push("site.we
 if (manifest.display !== "standalone") failures.push("site.webmanifest display must be standalone.");
 if (!Array.isArray(manifest.icons) || !manifest.icons.some((icon) => icon.src === "/favicon.svg")) {
   failures.push("site.webmanifest must include /favicon.svg as an icon.");
+}
+if (
+  !Array.isArray(manifest.icons) ||
+  !manifest.icons.some((icon) => icon.src === "/icon-192.png" && icon.sizes === "192x192" && icon.type === "image/png") ||
+  !manifest.icons.some((icon) => icon.src === "/icon-512.png" && icon.sizes === "512x512" && icon.type === "image/png")
+) {
+  failures.push("site.webmanifest must include 192x192 and 512x512 PNG app icons.");
 }
 if (packageConfig.name !== "solus-blog") failures.push("package name should match the SOLUS blog project.");
 if (packageConfig.scripts?.["check:all"] !== "node scripts/check-all.js") {
