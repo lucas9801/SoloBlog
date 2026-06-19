@@ -804,6 +804,7 @@ if (!testPreviewScript.includes('"/rss"') || !testPreviewScript.includes('"/feed
 }
 if (manifest.name !== "SOLUS Dev Notes") failures.push("site.webmanifest name must match the site title.");
 if (manifest.short_name !== "SOLUS") failures.push("site.webmanifest short_name must be SOLUS.");
+if (manifest.description !== site.description) failures.push("site.webmanifest description must match the localized site description.");
 if (manifest.id !== "/") failures.push("site.webmanifest id must be stable at the site root.");
 if (manifest.start_url !== "/" || manifest.scope !== "/") failures.push("site.webmanifest must start at the site root.");
 if (manifest.display !== "standalone") failures.push("site.webmanifest display must be standalone.");

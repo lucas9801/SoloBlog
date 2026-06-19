@@ -1,7 +1,7 @@
 {
   "name": "SOLUS Dev Notes",
   "short_name": "SOLUS",
-  "description": "Game engine, rendering, tools, and engineering practice notes.",
+  "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
   "id": "/",
   "start_url": "/",
   "scope": "/",
