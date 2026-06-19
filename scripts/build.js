@@ -1056,8 +1056,9 @@ function sidebar(posts, categories, tags) {
       <h2>${escapeHtml(site.subscribe.title)}</h2>
       <p>${escapeHtml(site.subscribe.description)}</p>
       <div class="subscribe-actions">
-        <a class="button-link" href="${site.subscribe.rss}">打开 RSS</a>
-        <button class="secondary-button" type="button" data-copy-rss="${escapeAttr(absoluteUrl(site.subscribe.rss))}">复制链接</button>
+        <a class="button-link" href="${site.subscribe.rss}">RSS</a>
+        <a class="ghost-link" href="/feed.json">JSON Feed</a>
+        <button class="secondary-button" type="button" data-copy-rss="${escapeAttr(absoluteUrl(site.subscribe.rss))}">复制 RSS</button>
         <span class="sr-only" aria-live="polite" data-copy-rss-status></span>
       </div>
     </section>

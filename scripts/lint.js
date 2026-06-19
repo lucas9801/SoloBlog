@@ -749,11 +749,13 @@ if (buildScript.includes('<span class="section-kicker">About</span>')) {
 }
 if (
   !buildScript.includes("data-copy-rss-status") ||
+  !buildScript.includes('href="/feed.json">JSON Feed</a>') ||
+  !buildScript.includes(">复制 RSS</button>") ||
   !siteScript.includes("RSS 链接已复制") ||
   !siteScript.includes("async function copyText") ||
   !siteScript.includes('document.execCommand("copy")')
 ) {
-  failures.push("RSS copy action must expose a clear copied state.");
+  failures.push("Subscribe card must expose RSS, JSON Feed, and a clear RSS copy state.");
 }
 if (buildScript.includes(">Sitemap<")) {
   failures.push("Visible footer sitemap link should be localized.");

@@ -181,6 +181,9 @@ try {
   assert.match(home, /<h2 data-ranking-title>阅读排行<\/h2>/);
   assert.match(home, /data-ranking-posts=/);
   assert.match(home, /data-ranking-posts="[^"]*&quot;date&quot;[^"]*&quot;category&quot;/);
+  assert.match(home, /<a class="button-link" href="\/rss\.xml">RSS<\/a>/);
+  assert.match(home, /<a class="ghost-link" href="\/feed\.json">JSON Feed<\/a>/);
+  assert.match(home, />复制 RSS<\/button>/);
   assert.match(home, /data-copy-rss-status/);
   assert.match(home, /站点地图/);
   assert.match(home, /<button type="submit" aria-label="搜索文章">搜索<\/button>/);
