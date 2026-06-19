@@ -11,6 +11,8 @@ npm run check:all
 npm run preview
 ```
 
+不带 `--category` 新建文章时，会使用 `content/site.json` 里的 `defaultPostCategory`。
+
 新建文章时也可以直接带上常用元信息：
 
 ```powershell

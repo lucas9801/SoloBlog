@@ -232,13 +232,21 @@ if (options.cover && !(await localAssetExists(options.cover))) {
 }
 const postsDir = path.join(process.cwd(), "content", "posts");
 const siteConfigPath = path.join(process.cwd(), "content", "site.json");
-const knownCategoryNames = await readFile(siteConfigPath, "utf8")
-  .then((raw) => Object.keys(JSON.parse(raw).categoryCovers || {}))
-  .catch(() => []);
+const siteConfig = await readFile(siteConfigPath, "utf8")
+  .then((raw) => JSON.parse(raw))
+  .catch(() => ({}));
+const knownCategoryNames = Object.keys(siteConfig.categoryCovers || {});
 const knownCategories = new Set(knownCategoryNames);
-const defaultCategory = knownCategoryNames[0] || "未分类";
+const configuredDefaultCategory = String(siteConfig.defaultPostCategory || "").trim();
+const defaultCategory =
+  configuredDefaultCategory && knownCategories.has(configuredDefaultCategory)
+    ? configuredDefaultCategory
+    : knownCategoryNames[0] || "未分类";
 const category = options.category || defaultCategory;
 
+if (configuredDefaultCategory && !knownCategories.has(configuredDefaultCategory)) {
+  console.warn(`Configured defaultPostCategory is unknown: ${configuredDefaultCategory}; using ${defaultCategory}.`);
+}
 if (!options.category && defaultCategory === "未分类") {
   console.warn("No categories are configured; using 未分类.");
 }

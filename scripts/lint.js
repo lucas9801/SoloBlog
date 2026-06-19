@@ -909,9 +909,10 @@ if (
   !newPostScript.includes("isValidDate") ||
   !newPostScript.includes("isAssetPath") ||
   !newPostScript.includes("localAssetExists") ||
-  !newPostScript.includes("knownCategoryNames[0]") ||
+  !newPostScript.includes("defaultPostCategory") ||
   !newPostScript.includes("const category = options.category || defaultCategory") ||
-  !testNewPostScript.includes('parseJsonString(frontMatterValue(post, "category")), "Unity"') ||
+  !testNewPostScript.includes('defaultPostCategory: "工具链"') ||
+  !blogOperationsDocs.includes("`defaultPostCategory`") ||
   !blogOperationsDocs.includes("--slug unity-performance")
 ) {
   failures.push("New post workflow must support explicit canonical slugs, dates, and covers.");
@@ -938,6 +939,9 @@ for (const [category, cover] of Object.entries(site.categoryCovers || {})) {
   });
 }
 const knownCategories = new Set(Object.keys(site.categoryCovers || {}));
+if (!site.defaultPostCategory || !knownCategories.has(site.defaultPostCategory)) {
+  failures.push("content/site.json defaultPostCategory must exist in categoryCovers.");
+}
 
 const slugs = new Map();
 const seriesOrders = new Map();

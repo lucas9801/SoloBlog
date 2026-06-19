@@ -59,6 +59,7 @@ try {
   await writeFile(
     path.join(tempRoot, "content", "site.json"),
     JSON.stringify({
+      defaultPostCategory: "工具链",
       categoryCovers: {
         Unity: "/assets/posts/unity.svg",
         工具链: "/assets/posts/toolchain.svg"
@@ -90,7 +91,7 @@ try {
   for (const post of bySlug.values()) {
     assert.equal(parseJsonString(frontMatterValue(post, "title")), title);
     assert.equal(frontMatterValue(post, "status"), "draft");
-    assert.equal(parseJsonString(frontMatterValue(post, "category")), "Unity");
+    assert.equal(parseJsonString(frontMatterValue(post, "category")), "工具链");
     assert.match(post, /## 小标题/);
   }
 
@@ -171,6 +172,25 @@ try {
   result = await runNewPost(tempRoot, ["Missing Cover", "--cover", "/assets/posts/missing.svg"]);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /Cover file does not exist/);
+
+  await writeFile(
+    path.join(tempRoot, "content", "site.json"),
+    JSON.stringify({
+      defaultPostCategory: "Unknown",
+      categoryCovers: {
+        Unity: "/assets/posts/unity.svg",
+        工具链: "/assets/posts/toolchain.svg"
+      }
+    }),
+    "utf8"
+  );
+  result = await runNewPost(tempRoot, ["Fallback Category", "--slug", "fallback-category"]);
+  assert.equal(result.code, 0);
+  assert.match(result.stderr, /defaultPostCategory is unknown/);
+  const fallbackFiles = (await readdir(postsDir)).filter((file) => file.endsWith("fallback-category.md"));
+  assert.equal(fallbackFiles.length, 1);
+  const fallbackPost = await readFile(path.join(postsDir, fallbackFiles[0]), "utf8");
+  assert.equal(parseJsonString(frontMatterValue(fallbackPost, "category")), "Unity");
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

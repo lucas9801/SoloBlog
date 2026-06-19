@@ -108,6 +108,8 @@ http://localhost:4173
 npm run new:post -- "Unity 性能优化记录"
 ```
 
+不带 `--category` 时，脚本会使用 `content/site.json` 里的 `defaultPostCategory`。当前默认是 `游戏开发`；如果要改成 Unity、图形渲染或其他分类，先确认该分类已经写在 `categoryCovers` 里。
+
 如果分类、标签和摘要已经确定，可以一次生成更完整的草稿：
 
 ```powershell
@@ -447,6 +449,7 @@ content/site.json
   "tagline": "技术档案",
   "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
   "baseUrl": "https://blog.solus.games/",
+  "defaultPostCategory": "游戏开发",
   "socialImage": "/assets/og/solus-og.png"
 }
 ```
@@ -460,6 +463,7 @@ content/site.json
 | `tagline` | 品牌副标题 |
 | `description` | 网站描述 |
 | `baseUrl` | 正式站点地址，用于 canonical URL、RSS、sitemap 和 robots.txt |
+| `defaultPostCategory` | `new:post` 不带 `--category` 时使用的默认分类，必须存在于 `categoryCovers` |
 | `socialImage` | 首页、归档、标签、专题等页面默认分享图，当前 PNG 由 `assets/og/solus-og.svg` 生成 |
 | `navigation` | 顶部导航 |
 | `hero` | 首页 Hero 文案 |
