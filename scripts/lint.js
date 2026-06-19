@@ -741,6 +741,11 @@ if (!buildScript.includes('aria-label="搜索文章">搜索</button>') || !css.i
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");
 }
+for (const requiredCloudflareDocText of ["JSON Feed", "OpenSearch", "search-index.json", "feed.json", "opensearch.xml"]) {
+  if (!cloudflareDocs.includes(requiredCloudflareDocText)) {
+    failures.push(`Cloudflare docs must mention ${requiredCloudflareDocText}.`);
+  }
+}
 if (blogOperationsDocs.includes("分类页和默认封面会保持一致")) {
   failures.push("Project docs must not claim category covers drive generated article covers.");
 }

@@ -47,7 +47,7 @@ content/site.json baseUrl
 SITE_URL=https://your-domain.com/
 ```
 
-然后重新部署。这样 canonical、RSS、sitemap 和 robots.txt 都会保持正确。
+然后重新部署。这样 canonical、RSS、JSON Feed、sitemap、OpenSearch 和 robots.txt 都会保持正确。
 
 ## 可选：使用 Wrangler 直接部署
 
@@ -70,11 +70,14 @@ Wrangler 提示登录时，需要在浏览器里完成 Cloudflare 登录。
 
 - `wrangler.toml`: Wrangler 使用的 Pages 项目名和输出目录。
 - `.node-version`: 指定 Node 20，保证构建环境一致。
-- `public/_headers`: 复制到 `dist` 的安全和缓存响应头。
+- `public/_headers`: 复制到 `dist` 的安全和缓存响应头，也负责缓存 RSS、JSON Feed、OpenSearch 和搜索索引。
 - `public/_redirects`: 复制到 `dist` 的 RSS 别名重定向。
 - `dist/robots.txt`: 由 `npm run build` 生成。
 - `dist/rss.xml`: 由 `npm run build` 生成。
+- `dist/feed.json`: 由 `npm run build` 生成的 JSON Feed。
 - `dist/sitemap.xml`: 由 `npm run build` 生成。
+- `dist/opensearch.xml`: 由 `npm run build` 生成，供浏览器添加站内搜索。
+- `dist/search-index.json`: 由 `npm run build` 生成，供前端搜索页使用。
 
 ## 正常发布流程
 
