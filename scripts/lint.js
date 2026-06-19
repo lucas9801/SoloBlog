@@ -778,13 +778,14 @@ if (
   failures.push("Header search submit must use a compact accessible icon button.");
 }
 if (
-  buildScript.includes('<a class="archive-card-thumb') ||
-  searchScript.includes('<a class="search-result-thumb') ||
-  !buildScript.includes('<div class="archive-card-thumb ${post.categorySlug}" aria-hidden="true">') ||
-  !searchScript.includes('<div class="search-result-thumb" aria-hidden="true">') ||
-  !checkOutputScript.includes("card thumbnails must not be duplicate article links")
+  !buildScript.includes('<a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="阅读文章：${escapeAttr(post.title)}">') ||
+  !searchScript.includes('<a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="阅读文章：${escapeHtml(post.title)}">') ||
+  buildScript.includes('class="archive-card-thumb ${post.categorySlug}" aria-hidden="true"') ||
+  searchScript.includes('class="search-result-thumb" aria-hidden="true"') ||
+  !checkOutputScript.includes("card thumbnails must be article links") ||
+  !checkLayoutScript.includes("search result card is missing a thumbnail article link")
 ) {
-  failures.push("Article card thumbnails must be visual identifiers, with article titles as the primary links.");
+  failures.push("Article card thumbnails must be accessible article links, while cover images stay decorative.");
 }
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");

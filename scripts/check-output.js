@@ -593,14 +593,21 @@ function checkLinks(file, html) {
 function checkCardThumbs(file, html) {
   const relative = displayPath(file);
 
-  if (/<a\b[^>]*class="[^"]*(?:archive-card-thumb|search-result-thumb)[^"]*"/i.test(html)) {
-    failures.push(`${relative} card thumbnails must not be duplicate article links.`);
-  }
-
-  for (const match of html.matchAll(/<div\b[^>]*class="[^"]*(?:archive-card-thumb|search-result-thumb)[^"]*"[^>]*>/gi)) {
+  for (const match of html.matchAll(/<(a|div)\b[^>]*class="[^"]*(?:archive-card-thumb|search-result-thumb)[^"]*"[^>]*>/gi)) {
+    const tagName = match[1].toLowerCase();
     const attrs = tagAttributes(match[0]);
-    if (attrs.get("aria-hidden") !== "true") {
-      failures.push(`${relative} card thumbnails must be hidden from the accessibility tree.`);
+    if (tagName !== "a") {
+      failures.push(`${relative} card thumbnails must be article links.`);
+      continue;
+    }
+    if (!attrs.get("href")) {
+      failures.push(`${relative} card thumbnail links must include href.`);
+    }
+    if (!attrs.get("aria-label")?.trim()) {
+      failures.push(`${relative} card thumbnail links must include a descriptive aria-label.`);
+    }
+    if (attrs.get("aria-hidden") === "true") {
+      failures.push(`${relative} card thumbnail links must not be hidden from the accessibility tree.`);
     }
   }
 }

@@ -972,10 +972,10 @@ function giscusComments() {
 
 function archivePostCard(post) {
   return `<article class="archive-card">
-    <div class="archive-card-thumb ${post.categorySlug}" aria-hidden="true">
+    <a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="阅读文章：${escapeAttr(post.title)}">
       ${coverImage(post.cover)}
       <span>${escapeHtml(post.category)}</span>
-    </div>
+    </a>
     <div class="archive-card-body">
       ${postMeta(post)}
       <h2><a href="${post.url}">${escapeHtml(post.title)}</a></h2>
