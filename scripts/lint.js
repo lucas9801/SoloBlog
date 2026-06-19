@@ -787,6 +787,15 @@ if (
 ) {
   failures.push("Article card thumbnails must be accessible article links, while cover images stay decorative.");
 }
+if (
+  !/\.archive-card h2\s*\{[\s\S]*?min-height:\s*calc\(1\.38em \* 2\);[\s\S]*?-webkit-line-clamp:\s*2;/.test(css) ||
+  !/\.search-result-card h2\s*\{[\s\S]*?-webkit-line-clamp:\s*2;/.test(css) ||
+  !/\.search-result-card p\s*\{[\s\S]*?-webkit-line-clamp:\s*2;/.test(css) ||
+  !css.includes(".archive-card-thumb:focus-visible") ||
+  !css.includes(".search-result-card:focus-within")
+) {
+  failures.push("Post and search cards must keep stable text rhythm and visible focus states.");
+}
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");
 }
