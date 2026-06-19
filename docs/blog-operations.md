@@ -40,8 +40,10 @@ cd D:\MyBlog
 新增文章：
 
 ```powershell
-npm run new:post -- "文章标题"
+npm run new:post -- "文章标题" --slug article-slug
 ```
+
+标题包含中文时必须手动提供英文 `--slug`。这样文章 URL 会保持稳定、可读，例如 `/posts/unity-performance-notes/`。
 
 也可以在新建时直接写入分类、标签、摘要、专题和精选状态：
 
@@ -105,7 +107,7 @@ http://localhost:4173
 运行：
 
 ```powershell
-npm run new:post -- "Unity 性能优化记录"
+npm run new:post -- "Unity 性能优化记录" --slug unity-performance-notes
 ```
 
 不带 `--category` 时，脚本会使用 `content/site.json` 里的 `defaultPostCategory`。当前默认是 `游戏开发`；如果要改成 Unity、图形渲染或其他分类，先确认该分类已经写在 `categoryCovers` 里。
@@ -124,7 +126,7 @@ npm run new:post -- "Unity 性能优化记录" --slug unity-performance-notes --
 content/posts/2026-06-04-unity-performance-notes.md
 ```
 
-如果没有手动设置 `--slug`，同名文章会自动追加编号，避免覆盖已有文章。设置了 `--slug` 时，如果 slug 已存在，脚本会直接报错，避免发布后 URL 和预期不一致。
+如果标题完全由英文、数字和符号组成，可以不手动设置 `--slug`，脚本会自动生成英文 slug，并在同名文章后追加编号，避免覆盖已有文章。标题包含中文时必须手动设置 `--slug`。设置了 `--slug` 时，如果 slug 已存在，脚本会直接报错，避免发布后 URL 和预期不一致。
 
 迁移旧文章时可以用 `--date YYYY-MM-DD` 指定原始发布日期；如果文章后续更新过，可以加 `--updated YYYY-MM-DD`。`updated` 不能早于 `date`。
 

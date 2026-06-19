@@ -152,6 +152,10 @@ function isCanonicalSlug(value) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
 }
 
+function needsExplicitSlug(value) {
+  return /[^\x00-\x7f]/.test(String(value || ""));
+}
+
 function isValidDate(value) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))) return false;
   const date = new Date(value);
@@ -277,6 +281,10 @@ const usedSlugs = await existingSlugs(postsDir);
 const baseSlug = options.slug || slugify(title);
 if (options.slug && !isCanonicalSlug(options.slug)) {
   console.error("--slug must use lowercase English letters, numbers, and single hyphens.");
+  process.exit(1);
+}
+if (!options.slug && needsExplicitSlug(title)) {
+  console.error('Titles containing non-ASCII characters require --slug, for example: --slug unity-performance-notes');
   process.exit(1);
 }
 if (!baseSlug || !isCanonicalSlug(baseSlug)) {

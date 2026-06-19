@@ -78,7 +78,11 @@ try {
 
   result = await runNewPost(tempRoot, ["中文标题"]);
   assert.equal(result.code, 1);
-  assert.match(result.stderr, /Cannot derive a URL slug/);
+  assert.match(result.stderr, /require --slug/);
+
+  result = await runNewPost(tempRoot, ["Unity 性能预算"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /require --slug/);
 
   result = await runNewPost(tempRoot, ["中文标题", "--slug", "manual-chinese-title"]);
   assert.equal(result.code, 0);

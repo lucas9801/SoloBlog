@@ -6,10 +6,12 @@
 
 ```powershell
 cd D:\MyBlog
-npm run new:post -- "文章标题"
+npm run new:post -- "文章标题" --slug article-slug
 npm run check:all
 npm run preview
 ```
+
+标题包含中文时必须手动提供英文 `--slug`，这样发布后的 URL 会保持稳定、可读。
 
 不带 `--category` 新建文章时，会使用 `content/site.json` 里的 `defaultPostCategory`。
 

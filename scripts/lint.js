@@ -941,6 +941,8 @@ if (
   !newPostScript.includes("--cover <path>") ||
   !newPostScript.includes("isCanonicalSlug") ||
   !newPostScript.includes('Cannot derive a URL slug from the title') ||
+  !newPostScript.includes("function needsExplicitSlug") ||
+  !newPostScript.includes("Titles containing non-ASCII characters require --slug") ||
   !newPostScript.includes(".replace(/[^a-z0-9]+/g, \"-\")") ||
   !newPostScript.includes("isValidDate") ||
   !newPostScript.includes("isAssetPath") ||
@@ -949,8 +951,11 @@ if (
   !newPostScript.includes("const category = options.category || defaultCategory") ||
   !testNewPostScript.includes('defaultPostCategory: "工具链"') ||
   !testNewPostScript.includes("manual-chinese-title") ||
+  !testNewPostScript.includes("Unity 性能预算") ||
   !blogOperationsDocs.includes("`defaultPostCategory`") ||
-  !blogOperationsDocs.includes("--slug unity-performance")
+  !blogOperationsDocs.includes("--slug unity-performance") ||
+  !blogOperationsDocs.includes("标题包含中文时必须手动提供英文 `--slug`") ||
+  !readme.includes('npm run new:post -- "文章标题" --slug article-slug')
 ) {
   failures.push("New post workflow must support explicit canonical slugs, dates, and covers.");
 }
