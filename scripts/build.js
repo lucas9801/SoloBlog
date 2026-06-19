@@ -123,9 +123,19 @@ function readingTime(text) {
 function stripMarkdown(markdown) {
   return markdown
     .replace(/```[\s\S]*?```/g, " ")
+    .replace(/^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/gm, " ")
+    .replace(/^\s*\|(.+)\|\s*$/gm, (_, row) =>
+      row
+        .replace(/\\\|/g, " ")
+        .split("|")
+        .map((cell) => cell.trim())
+        .filter(Boolean)
+        .join(" ")
+    )
     .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
     .replace(/\[[^\]]*]\([^)]*\)/g, " ")
     .replace(/[#>*_`~-]/g, " ")
+    .replace(/\|/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }

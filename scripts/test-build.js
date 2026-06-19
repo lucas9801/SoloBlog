@@ -335,6 +335,9 @@ try {
   const markdownEdge = searchIndex.find((item) => item.slug === "markdown-edge-cases");
   assert.equal(markdownEdge.year, "2026");
   assert.equal(markdownEdge.cover, "/assets/posts/inline.svg");
+  assert.match(markdownEdge.text, /Name Value Pipe A B/);
+  assert.doesNotMatch(markdownEdge.text, /\|/);
+  assert.doesNotMatch(markdownEdge.text, /---/);
   const markdownSameDay = searchIndex.find((item) => item.slug === "markdown-same-day");
   assert.equal(markdownSameDay.cover, "/assets/posts/markdown-same-day.svg");
   const generatedCover = await readFile(path.join(tempRoot, "assets", "posts", "markdown-same-day.svg"), "utf8");

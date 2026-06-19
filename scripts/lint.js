@@ -308,6 +308,14 @@ if (!buildScript.includes('notFoundPage(posts)') || !buildScript.includes('compa
 if (!buildScript.includes("content:encoded") || !buildScript.includes("absolutizeFeedHtml")) {
   failures.push("RSS feed must include full post content with absolute local URLs.");
 }
+if (
+  !buildScript.includes(":?-{3,}") ||
+  !buildScript.includes('.replace(/\\\\\\|/g, " ")') ||
+  !buildScript.includes('.replace(/\\|/g, " ")') ||
+  !testBuildScript.includes("Name Value Pipe A B")
+) {
+  failures.push("Search index text must strip Markdown table syntax into readable plain text.");
+}
 if (!buildScript.includes('value.startsWith("#")') || !checkOutputScript.includes("fragment-only heading links")) {
   failures.push("RSS and JSON Feed content must absolutize article heading fragment links.");
 }
