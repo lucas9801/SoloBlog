@@ -443,8 +443,10 @@ async function checkViewport(viewport, page) {
               const primaryHeroLink = document.querySelector(".hero-actions .button-link");
               const toggle = document.querySelector("[data-theme-toggle]");
               const rankingTitle = document.querySelector("[data-ranking-title]");
+              const rssCopyButton = document.querySelector("[data-copy-rss]");
               if (!header) failures.push("site header is missing");
               if (!(toggle instanceof HTMLButtonElement)) failures.push("theme toggle is missing");
+              if (!(rssCopyButton instanceof HTMLButtonElement)) failures.push("RSS copy button is missing");
               if (primaryHeroLink?.getAttribute("href") === "#latest-posts" && !document.querySelector("#latest-posts")) {
                 failures.push("home hero latest-posts link points to a missing section");
               }
@@ -491,6 +493,41 @@ async function checkViewport(viewport, page) {
               }
               if (toggle.getAttribute("aria-label") !== themeLabel(originalTheme)) {
                 failures.push("theme toggle aria-label did not restore with the original theme");
+              }
+
+              const rssCopyStatus = rssCopyButton.parentElement?.querySelector("[data-copy-rss-status]");
+              const originalClipboard = navigator.clipboard;
+              const originalRssCopyText = rssCopyButton.textContent.trim();
+              try {
+                Object.defineProperty(navigator, "clipboard", {
+                  configurable: true,
+                  value: { writeText: async () => {} }
+                });
+              } catch {
+                failures.push("RSS copy button clipboard stub could not be installed");
+              }
+              rssCopyButton.click();
+              await wait(120);
+              if (rssCopyButton.textContent.trim() !== "已复制") {
+                failures.push("RSS copy button did not expose visible feedback");
+              }
+              if (rssCopyButton.getAttribute("aria-label") !== "RSS 链接已复制") {
+                failures.push("RSS copy button did not expose aria feedback");
+              }
+              if (rssCopyStatus?.textContent.trim() !== "RSS 链接已复制") {
+                failures.push("RSS copy button did not expose live-region feedback");
+              }
+              await wait(1700);
+              if (rssCopyButton.textContent.trim() !== originalRssCopyText) {
+                failures.push("RSS copy button did not restore its original label");
+              }
+              try {
+                Object.defineProperty(navigator, "clipboard", {
+                  configurable: true,
+                  value: originalClipboard
+                });
+              } catch {
+                // The test page is disposable; restoring is best effort.
               }
 
               scrollTo(0, Math.min(520, document.documentElement.scrollHeight));

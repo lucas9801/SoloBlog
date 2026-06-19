@@ -776,8 +776,11 @@ if (
   !buildScript.includes(">复制 RSS</button>") ||
   site.subscribe?.description !== "通过 RSS 或 JSON Feed 跟踪最新文章。" ||
   !siteScript.includes("RSS 链接已复制") ||
+  !siteScript.includes("RSS 链接复制失败") ||
   !siteScript.includes("async function copyText") ||
-  !siteScript.includes('document.execCommand("copy")')
+  !siteScript.includes('document.execCommand("copy")') ||
+  !checkLayoutScript.includes("RSS copy button did not expose visible feedback") ||
+  !checkLayoutScript.includes("RSS copy button did not restore its original label")
 ) {
   failures.push("Subscribe card must expose RSS, JSON Feed, and a clear RSS copy state.");
 }

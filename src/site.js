@@ -147,31 +147,38 @@ for (const form of document.querySelectorAll(".site-search")) {
   });
 }
 
+function setRssCopyState(button, visibleText, statusMessage = visibleText, restoreDelay = 1600) {
+  const previous = button.textContent;
+  const previousLabel = button.getAttribute("aria-label");
+  const status = button.parentElement?.querySelector("[data-copy-rss-status]");
+
+  button.textContent = visibleText;
+  button.setAttribute("aria-label", statusMessage);
+  if (status) status.textContent = statusMessage;
+
+  window.setTimeout(() => {
+    button.textContent = previous;
+    if (previousLabel) {
+      button.setAttribute("aria-label", previousLabel);
+    } else {
+      button.removeAttribute("aria-label");
+    }
+    if (status) status.textContent = "";
+  }, restoreDelay);
+}
+
 document.addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-copy-rss]");
-  if (!button) return;
+  const target = event.target instanceof Element ? event.target : null;
+  const button = target?.closest("[data-copy-rss]");
+  if (!(button instanceof HTMLElement)) return;
 
   const url = button.dataset.copyRss;
   if (!url) return;
 
   if (await copyText(url)) {
-    const previous = button.textContent;
-    const previousLabel = button.getAttribute("aria-label");
-    const status = button.parentElement?.querySelector("[data-copy-rss-status]");
-    button.textContent = "已复制";
-    button.setAttribute("aria-label", "RSS 链接已复制");
-    if (status) status.textContent = "RSS 链接已复制";
-    window.setTimeout(() => {
-      button.textContent = previous;
-      if (previousLabel) {
-        button.setAttribute("aria-label", previousLabel);
-      } else {
-        button.removeAttribute("aria-label");
-      }
-      if (status) status.textContent = "";
-    }, 1600);
+    setRssCopyState(button, "已复制", "RSS 链接已复制");
     return;
   }
 
-  window.location.href = url;
+  setRssCopyState(button, "复制失败", "RSS 链接复制失败", 2200);
 });
