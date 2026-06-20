@@ -1016,7 +1016,10 @@ if (
   !buildScript.includes('<h2>专题</h2>') ||
   !buildScript.includes('href="/series/${slugify(name)}/"') ||
   !buildScript.includes("sidebar(posts, categories, tags, seriesEntries)") ||
+  !buildScript.includes('class="sidebar-card subscribe-card"') ||
+  !buildScript.includes('class="sidebar-card ranking-card"') ||
   !css.includes(".sidebar-index-card") ||
+  buildScript.indexOf('class="sidebar-card subscribe-card"') > buildScript.indexOf('class="sidebar-card ranking-card"') ||
   !testBuildScript.includes('href="\\/series\\/markdown-lab\\/"')
 ) {
   failures.push("Home sidebar must expose compact category, series, and tag index panels.");

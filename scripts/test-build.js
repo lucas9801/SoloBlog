@@ -223,6 +223,7 @@ try {
   assert.match(home, /<a class="button-link" href="\/rss\.xml">RSS<\/a>/);
   assert.match(home, /<a class="ghost-link" href="\/feed\.json">JSON Feed<\/a>/);
   assert.match(home, />复制 RSS<\/button>/);
+  assert.ok(home.indexOf('class="sidebar-card subscribe-card"') < home.indexOf('class="sidebar-card ranking-card"'));
   assert.match(home, /data-copy-rss-status/);
   assert.match(home, /站点地图/);
   assert.match(home, /<button type="submit" aria-label="搜索文章"><span class="sr-only">搜索文章<\/span><\/button>/);

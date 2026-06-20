@@ -1109,15 +1109,6 @@ function sidebar(posts, categories, tags, seriesEntries = []) {
         .map(([tag, list]) => `<a href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`)
         .join("")}</div>
     </section>
-    <section class="sidebar-card ranking-card">
-      <h2 data-ranking-title>阅读排行</h2>
-      <div class="ranking-list" data-ranking-posts="${rankingPayload(posts)}">${fallbackRanking
-        .map(
-          (post, index) =>
-            `<a class="ranking-link" href="${post.url}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small></a>`
-        )
-        .join("")}</div>
-    </section>
     <section class="sidebar-card subscribe-card">
       <h2>${escapeHtml(site.subscribe.title)}</h2>
       <p>${escapeHtml(site.subscribe.description)}</p>
@@ -1127,6 +1118,15 @@ function sidebar(posts, categories, tags, seriesEntries = []) {
         <button class="secondary-button" type="button" data-copy-rss="${escapeAttr(absoluteUrl(site.subscribe.rss))}">复制 RSS</button>
         <span class="sr-only" aria-live="polite" data-copy-rss-status></span>
       </div>
+    </section>
+    <section class="sidebar-card ranking-card">
+      <h2 data-ranking-title>阅读排行</h2>
+      <div class="ranking-list" data-ranking-posts="${rankingPayload(posts)}">${fallbackRanking
+        .map(
+          (post, index) =>
+            `<a class="ranking-link" href="${post.url}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small></a>`
+        )
+        .join("")}</div>
     </section>
   </aside>`;
 }
