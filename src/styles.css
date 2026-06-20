@@ -1168,7 +1168,7 @@ pre {
 }
 
 .post-index-list {
-  max-width: 920px;
+  width: 100%;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1176,7 +1176,7 @@ pre {
 }
 
 .post-index-list.wide {
-  max-width: 1040px;
+  width: 100%;
 }
 
 .post-index-item {
@@ -1311,10 +1311,6 @@ pre {
 
 .series-index-layout.single-series {
   grid-template-columns: minmax(0, 1fr);
-}
-
-.series-index-layout.single-series .series-card {
-  max-width: 920px;
 }
 
 .series-detail-layout {

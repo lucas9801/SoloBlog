@@ -609,11 +609,19 @@ if (
   !css.includes(".post-index-list") ||
   !css.includes(".post-index-list.wide") ||
   !css.includes(".post-index-item") ||
+  !/\.post-index-list\s*\{[\s\S]*?width:\s*100%;/.test(css) ||
+  !/\.post-index-list\.wide\s*\{[\s\S]*?width:\s*100%;/.test(css) ||
   !testBuildScript.includes('class="post-index-list"') ||
   !testBuildScript.includes('assert.doesNotMatch(archive, /class="archive-card-thumb/') ||
   !testBuildScript.includes('assert.doesNotMatch(tagPage, /class="article-index-grid"/)')
 ) {
   failures.push("Archive and tag result pages must use compact technical index lists instead of large cover cards.");
+}
+if (
+  /post-index-list(?:\.wide)?\s*\{[\s\S]*?max-width:\s*(?:920|1040)px/.test(css) ||
+  /\.series-index-layout\.single-series\s+\.series-card\s*\{[\s\S]*?max-width:\s*920px/.test(css)
+) {
+  failures.push("Desktop archive, tag, and single-series indexes must use the full page shell instead of narrow template-era caps.");
 }
 if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPage({ name, posts, seriesEntries, page")) {
   failures.push("Series detail pages must be paginated.");
