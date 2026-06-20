@@ -91,6 +91,17 @@ slug: unity-性能优化记录
   assert.match(result.stderr, /current SOLUS wording/);
   await writeFile(coverPath, cover, "utf8");
 
+  const categoryCoversDir = path.join(tempRoot, "assets", "categories");
+  const firstCategoryCover = (await readdir(categoryCoversDir)).find((file) => file.endsWith(".svg"));
+  assert.ok(firstCategoryCover, "fixture should include at least one category cover");
+  const categoryCoverPath = path.join(categoryCoversDir, firstCategoryCover);
+  const categoryCover = await readFile(categoryCoverPath, "utf8");
+  await writeFile(categoryCoverPath, categoryCover.replace("</defs>", '<linearGradient id="old"></linearGradient></defs>'), "utf8");
+  result = await runLint(tempRoot);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Category covers must use the restrained SOLUS technical channel system/);
+  await writeFile(categoryCoverPath, categoryCover, "utf8");
+
   const postsDir = path.join(tempRoot, "content", "posts");
   const firstPost = (await readdir(postsDir)).find((file) => file.endsWith(".md"));
   assert.ok(firstPost, "fixture should include at least one post");

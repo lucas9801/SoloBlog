@@ -1,31 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Game development cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Game development category cover">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#eef8ff"/>
-      <stop offset="0.52" stop-color="#cfe0ff"/>
-      <stop offset="1" stop-color="#fff1cf"/>
-    </linearGradient>
-    <pattern id="grid" width="52" height="52" patternUnits="userSpaceOnUse">
-      <path d="M52 0H0v52" fill="none" stroke="#6d8df7" stroke-opacity=".16"/>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0v56" fill="none" stroke="#edf2f7" stroke-opacity=".055"/>
     </pattern>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#3650d8" flood-opacity=".22"/>
-    </filter>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="#090d12"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="250" cy="470" r="150" fill="#ffffff" opacity=".45"/>
-  <g filter="url(#shadow)">
-    <path d="M630 145l155 78-155 78-155-78z" fill="#8aa0ff"/>
-    <path d="M475 223l155 78v152l-155-78z" fill="#5971ea"/>
-    <path d="M785 223l-155 78v152l155-78z" fill="#46d7bf"/>
-    <path d="M730 84l110 55-110 55-110-55z" fill="#c9d9ff"/>
-    <path d="M620 139l110 55v108l-110-55z" fill="#8ea4ff"/>
-    <path d="M840 139l-110 55v108l110-55z" fill="#63e0cd"/>
-    <rect x="190" y="365" width="210" height="86" rx="43" fill="#edf4ff"/>
-    <circle cx="250" cy="408" r="18" fill="#4257dd"/>
-    <circle cx="326" cy="388" r="11" fill="#ffaf61"/>
-    <circle cx="356" cy="414" r="11" fill="#46d7bf"/>
-    <path d="M225 408h50M250 383v50" stroke="#17243a" stroke-width="13" stroke-linecap="round"/>
+  <path d="M72 96h1056M72 578h1056M936 96v482" stroke="#edf2f7" stroke-opacity=".09"/>
+  <g fill="none" stroke-linejoin="round">
+    <rect x="170" y="150" width="426" height="282" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <path d="M214 362l100-106 82 68 82-116 76 84" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round"/>
+    <path d="M214 196h338M214 242h338M214 288h338M214 334h338" stroke="#edf2f7" stroke-opacity=".12"/>
+    <rect x="680" y="172" width="214" height="108" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <rect x="680" y="326" width="214" height="108" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <path d="M734 226h106M734 380h106M596 290h84M596 380h84" stroke="#edf2f7" stroke-opacity=".24" stroke-width="7" stroke-linecap="round"/>
+    <path d="M228 496h660" stroke="#60a5fa" stroke-opacity=".35" stroke-width="4"/>
+  </g>
+  <g font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">
+    <rect x="72" y="52" width="138" height="34" rx="4" fill="#111821" stroke="#60a5fa" stroke-opacity=".55"/>
+    <text x="92" y="75" fill="#edf2f7" font-size="14" font-weight="700">游戏开发</text>
+    <text x="72" y="622" fill="#edf2f7" font-size="12" font-weight="700" opacity=".6">SOLUS CATEGORY</text>
+    <text x="1128" y="622" text-anchor="end" fill="#94a3b8" font-size="12" font-weight="700">GAMEPLAY LOOP</text>
   </g>
 </svg>

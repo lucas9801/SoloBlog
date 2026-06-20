@@ -1,29 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Rendering cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Rendering category cover">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f5f8ff"/>
-      <stop offset=".48" stop-color="#e1e9ff"/>
-      <stop offset="1" stop-color="#e9fff7"/>
-    </linearGradient>
-    <radialGradient id="sphere" cx=".35" cy=".25" r=".75">
-      <stop offset="0" stop-color="#fff"/>
-      <stop offset=".35" stop-color="#8aa0ff"/>
-      <stop offset="1" stop-color="#253ed0"/>
-    </radialGradient>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="24" stdDeviation="20" flood-color="#3650d8" flood-opacity=".23"/>
-    </filter>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0v56" fill="none" stroke="#edf2f7" stroke-opacity=".055"/>
+    </pattern>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
-  <g stroke="#4257dd" stroke-opacity=".14" fill="none">
-    <path d="M120 500C320 240 500 600 710 305S1020 135 1110 280"/>
-    <path d="M120 550C320 290 500 650 710 355s310-170 400-25"/>
+  <rect width="1200" height="675" fill="#090d12"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <path d="M72 96h1056M72 578h1056M936 96v482" stroke="#edf2f7" stroke-opacity=".09"/>
+  <g fill="none" stroke-linejoin="round">
+    <rect x="156" y="138" width="560" height="398" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <path d="M206 436L318 308l118 76 136-162 98 128" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round"/>
+    <path d="M206 470h462M206 390h462M206 310h462M206 230h462M286 176v318M410 176v318M534 176v318" stroke="#edf2f7" stroke-opacity=".13"/>
+    <rect x="782" y="156" width="254" height="64" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <rect x="782" y="266" width="254" height="64" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <rect x="782" y="376" width="254" height="64" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <path d="M716 188h66M716 298h66M716 408h66" stroke="#edf2f7" stroke-opacity=".24" stroke-width="5"/>
   </g>
-  <g filter="url(#shadow)">
-    <circle cx="520" cy="330" r="155" fill="url(#sphere)"/>
-    <circle cx="730" cy="250" r="85" fill="#46d7bf"/>
-    <circle cx="830" cy="430" r="110" fill="#ffaf61"/>
-    <path d="M285 500h620" stroke="#fff" stroke-width="22" stroke-linecap="round" opacity=".74"/>
-    <path d="M350 200l160 92M700 160l80 170M430 510l330-220" stroke="#fff" stroke-width="4" opacity=".55"/>
+  <g font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">
+    <rect x="72" y="52" width="138" height="34" rx="4" fill="#111821" stroke="#60a5fa" stroke-opacity=".55"/>
+    <text x="92" y="75" fill="#edf2f7" font-size="14" font-weight="700">图形渲染</text>
+    <text x="72" y="622" fill="#edf2f7" font-size="12" font-weight="700" opacity=".6">SOLUS CATEGORY</text>
+    <text x="1128" y="622" text-anchor="end" fill="#94a3b8" font-size="12" font-weight="700">FRAME DEBUG</text>
   </g>
 </svg>

@@ -112,6 +112,17 @@ function checkDuplicateIds(file, html) {
   }
 }
 
+function checkVersionedLocalImages(file, html) {
+  const relative = displayPath(file);
+  for (const match of html.matchAll(/<img\b[^>]*\ssrc="([^"]+)"/gi)) {
+    const src = match[1];
+    if (/^\/assets\/.+\?v=[a-f0-9]{12}(?:[&#"][^"]*)?$/i.test(src)) continue;
+    if (src.startsWith("/assets/")) {
+      failures.push(`${relative} references an unversioned local image: ${src}`);
+    }
+  }
+}
+
 function checkTimeElements(file, html) {
   const relative = displayPath(file);
   for (const match of html.matchAll(/<time\b[^>]*>/gi)) {
@@ -1092,6 +1103,7 @@ async function main() {
     const relative = displayPath(file);
 
     checkNoInternalProjectNames(relative, html);
+    checkVersionedLocalImages(file, html);
     if (/pages\.dev/i.test(html)) failures.push(`${relative} must not contain a pages.dev URL.`);
     if (/javascript:|data:text\/html/i.test(html)) failures.push(`${relative} contains an unsafe URL scheme.`);
     if (/\son(?:click|error|load|mouseover)=/i.test(html)) failures.push(`${relative} contains an inline event handler.`);
@@ -1099,7 +1111,7 @@ async function main() {
     if (html.includes("@@INLINE_HTML_")) failures.push(`${relative} contains an unreplaced inline token.`);
     if (/[?&]v=local\b/.test(html)) failures.push(`${relative} contains an unversioned local asset URL.`);
     if (html.includes("/assets/hero-game-tech.png")) failures.push(`${relative} references the retired hero PNG.`);
-    if (relative === "dist/index.html" && !html.includes('class="hero-cover" src="/assets/hero/solus-hero.svg"')) {
+    if (relative === "dist/index.html" && !/class="hero-cover" src="\/assets\/hero\/solus-hero\.svg\?v=[a-f0-9]{12}"/.test(html)) {
       failures.push("dist/index.html must use the dedicated SOLUS hero asset.");
     }
     if (relative === "dist/index.html" && html.includes('class="hero-cover" src="/assets/posts/')) {

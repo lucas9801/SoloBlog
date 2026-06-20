@@ -122,6 +122,12 @@ const postCoverSvgFiles = (await readdir(path.join(root, "assets/posts"))).filte
 const postCoverSvgs = await Promise.all(
   postCoverSvgFiles.map((file) => readFile(path.join(root, "assets/posts", file), "utf8"))
 );
+const categoryCoverSvgFiles = (await readdir(path.join(root, "assets/categories"))).filter((file) =>
+  file.endsWith(".svg")
+);
+const categoryCoverSvgs = await Promise.all(
+  categoryCoverSvgFiles.map((file) => readFile(path.join(root, "assets/categories", file), "utf8"))
+);
 
 const failures = [];
 const warnings = [];
@@ -336,8 +342,13 @@ if (
   failures.push("Project sources should not reference the retired large hero PNG.");
 }
 if (!buildScript.includes("process.env.SITE_URL")) failures.push("Build must support explicit SITE_URL override.");
-if (!buildScript.includes("resolveAssetVersion") || !buildScript.includes("hashDirectory")) {
-  failures.push("Build must version CSS and JS assets from source content when no deploy SHA is available.");
+if (
+  !buildScript.includes("resolveAssetVersion") ||
+  !buildScript.includes("hashDirectory") ||
+  !buildScript.includes('hashDirectory(path.join(root, "src"))') ||
+  !buildScript.includes('hashDirectory(path.join(root, "assets"))')
+) {
+  failures.push("Build must version CSS, JS, and visual assets from source content when no deploy SHA is available.");
 }
 if (!buildScript.includes("comparePostsNewestFirst")) {
   failures.push("Build must sort posts with a deterministic newest-first comparator.");
@@ -663,6 +674,15 @@ if (!buildScript.includes('class="updated-date" datetime=') || !checkOutputScrip
 }
 if (!buildScript.includes("coverImage") || !buildScript.includes('fetchpriority="${escapeAttr(fetchPriority)}"')) {
   failures.push("Build must render cover images with stable dimensions and explicit hero priority.");
+}
+if (!buildScript.includes('src.startsWith("/assets/") ? assetUrl(src) : src')) {
+  failures.push("Rendered local cover images must carry the shared asset version query.");
+}
+if (
+  !buildScript.includes('const imageSrc = safeSrc.startsWith("/assets/") ? assetUrl(safeSrc) : safeSrc') ||
+  !checkOutputScript.includes("function checkVersionedLocalImages")
+) {
+  failures.push("Rendered local markdown images must carry the shared asset version query.");
 }
 if (
   !buildScript.includes("function coverTextLines") ||
@@ -1185,6 +1205,15 @@ for (const [category, cover] of Object.entries(site.categoryCovers || {})) {
   await existsLocalPath(cover).catch(() => {
     failures.push(`category cover for ${category} does not exist: ${cover}`);
   });
+}
+if (
+  categoryCoverSvgFiles.length !== Object.keys(site.categoryCovers || {}).length ||
+  categoryCoverSvgs.some((source) => !source.includes("SOLUS CATEGORY")) ||
+  categoryCoverSvgs.some((source) =>
+    /<(?:linearGradient|radialGradient|feDropShadow)\b|#ffaf61|#6577ff|#4257dd|#46d7bf|#fff8|#fff1/i.test(source)
+  )
+) {
+  failures.push("Category covers must use the restrained SOLUS technical channel system without legacy gradients, shadows, or bright decorative colors.");
 }
 const knownCategories = new Set(Object.keys(site.categoryCovers || {}));
 if (!site.defaultPostCategory || !knownCategories.has(site.defaultPostCategory)) {

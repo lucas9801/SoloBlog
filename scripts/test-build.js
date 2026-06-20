@@ -143,7 +143,7 @@ try {
   assert.match(article, /<a href="https:\/\/example\.com\/path" target="_blank" rel="noopener noreferrer" aria-label="external（在新标签页打开）" data-external-link>external<\/a>/);
   assert.doesNotMatch(article, /javascript:alert/);
   assert.doesNotMatch(article, /href="relative-page"/);
-  assert.match(article, /<img src="\/assets\/posts\/inline\.svg" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
+  assert.match(article, /<img src="\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
   assert.match(article, /<pre data-language="js" tabindex="0" aria-label="js 代码块，可横向滚动"><button class="code-copy-button" type="button" data-copy-code aria-label="复制代码">复制<\/button><span class="sr-only" aria-live="polite" data-copy-code-status><\/span><code>console\.log\(&quot;ok&quot;\);<\/code><\/pre>/);
   assert.match(article, /<time class="updated-date" datetime="2026-06-14">更新 2026\/06\/14<\/time>/);
   assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
@@ -192,7 +192,7 @@ try {
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<a class="button-link" href="#latest-posts">最新文章<\/a>/);
-  assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
+  assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.svg\?v=[a-f0-9]{12}" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<section id="latest-posts" class="section-block">/);
   assert.match(home, /推荐阅读/);
   assert.match(home, /<div class="featured-post-grid count-3">/);
@@ -394,7 +394,7 @@ try {
 
   const rss = await readFile(path.join(tempRoot, "dist", "rss.xml"), "utf8");
   assert.match(rss, /<content:encoded><!\[CDATA\[/);
-  assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
+  assert.match(rss, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}"/);
   assert.match(rss, /href="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/#repeat"/);
   assert.doesNotMatch(rss, /\s(?:href|src)="\//);
   assert.doesNotMatch(rss, /\shref="#/);
@@ -419,7 +419,7 @@ try {
   assert.equal(jsonFeed.items[0].image, "https://blog.solus.games/assets/posts/inline.svg");
   assert.equal(jsonFeed.items.some((item) => item.url.includes("/draft-only/")), false);
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
-  assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg"/);
+  assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}"/);
   assert.match(feedMarkdownEdge.content_html, /href="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/#repeat"/);
   assert.doesNotMatch(feedMarkdownEdge.content_html, /\s(?:href|src)="\//);
   assert.doesNotMatch(feedMarkdownEdge.content_html, /\shref="#/);

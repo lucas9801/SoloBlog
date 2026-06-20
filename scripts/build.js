@@ -41,7 +41,10 @@ async function hashDirectory(dir) {
 async function resolveAssetVersion() {
   const explicit = process.env.CF_PAGES_COMMIT_SHA || siteConfig.assetVersion;
   if (explicit) return String(explicit).slice(0, 12);
-  return (await hashDirectory(path.join(root, "src"))).slice(0, 12);
+  const hash = crypto.createHash("sha1");
+  hash.update(await hashDirectory(path.join(root, "src")));
+  hash.update(await hashDirectory(path.join(root, "assets")));
+  return hash.digest("hex").slice(0, 12);
 }
 
 const assetVersion = encodeURIComponent(await resolveAssetVersion());
@@ -395,9 +398,10 @@ function inlineMarkdown(text) {
   html = html.replace(/!\[([^\]]*)]\(([^)]+)\)/g, (_, alt, src) => {
     const safeSrc = safeMarkdownUrl(src);
     if (!safeSrc) return alt;
+    const imageSrc = safeSrc.startsWith("/assets/") ? assetUrl(safeSrc) : safeSrc;
     return inlineToken(
       tokens,
-      `<img src="${escapeAttr(safeSrc)}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async" />`
+      `<img src="${escapeAttr(imageSrc)}" alt="${escapeAttr(alt)}" loading="lazy" decoding="async" />`
     );
   });
   html = html.replace(/\[([^\]]+)]\(([^)]+)\)/g, (_, label, href) => {
@@ -797,7 +801,8 @@ function coverImage(src, { className = "", alt = "", loading = "lazy", fetchPrio
   const classAttr = className ? ` class="${escapeAttr(className)}"` : "";
   const loadingAttr = loading ? ` loading="${escapeAttr(loading)}"` : "";
   const fetchPriorityAttr = fetchPriority ? ` fetchpriority="${escapeAttr(fetchPriority)}"` : "";
-  return `<img${classAttr} src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" width="1200" height="675"${loadingAttr} decoding="async"${fetchPriorityAttr} />`;
+  const imageSrc = src.startsWith("/assets/") ? assetUrl(src) : src;
+  return `<img${classAttr} src="${escapeAttr(imageSrc)}" alt="${escapeAttr(alt)}" width="1200" height="675"${loadingAttr} decoding="async"${fetchPriorityAttr} />`;
 }
 
 function pageLayout({

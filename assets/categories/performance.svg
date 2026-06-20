@@ -1,24 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Performance cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Performance category cover">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#eef5ff"/>
-      <stop offset=".55" stop-color="#eafcff"/>
-      <stop offset="1" stop-color="#fff3df"/>
-    </linearGradient>
-    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#24354f" flood-opacity=".18"/>
-    </filter>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0v56" fill="none" stroke="#edf2f7" stroke-opacity=".055"/>
+    </pattern>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
-  <g opacity=".22" stroke="#6577ff" stroke-width="2">
-    <path d="M180 520h820M210 470h760M240 420h700"/>
+  <rect width="1200" height="675" fill="#090d12"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <path d="M72 96h1056M72 578h1056M936 96v482" stroke="#edf2f7" stroke-opacity=".09"/>
+  <g fill="none" stroke-linejoin="round">
+    <rect x="154" y="154" width="398" height="292" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <path d="M204 362c42-104 84 36 130-16 38-44 58-136 106-36 28 58 58 42 82 18" stroke="#2dd4bf" stroke-width="6" stroke-linecap="round"/>
+    <path d="M204 392h298M204 314h298M204 236h298" stroke="#edf2f7" stroke-opacity=".13"/>
+    <rect x="628" y="154" width="328" height="292" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <path d="M686 378V292M750 378V238M814 378V276M878 378V202" stroke="#60a5fa" stroke-width="22" stroke-linecap="butt" opacity=".7"/>
+    <path d="M260 500h660" stroke="#edf2f7" stroke-opacity=".17" stroke-width="8" stroke-linecap="round"/>
   </g>
-  <g filter="url(#shadow)">
-    <path d="M310 475a290 290 0 1 1 580 0" fill="none" stroke="#dbe6ff" stroke-width="58" stroke-linecap="round"/>
-    <path d="M310 475a290 290 0 0 1 430-252" fill="none" stroke="#46d7bf" stroke-width="58" stroke-linecap="round"/>
-    <path d="M742 222a290 290 0 0 1 148 253" fill="none" stroke="#ffaf61" stroke-width="58" stroke-linecap="round"/>
-    <path d="M600 460l210-190" stroke="#17243a" stroke-width="22" stroke-linecap="round"/>
-    <circle cx="600" cy="460" r="42" fill="#17243a"/>
-    <rect x="270" y="510" width="660" height="56" rx="28" fill="#fff"/>
+  <g font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">
+    <rect x="72" y="52" width="138" height="34" rx="4" fill="#111821" stroke="#2dd4bf" stroke-opacity=".55"/>
+    <text x="92" y="75" fill="#edf2f7" font-size="14" font-weight="700">性能优化</text>
+    <text x="72" y="622" fill="#edf2f7" font-size="12" font-weight="700" opacity=".6">SOLUS CATEGORY</text>
+    <text x="1128" y="622" text-anchor="end" fill="#94a3b8" font-size="12" font-weight="700">PROFILING</text>
   </g>
 </svg>

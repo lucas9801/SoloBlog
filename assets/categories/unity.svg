@@ -1,25 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unity cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unity category cover">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#edf3ff"/>
-      <stop offset=".5" stop-color="#d8e2ff"/>
-      <stop offset="1" stop-color="#e9fff8"/>
-    </linearGradient>
-    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#2f43aa" flood-opacity=".2"/>
-    </filter>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0v56" fill="none" stroke="#edf2f7" stroke-opacity=".055"/>
+    </pattern>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
-  <g stroke="#6077ee" stroke-opacity=".16" stroke-width="2">
-    <path d="M160 145l230 132 230-132 230 132 230-132M160 365l230 132 230-132 230 132 230-132"/>
+  <rect width="1200" height="675" fill="#090d12"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <path d="M72 96h1056M72 578h1056M936 96v482" stroke="#edf2f7" stroke-opacity=".09"/>
+  <g fill="none" stroke-linejoin="round">
+    <rect x="150" y="126" width="400" height="438" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <path d="M150 184h400M202 252h280M202 306h232M202 360h286M202 414h176M202 468h262" stroke="#edf2f7" stroke-opacity=".18" stroke-width="8" stroke-linecap="round"/>
+    <rect x="612" y="142" width="400" height="206" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <path d="M656 304c44-82 96 18 142-36 38-46 70-110 112-36 24 42 48 46 72 22" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+    <path d="M656 270h318M656 226h318M656 182h318" stroke="#edf2f7" stroke-opacity=".11"/>
+    <rect x="612" y="390" width="180" height="118" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <rect x="832" y="390" width="180" height="118" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <path d="M656 450h92M876 450h94" stroke="#edf2f7" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/>
   </g>
-  <g filter="url(#shadow)">
-    <path d="M590 106l198 114-198 114-198-114z" fill="#17243a"/>
-    <path d="M392 220l198 114v220L392 440z" fill="#4257dd"/>
-    <path d="M788 220L590 334v220l198-114z" fill="#46d7bf"/>
-    <path d="M590 226l82 47-82 47-82-47z" fill="#fff" opacity=".86"/>
-    <path d="M318 156l75 43-75 43-75-43z" fill="#8aa0ff"/>
-    <path d="M870 410l92 53-92 53-92-53z" fill="#ffaf61"/>
-    <circle cx="258" cy="458" r="50" fill="#fff" opacity=".58"/>
+  <g font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">
+    <rect x="72" y="52" width="118" height="34" rx="4" fill="#111821" stroke="#60a5fa" stroke-opacity=".55"/>
+    <text x="92" y="75" fill="#edf2f7" font-size="14" font-weight="700">Unity</text>
+    <text x="72" y="622" fill="#edf2f7" font-size="12" font-weight="700" opacity=".6">SOLUS CATEGORY</text>
+    <text x="1128" y="622" text-anchor="end" fill="#94a3b8" font-size="12" font-weight="700">EDITOR PROFILER</text>
   </g>
 </svg>

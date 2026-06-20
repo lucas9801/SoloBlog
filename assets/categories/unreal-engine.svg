@@ -1,26 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unreal engine cover">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unreal category cover">
   <defs>
-    <radialGradient id="core" cx=".52" cy=".45" r=".42">
-      <stop offset="0" stop-color="#8af4ff"/>
-      <stop offset=".36" stop-color="#6577ff"/>
-      <stop offset="1" stop-color="#111c34"/>
-    </radialGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0v56" fill="none" stroke="#edf2f7" stroke-opacity=".055"/>
+    </pattern>
   </defs>
-  <rect width="1200" height="675" fill="#101827"/>
-  <rect width="1200" height="675" fill="url(#core)" opacity=".95"/>
-  <g fill="none" stroke="#a8f7ff" stroke-opacity=".22">
-    <circle cx="600" cy="330" r="245"/>
-    <circle cx="600" cy="330" r="170"/>
-    <circle cx="600" cy="330" r="95"/>
+  <rect width="1200" height="675" fill="#090d12"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <path d="M72 96h1056M72 578h1056M936 96v482" stroke="#edf2f7" stroke-opacity=".09"/>
+  <g fill="none" stroke-linejoin="round">
+    <rect x="196" y="150" width="440" height="300" rx="6" stroke="#60a5fa" stroke-width="4"/>
+    <path d="M238 396l90-128 92 80 92-126 82 96" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round"/>
+    <path d="M238 198h356M238 246h356M238 294h356M238 342h356" stroke="#edf2f7" stroke-opacity=".12"/>
+    <rect x="722" y="150" width="254" height="300" rx="6" stroke="#2dd4bf" stroke-width="4"/>
+    <path d="M768 228h162M768 288h118M768 348h146" stroke="#edf2f7" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/>
+    <path d="M286 508h640M706 508l58-58M764 508l-58-58" stroke="#60a5fa" stroke-opacity=".42" stroke-width="4" stroke-linecap="round"/>
   </g>
-  <g filter="url(#glow)">
-    <path d="M600 105l220 127v196L600 555 380 428V232z" fill="none" stroke="#d9fbff" stroke-width="16"/>
-    <path d="M600 105v450M380 232l440 196M820 232L380 428" stroke="#46d7bf" stroke-width="10" opacity=".72"/>
-    <rect x="250" y="145" width="80" height="80" rx="18" fill="#6577ff" opacity=".55"/>
-    <rect x="870" y="450" width="96" height="96" rx="22" fill="#ffaf61" opacity=".58"/>
+  <g font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">
+    <rect x="72" y="52" width="118" height="34" rx="4" fill="#111821" stroke="#60a5fa" stroke-opacity=".55"/>
+    <text x="92" y="75" fill="#edf2f7" font-size="14" font-weight="700">Unreal</text>
+    <text x="72" y="622" fill="#edf2f7" font-size="12" font-weight="700" opacity=".6">SOLUS CATEGORY</text>
+    <text x="1128" y="622" text-anchor="end" fill="#94a3b8" font-size="12" font-weight="700">ENGINE TOOLS</text>
   </g>
 </svg>
