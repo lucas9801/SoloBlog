@@ -668,6 +668,14 @@ if (!buildScript.includes("safeMarkdownUrl") || !buildScript.includes("allowMail
   failures.push("Markdown links and images must validate URL schemes before rendering.");
 }
 if (
+  !buildScript.includes('class="table-scroll" tabindex="0" aria-label="可横向滚动的数据表"') ||
+  !css.includes(".article-content .table-scroll") ||
+  !css.includes("mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);") ||
+  !checkLayoutScript.includes("mobile article table is missing a horizontal scroll hint")
+) {
+  failures.push("Article tables must keep accessible horizontal scrolling with a subtle mobile scroll hint.");
+}
+if (
   !buildScript.includes("data-external-link") ||
   !buildScript.includes("在新标签页打开") ||
   !css.includes(".article-content a[data-external-link]::after")

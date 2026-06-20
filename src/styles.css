@@ -2916,6 +2916,8 @@ pre {
 
   .article-content .table-scroll {
     box-shadow: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
   }
 
   .comments-loader {

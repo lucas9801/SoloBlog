@@ -1123,6 +1123,19 @@ async function checkViewport(viewport, page) {
               if (anySeries && !sidebarSeries) failures.push("article series panel is not in the side column");
               if (footerSeries) failures.push("article series panel should not render inside the footer");
               if (tocLinks.length < 3) failures.push("article table of contents has fewer than 3 links");
+              if (innerWidth <= 720) {
+                for (const tableScroll of document.querySelectorAll(".article-content .table-scroll")) {
+                  const tableStyle = getComputedStyle(tableScroll);
+                  if (tableScroll.scrollWidth <= tableScroll.clientWidth) {
+                    failures.push("mobile article table is not horizontally scrollable");
+                    break;
+                  }
+                  if (tableStyle.maskImage === "none" && tableStyle.webkitMaskImage === "none") {
+                    failures.push("mobile article table is missing a horizontal scroll hint");
+                    break;
+                  }
+                }
+              }
               if (failures.length > 0) return failures;
 
               const commentsSection = document.querySelector("[data-giscus-comments]");
