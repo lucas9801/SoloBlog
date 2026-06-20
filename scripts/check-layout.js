@@ -1043,6 +1043,7 @@ async function checkViewport(viewport, page) {
               const remainingNode = document.querySelector("#readingRemaining");
               const readingPill = document.querySelector(".reading-pill");
               const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
+              const articleHero = document.querySelector(".article-hero");
               const articleContent = document.querySelector(".article-content");
               const sidebarSeries = document.querySelector(".article-related-aside .series-panel");
               const footerSeries = document.querySelector(".article-footer .series-panel");
@@ -1053,6 +1054,12 @@ async function checkViewport(viewport, page) {
                 const pillRect = readingPill.getBoundingClientRect();
                 if (pillRect.top > 1 || pillRect.height > 3) {
                   failures.push("reading progress should stay a restrained top-edge line");
+                }
+              }
+              if (innerWidth > 720 && articleHero instanceof HTMLElement) {
+                const heroHeight = Math.round(articleHero.getBoundingClientRect().height);
+                if (heroHeight > 260) {
+                  failures.push("article hero is too tall for a focused technical reading page");
                 }
               }
               if (!articleContent) failures.push("article content is missing");

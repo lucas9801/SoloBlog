@@ -572,9 +572,11 @@ if (
   !buildScript.includes("seriesPanel(post, posts, { compact: true })") ||
   !buildScript.includes("article-related-aside") ||
   !testBuildScript.includes("series-panel compact") ||
-  !checkLayoutScript.includes("article series panel is not in the side column")
+  !checkLayoutScript.includes("article series panel is not in the side column") ||
+  !checkLayoutScript.includes("article hero is too tall for a focused technical reading page") ||
+  !css.includes("font-size: clamp(32px, 3.2vw, 44px);")
 ) {
-  failures.push("Article series navigation must render in the side column instead of the article footer.");
+  failures.push("Article page chrome must keep series navigation in the side column and preserve a focused reading header.");
 }
 if (
   !buildScript.includes('<nav class="sidebar-card toc" aria-labelledby="article-toc-title">') ||
