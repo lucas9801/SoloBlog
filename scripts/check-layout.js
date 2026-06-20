@@ -628,12 +628,32 @@ async function checkViewport(viewport, page) {
               for (const card of document.querySelectorAll(".search-result-card")) {
                 const indexNode = card.querySelector(".search-result-index");
                 const titleLink = card.querySelector(".search-result-body h2 a");
+                const unsafeLinks = Array.from(card.querySelectorAll("a")).filter((link) => {
+                  const href = link.getAttribute("href") || "";
+                  return !href.startsWith("/") || /^javascript:|^data:/i.test(href);
+                });
+                const unsafeTagLinks = Array.from(card.querySelectorAll(".tag-row a")).filter((link) => {
+                  const href = link.getAttribute("href") || "";
+                  return !href.startsWith("/tags/");
+                });
                 if (!(indexNode instanceof HTMLElement)) {
                   failures.push("search result card is missing a result index");
                   break;
                 }
                 if (!(titleLink instanceof HTMLAnchorElement)) {
                   failures.push("search result card is missing a title article link");
+                  break;
+                }
+                if (!titleLink.getAttribute("href")?.startsWith("/posts/")) {
+                  failures.push("search result card article link must stay on local post paths");
+                  break;
+                }
+                if (unsafeLinks.length > 0) {
+                  failures.push("search result card contains a non-local or unsafe link");
+                  break;
+                }
+                if (unsafeTagLinks.length > 0) {
+                  failures.push("search result tag links must stay on local tag paths");
                   break;
                 }
               }

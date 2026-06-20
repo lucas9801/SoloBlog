@@ -94,6 +94,28 @@ function slugify(value = "") {
   return slug || encodeURIComponent(String(value));
 }
 
+function safePostHref(value = "") {
+  const raw = String(value || "").trim();
+  if (!raw.startsWith("/posts/")) return "";
+
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin || !url.pathname.startsWith("/posts/")) return "";
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return "";
+  }
+}
+
+function tagHref(tag) {
+  return `/tags/${slugify(tag)}/`;
+}
+
+function sanitizePosts(posts) {
+  if (!Array.isArray(posts)) return [];
+  return posts.filter((post) => post && safePostHref(post.url));
+}
+
 function searchable(post) {
   return {
     title: normalize(post.title),
@@ -382,6 +404,9 @@ function renderSearchPagination(totalPages) {
 }
 
 function renderCard(post, query, index) {
+  const postHref = safePostHref(post.url);
+  if (!postHref) return "";
+
   return `<article class="search-result-card" role="listitem" data-result-year="${escapeHtml(postYear(post))}" data-result-category="${escapeHtml(post.category)}" data-result-series="${escapeHtml(post.series || "")}">
     <span class="search-result-index" aria-hidden="true">${escapeHtml(String(index).padStart(2, "0"))}</span>
     <div class="search-result-body">
@@ -390,11 +415,11 @@ function renderCard(post, query, index) {
         <span>${escapeHtml(post.category)}</span>
         <span>${escapeHtml(post.readingTime || "")}</span>
       </div>
-      <h2><a href="${escapeHtml(post.url)}">${highlight(post.title, query)}</a></h2>
+      <h2><a href="${escapeHtml(postHref)}">${highlight(post.title, query)}</a></h2>
       <p>${highlight(snippet(post, query), query)}</p>
       <div class="tag-row">${(post.tags || [])
         .slice(0, 5)
-        .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+        .map((tag) => `<a href="${escapeHtml(tagHref(tag))}">${escapeHtml(tag)}</a>`)
         .join("")}</div>
     </div>
   </article>`;
@@ -530,7 +555,7 @@ async function boot() {
 
   const response = await fetch("/search-index.json");
   if (!response.ok) throw new Error("Search index is unavailable.");
-  const posts = await response.json();
+  const posts = sanitizePosts(await response.json());
 
   sanitizeState(posts);
   render(posts);
