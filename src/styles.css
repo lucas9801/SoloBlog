@@ -2814,6 +2814,7 @@ pre {
   .series-detail-layout,
   .series-grid,
   .featured-post-grid,
+  .featured-post-grid.even-featured-grid,
   .home-post-grid {
     grid-template-columns: 1fr;
   }

@@ -468,6 +468,13 @@ async function checkViewport(viewport, page) {
                   failures.push("mobile hero is too tall for an index-first home page");
                 }
               }
+              const featuredGrid = document.querySelector(".featured-post-grid");
+              if (innerWidth <= 720 && featuredGrid instanceof HTMLElement) {
+                const columns = getComputedStyle(featuredGrid).gridTemplateColumns.split(" ").filter(Boolean);
+                if (columns.length !== 1) {
+                  failures.push("mobile recommended posts should use a single readable column");
+                }
+              }
               if (headerSearchButton.getAttribute("aria-label") !== "搜索文章") {
                 failures.push("header search icon button is missing its accessible label");
               }
