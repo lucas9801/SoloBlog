@@ -948,8 +948,16 @@ if (
 ) {
   failures.push("Blog operations docs must describe the implemented views/comments features instead of an old future-plan note.");
 }
-if (buildScript.includes('<span class="section-kicker">About</span>')) {
-  failures.push("About page must not expose an English template kicker.");
+if (
+  buildScript.includes('class="page-title"') ||
+  buildScript.includes('class="section-kicker"') ||
+  css.includes(".page-title") ||
+  css.includes(".section-kicker") ||
+  !buildScript.includes('class="not-found-panel"') ||
+  !css.includes(".not-found-panel") ||
+  !testBuildScript.includes('class="not-found-panel"')
+) {
+  failures.push("Standalone pages must not keep the generic page-title or section-kicker template modules.");
 }
 if (
   !buildScript.includes('class="page-shell narrow about-page"') ||

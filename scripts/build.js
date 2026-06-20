@@ -1987,8 +1987,8 @@ function searchPage() {
 
 function notFoundPage(posts) {
   const body = `<main class="page-shell narrow">
-    <header class="page-title">
-      <span class="section-kicker">404</span>
+    <header class="not-found-panel">
+      <span>404</span>
       <h1>页面未找到</h1>
       <p>这个地址没有对应的技术笔记。可以回到首页，或从全部文章继续查找内容。</p>
       <div class="hero-actions">

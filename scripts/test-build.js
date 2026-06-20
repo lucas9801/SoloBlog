@@ -383,7 +383,9 @@ try {
 
   const notFound = await readFile(path.join(tempRoot, "dist", "404.html"), "utf8");
   assert.match(notFound, /<meta name="robots" content="noindex,follow" \/>/);
+  assert.match(notFound, /class="not-found-panel"/);
   assert.match(notFound, /<h1>页面未找到<\/h1>/);
+  assert.doesNotMatch(notFound, /class="page-title"|class="section-kicker"/);
   assert.match(notFound, /class="compact-post-index"/);
   assert.match(notFound, /最近文章/);
   assert.match(notFound, /href="\/posts\/markdown-followup\/"/);
