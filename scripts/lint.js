@@ -425,7 +425,16 @@ if (css.includes(".page-context")) {
 if (/(function\s+(?:taxonomyIndexPage|listPage|postCard)\b)/.test(buildScript)) {
   failures.push("Build must not keep retired collection page builders.");
 }
-for (const retiredClass of [".post-card", ".post-grid", ".taxonomy-card", ".taxonomy-grid", ".tag-results-head"]) {
+for (const retiredClass of [
+  ".post-card",
+  ".post-grid",
+  ".taxonomy-card",
+  ".taxonomy-grid",
+  ".tag-results-head",
+  ".article-index-grid",
+  ".archive-list",
+  ".archive-item"
+]) {
   if (css.includes(retiredClass)) failures.push(`CSS must not keep retired selector ${retiredClass}.`);
 }
 if (!buildScript.includes("pageSchema") || !checkOutputScript.includes("CollectionPage")) {

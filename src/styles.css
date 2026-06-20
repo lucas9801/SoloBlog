@@ -539,12 +539,6 @@ pre {
   white-space: nowrap;
 }
 
-.article-index-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
 .home-post-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -811,8 +805,7 @@ pre {
   -webkit-line-clamp: 2;
 }
 
-.archive-card h2 a:hover,
-.archive-item h3 a:hover {
+.archive-card h2 a:hover {
   color: var(--brand);
 }
 
@@ -1527,43 +1520,6 @@ pre {
   color: var(--text);
   font-size: 18px;
   font-weight: 800;
-}
-
-.archive-list {
-  display: grid;
-  gap: 22px;
-}
-
-.archive-list section {
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-}
-
-.archive-list h2 {
-  margin: 0 0 14px;
-}
-
-.archive-item {
-  display: grid;
-  grid-template-columns: 120px minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-  padding: 13px 0;
-  border-top: 1px solid var(--line);
-}
-
-.archive-item time,
-.archive-item span {
-  color: var(--muted);
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-.archive-item h3 {
-  margin: 0;
-  font-size: 17px;
 }
 
 .pagination {
@@ -2664,7 +2620,6 @@ pre {
     max-height: none;
   }
 
-  .article-index-grid,
   .tag-matrix {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2774,7 +2729,6 @@ pre {
     padding: 16px;
   }
 
-  .article-index-grid,
   .blog-sidebar,
   .compact-post-list,
   .tag-matrix,
