@@ -1006,6 +1006,16 @@ function archivePostCard(post) {
 
 function featuredPostGrid(posts) {
   if (!posts.length) return "";
+  if (posts.length === 2) {
+    return `<div class="featured-post-grid count-2 even-featured-grid">
+    ${posts
+      .map((post) =>
+        archivePostCard(post).replace('<article class="archive-card">', '<article class="archive-card featured-card">')
+      )
+      .join("")}
+  </div>`;
+  }
+
   const [primary, ...secondary] = posts;
   return `<div class="featured-post-grid count-${posts.length}">
     ${archivePostCard(primary).replace('<article class="archive-card">', '<article class="archive-card featured-card is-primary">')}

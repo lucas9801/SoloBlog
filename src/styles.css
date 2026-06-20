@@ -552,6 +552,10 @@ pre {
   grid-template-columns: 1fr;
 }
 
+.featured-post-grid.even-featured-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .home-post-grid .archive-card {
   height: 100%;
 }
