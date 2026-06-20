@@ -264,6 +264,9 @@ try {
   assert.doesNotMatch(tagPage, /class="section-kicker"/);
   assert.match(tagPage, /Markdown 标签/);
   assert.match(tagPage, /<div class="archive-status" aria-live="polite">[\s\S]*<strong>标签：Markdown<\/strong>[\s\S]*<span>2 篇<\/span>[\s\S]*<span>第 1\/2 页<\/span>/);
+  assert.match(tagPage, /class="tag-result-list"/);
+  assert.match(tagPage, /class="tag-result-item"/);
+  assert.doesNotMatch(tagPage, /class="article-index-grid"/);
   assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
   assert.match(tagPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\/" \/>/);

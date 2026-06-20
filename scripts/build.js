@@ -1527,6 +1527,32 @@ function tagCloud(entries, activeTag = "") {
   </nav>`;
 }
 
+function tagResultList(posts, currentPage, perPage) {
+  return `<div class="tag-result-list">
+    ${posts
+      .map(
+        (post, index) => `<article class="tag-result-item">
+          <span>${String((currentPage - 1) * perPage + index + 1).padStart(2, "0")}</span>
+          <div>
+            <div class="post-meta">
+              <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
+              <span>${escapeHtml(post.category)}</span>
+              <span>${escapeHtml(post.readingTime)}</span>
+              ${viewCountMeta(post)}
+            </div>
+            <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
+            <p>${escapeHtml(post.summary)}</p>
+            <div class="tag-row">${post.tags
+              .slice(0, 4)
+              .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+              .join("")}</div>
+          </div>
+        </article>`
+      )
+      .join("")}
+  </div>`;
+}
+
 function tagListPage({ tag, posts, tags, page = 1, basePath }) {
   const perPage = archivePostsPerPage();
   const { items, currentPage, totalPages } = paginate(posts, page, perPage);
@@ -1540,7 +1566,7 @@ function tagListPage({ tag, posts, tags, page = 1, basePath }) {
     <section class="tag-results">
       <h2 class="sr-only">${escapeHtml(`${tag} 相关文章`)}</h2>
       ${archiveStatus({ title, count: posts.length, currentPage, totalPages })}
-      <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
+      ${tagResultList(items, currentPage, perPage)}
       ${paginationNav(basePath, currentPage, totalPages)}
     </section>
   </main>`;

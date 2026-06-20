@@ -506,6 +506,16 @@ if (
 if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage({ tag, posts, tags, page")) {
   failures.push("Tag result pages must be paginated.");
 }
+if (
+  !buildScript.includes("function tagResultList") ||
+  !buildScript.includes("tagResultList(items, currentPage, perPage)") ||
+  !css.includes(".tag-result-list") ||
+  !css.includes(".tag-result-item") ||
+  !testBuildScript.includes('class="tag-result-list"') ||
+  !testBuildScript.includes('assert.doesNotMatch(tagPage, /class="article-index-grid"/)')
+) {
+  failures.push("Tag result pages must use a compact technical index list instead of large cover cards.");
+}
 if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPage({ name, posts, seriesEntries, page")) {
   failures.push("Series detail pages must be paginated.");
 }
