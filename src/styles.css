@@ -1991,25 +1991,37 @@ pre {
 
 .reading-pill {
   position: fixed;
-  top: 84px;
-  right: 18px;
-  z-index: 8;
-  min-height: 26px;
-  padding: 0 9px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  z-index: 30;
+  min-height: 0;
+  height: 2px;
+  padding: 0;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  pointer-events: none;
+  opacity: 1;
 }
 
-.reading-pill span:first-child {
-  color: var(--brand);
+.reading-pill::before {
+  width: var(--reading-progress, 0%);
+  height: 100%;
+  display: block;
+  background: var(--brand);
+  content: "";
+}
+
+.reading-pill span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .search-page-card {
@@ -2741,40 +2753,6 @@ pre {
     grid-template-columns: 1fr;
   }
 
-  .reading-pill {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: auto;
-    z-index: 30;
-    min-height: 0;
-    height: 2px;
-    padding: 0;
-    display: block;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    pointer-events: none;
-    opacity: 1;
-  }
-
-  .reading-pill::before {
-    width: var(--reading-progress, 0%);
-    height: 100%;
-    display: block;
-    background: var(--brand);
-    content: "";
-  }
-
-  .reading-pill span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-  }
 }
 
 @media (max-width: 420px) {

@@ -1044,6 +1044,7 @@ async function checkViewport(viewport, page) {
               };
               const percentNode = document.querySelector("#readingPercent");
               const remainingNode = document.querySelector("#readingRemaining");
+              const readingPill = document.querySelector(".reading-pill");
               const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
               const articleContent = document.querySelector(".article-content");
               const sidebarSeries = document.querySelector(".article-related-aside .series-panel");
@@ -1051,6 +1052,12 @@ async function checkViewport(viewport, page) {
               const anySeries = document.querySelector(".series-panel");
               if (!percentNode) failures.push("reading percent node is missing");
               if (!remainingNode) failures.push("reading remaining node is missing");
+              if (readingPill instanceof HTMLElement) {
+                const pillRect = readingPill.getBoundingClientRect();
+                if (pillRect.top > 1 || pillRect.height > 3) {
+                  failures.push("reading progress should stay a restrained top-edge line");
+                }
+              }
               if (!articleContent) failures.push("article content is missing");
               if (anySeries && !sidebarSeries) failures.push("article series panel is not in the side column");
               if (footerSeries) failures.push("article series panel should not render inside the footer");

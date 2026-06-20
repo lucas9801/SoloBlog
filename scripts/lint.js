@@ -622,7 +622,11 @@ if (!articleScript.includes("IntersectionObserver") || !articleScript.includes("
 if (!articleScript.includes("giscusTheme") || !articleScript.includes("preferred_color_scheme")) {
   failures.push("Article script must load Giscus with the current site theme.");
 }
-if (!articleScript.includes("readingTarget") || !articleScript.includes(".article-content")) {
+if (
+  !articleScript.includes("readingTarget") ||
+  !articleScript.includes(".article-content") ||
+  !checkLayoutScript.includes("reading progress should stay a restrained top-edge line")
+) {
   failures.push("Article reading progress must be based on article content, not the whole document.");
 }
 if (
