@@ -65,6 +65,7 @@ class MockStatement {
       const limit = Number.parseInt(this.args[0], 10) || 0;
       return {
         results: [...this.db.rows.values()]
+          .filter(({ slug }) => !this.sql.includes("slug GLOB") || isCanonicalSlug(slug))
           .sort((a, b) => b.views - a.views || b.updatedAt - a.updatedAt)
           .slice(0, limit)
           .map(({ slug, views }) => ({ slug, views }))
@@ -94,6 +95,10 @@ class BrokenDatabase {
   prepare() {
     throw new Error("D1 unavailable");
   }
+}
+
+function isCanonicalSlug(value) {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
 }
 
 function context(db, request) {
@@ -243,6 +248,7 @@ await onRequestPost(context(db, viewRequest("start-here", "198.51.100.3")));
 await onRequestPost(context(db, viewRequest("game-team-toolchain", "198.51.100.4")));
 await onRequestPost(context(db, viewRequest("game-team-toolchain", "198.51.100.5")));
 await onRequestPost(context(db, viewRequest("game-team-toolchain", "198.51.100.6")));
+db.rows.set("../bad", { slug: "../bad", views: 100, updatedAt: ++db.clock });
 
 response = await readJson(await onRequestGet(context(db, new Request("https://blog.solus.games/api/views?top=2"))));
 assert.equal(response.status, 200);
@@ -250,6 +256,16 @@ assert.deepEqual(response.body.ranking, [
   { slug: "game-team-toolchain", views: 3 },
   { slug: "render-optimization-checklist", views: 2 }
 ]);
+assert.equal(response.body.ranking.some((entry) => entry.slug === "../bad"), false);
+
+response = await readJson(await onRequestGet(context(db, new Request("https://blog.solus.games/api/views?top=5"))));
+assert.equal(response.status, 200);
+assert.deepEqual(response.body.ranking, [
+  { slug: "game-team-toolchain", views: 3 },
+  { slug: "render-optimization-checklist", views: 2 },
+  { slug: "start-here", views: 1 }
+]);
+assert.equal(response.body.ranking.some((entry) => entry.slug === "../bad"), false);
 assert.ok(db.statements.some((sql) => sql.includes("idx_post_views_ranking")));
 assert.ok(db.statements.some((sql) => sql.includes("idx_post_view_events_date")));
 assert.ok(db.statements.some((sql) => sql.includes("DELETE FROM post_view_events WHERE viewed_on < ?")));

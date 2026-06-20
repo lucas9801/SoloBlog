@@ -166,14 +166,25 @@ export async function onRequestGet(context) {
     try {
       await ensureSchema(db);
       const result = await db
-        .prepare("SELECT slug, views FROM post_views ORDER BY views DESC, updated_at DESC LIMIT ?")
+        .prepare(
+          `SELECT slug, views FROM post_views
+           WHERE slug GLOB '[a-z0-9]*'
+             AND slug NOT GLOB '*[^a-z0-9-]*'
+             AND slug NOT LIKE '-%'
+             AND slug NOT LIKE '%-'
+             AND slug NOT LIKE '%--%'
+           ORDER BY views DESC, updated_at DESC
+           LIMIT ?`
+        )
         .bind(top)
         .all();
       return json({
-        ranking: (result.results || []).map((row) => ({
-          slug: row.slug,
-          views: Number(row.views) || 0
-        }))
+        ranking: (result.results || [])
+          .map((row) => ({
+            slug: sanitizeSlug(row.slug),
+            views: Number(row.views) || 0
+          }))
+          .filter((row) => row.slug)
       });
     } catch {
       return storageError();

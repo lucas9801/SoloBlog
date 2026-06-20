@@ -1001,6 +1001,16 @@ if (
   failures.push("Home sidebar must expose compact category, series, and tag index panels.");
 }
 if (
+  !viewsFunction.includes("slug: sanitizeSlug(row.slug)") ||
+  !viewsFunction.includes(".filter((row) => row.slug)") ||
+  !viewsFunction.includes("slug GLOB") ||
+  !testViewsScript.includes("function isCanonicalSlug") ||
+  !testViewsScript.includes('db.rows.set("../bad"') ||
+  !testViewsScript.includes("top=5")
+) {
+  failures.push("Views API ranking responses must filter invalid stored slugs before returning JSON.");
+}
+if (
   !viewsClientScript.includes("function rankingItems") ||
   !viewsClientScript.includes("function safePostHref") ||
   !viewsClientScript.includes("^\\/posts\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/$") ||
