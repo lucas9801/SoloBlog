@@ -36,6 +36,12 @@ function formatDate(date) {
   }).format(value);
 }
 
+function safePostHref(value = "") {
+  const raw = String(value || "").trim();
+  if (!/^\/posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(raw)) return "";
+  return raw;
+}
+
 async function loadViews() {
   const slugs = uniqueSlugs(viewNodes);
   if (slugs.length === 0) return;
@@ -62,7 +68,10 @@ function parseRankingPosts() {
 }
 
 export function rankingItems(ranking, posts, limit = 5) {
-  const bySlug = new Map(posts.map((post) => [post.slug, post]));
+  const validPosts = posts
+    .map((post) => ({ ...post, url: safePostHref(post.url) }))
+    .filter((post) => post.slug && post.title && post.url);
+  const bySlug = new Map(validPosts.map((post) => [post.slug, post]));
   const seenSlugs = new Set();
   const ranked = ranking
     .map((entry) => {
@@ -76,7 +85,7 @@ export function rankingItems(ranking, posts, limit = 5) {
       };
     })
     .filter(Boolean);
-  const fallback = posts
+  const fallback = validPosts
     .filter((post) => post.slug && !seenSlugs.has(post.slug))
     .map((post) => ({
       ...post,
@@ -85,7 +94,6 @@ export function rankingItems(ranking, posts, limit = 5) {
     }));
 
   return [...ranked, ...fallback]
-    .filter((item) => item.slug && item.title && item.url)
     .slice(0, limit);
 }
 

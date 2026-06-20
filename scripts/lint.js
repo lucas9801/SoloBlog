@@ -65,6 +65,7 @@ const [
   testBuildScript,
   testNewPostScript,
   testPreviewScript,
+  testViewsScript,
   checkAllScript,
   checkLayoutScript,
   checkOutputScript,
@@ -97,6 +98,7 @@ const [
   readFile(path.join(root, "scripts/test-build.js"), "utf8"),
   readFile(path.join(root, "scripts/test-new-post.js"), "utf8"),
   readFile(path.join(root, "scripts/test-preview.js"), "utf8"),
+  readFile(path.join(root, "scripts/test-views.js"), "utf8"),
   readFile(path.join(root, "scripts/check-all.js"), "utf8"),
   readFile(path.join(root, "scripts/check-layout.js"), "utf8"),
   readFile(path.join(root, "scripts/check-output.js"), "utf8"),
@@ -990,12 +992,17 @@ if (
 }
 if (
   !viewsClientScript.includes("function rankingItems") ||
+  !viewsClientScript.includes("function safePostHref") ||
+  !viewsClientScript.includes("^\\/posts\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/$") ||
+  !viewsClientScript.includes("validPosts") ||
   !viewsClientScript.includes("seenSlugs") ||
   !viewsClientScript.includes("ranked: false") ||
   !buildScript.includes("category: post.category") ||
-  !buildScript.includes("date: post.date")
+  !buildScript.includes("date: post.date") ||
+  !testViewsScript.includes("javascript:alert(1)") ||
+  !testViewsScript.includes("https://example.com/posts/external/")
 ) {
-  failures.push("Reading ranking must backfill sparse view rankings with recent posts.");
+  failures.push("Reading ranking must backfill sparse view rankings with recent safe local posts.");
 }
 if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?.eyebrow === "Technical Archive") {
   failures.push("Home page must not keep template-like English kicker labels.");

@@ -132,23 +132,28 @@ const rankingPosts = [
   { slug: "start-here", title: "Start", url: "/posts/start-here/", date: "2026-06-04", category: "随笔" },
   { slug: "render-optimization-checklist", title: "Render", url: "/posts/render/", date: "2026-06-03", category: "图形渲染" },
   { slug: "game-team-toolchain", title: "Tools", url: "/posts/tools/", date: "2026-06-02", category: "工具链" },
-  { slug: "unity-performance-start", title: "Unity", url: "/posts/unity/", date: "2026-06-01", category: "Unity" }
+  { slug: "unity-performance-start", title: "Unity", url: "/posts/unity/", date: "2026-06-01", category: "Unity" },
+  { slug: "unsafe-post", title: "Unsafe", url: "javascript:alert(1)", date: "2026-05-31", category: "测试" },
+  { slug: "external-post", title: "External", url: "https://example.com/posts/external/", date: "2026-05-30", category: "测试" }
 ];
 const sparseRanking = rankingItems(
   [
     { slug: "render-optimization-checklist", views: "7" },
     { slug: "unknown-post", views: 99 },
-    { slug: "render-optimization-checklist", views: 9 }
+    { slug: "render-optimization-checklist", views: 9 },
+    { slug: "unsafe-post", views: 8 },
+    { slug: "external-post", views: 6 }
   ],
   rankingPosts,
-  3
+  6
 );
 assert.deepEqual(
   sparseRanking.map(({ slug, ranked, views, category }) => ({ slug, ranked, views, category })),
   [
     { slug: "render-optimization-checklist", ranked: true, views: 7, category: "图形渲染" },
     { slug: "start-here", ranked: false, views: 0, category: "随笔" },
-    { slug: "game-team-toolchain", ranked: false, views: 0, category: "工具链" }
+    { slug: "game-team-toolchain", ranked: false, views: 0, category: "工具链" },
+    { slug: "unity-performance-start", ranked: false, views: 0, category: "Unity" }
   ]
 );
 
