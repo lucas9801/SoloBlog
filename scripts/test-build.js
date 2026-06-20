@@ -202,6 +202,9 @@ try {
   const latestSection = home.slice(latestSectionStart, latestSectionEnd);
   assert.match(latestSection, /Archive Latest/);
   assert.doesNotMatch(latestSection, /Archive Overflow/);
+  assert.match(home, /class="sidebar-card sidebar-index-card"/);
+  assert.match(home, /<h2>专题<\/h2>/);
+  assert.match(home, /href="\/series\/markdown-lab\/"/);
   assert.match(home, /<h2 data-ranking-title>阅读排行<\/h2>/);
   assert.match(home, /data-ranking-posts=/);
   assert.match(home, /data-ranking-posts="[^"]*&quot;date&quot;[^"]*&quot;category&quot;/);

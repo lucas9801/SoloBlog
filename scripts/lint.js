@@ -826,6 +826,17 @@ if (
   failures.push("Reading ranking must use reading-rank wording in both static and loaded states.");
 }
 if (
+  !buildScript.includes("function sidebar(posts, categories, tags, seriesEntries = [])") ||
+  !buildScript.includes('<section class="sidebar-card sidebar-index-card">') ||
+  !buildScript.includes('<h2>专题</h2>') ||
+  !buildScript.includes('href="/series/${slugify(name)}/"') ||
+  !buildScript.includes("sidebar(posts, categories, tags, seriesEntries)") ||
+  !css.includes(".sidebar-index-card") ||
+  !testBuildScript.includes('href="\\/series\\/markdown-lab\\/"')
+) {
+  failures.push("Home sidebar must expose compact category, series, and tag index panels.");
+}
+if (
   !viewsClientScript.includes("function rankingItems") ||
   !viewsClientScript.includes("seenSlugs") ||
   !viewsClientScript.includes("ranked: false") ||

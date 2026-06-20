@@ -1051,10 +1051,10 @@ function rankingPayload(posts) {
   );
 }
 
-function sidebar(posts, categories, tags) {
+function sidebar(posts, categories, tags, seriesEntries = []) {
   const fallbackRanking = posts.slice(0, 5);
   return `<aside class="blog-sidebar">
-    <section class="sidebar-card">
+    <section class="sidebar-card sidebar-index-card">
       <h2>分类</h2>
       <div class="category-list">${categories
         .map(
@@ -1063,7 +1063,18 @@ function sidebar(posts, categories, tags) {
         )
         .join("")}</div>
     </section>
-    <section class="sidebar-card">
+    ${
+      seriesEntries.length
+        ? `<section class="sidebar-card sidebar-index-card">
+          <h2>专题</h2>
+          <div class="category-list series-link-list">${seriesEntries
+            .slice(0, 6)
+            .map(([name, list]) => `<a href="/series/${slugify(name)}/"><span>${escapeHtml(name)}</span><b>${list.length}</b></a>`)
+            .join("")}</div>
+        </section>`
+        : ""
+    }
+    <section class="sidebar-card sidebar-index-card">
       <h2>标签索引</h2>
       <div class="tag-cloud">${tags
         .slice(0, 18)
@@ -1334,7 +1345,7 @@ async function loadPosts() {
   return posts.sort(comparePostsNewestFirst);
 }
 
-function homePage(posts, categories, tags) {
+function homePage(posts, categories, tags, seriesEntries = []) {
   const featuredPosts = posts.filter((post) => post.featured);
   const hero = site.hero;
   const recommended = featuredPosts.slice(0, 3);
@@ -1377,7 +1388,7 @@ function homePage(posts, categories, tags) {
           <div class="home-post-grid">${latest.map((post) => archivePostCard(post)).join("")}</div>
         </section>` : ""}
       </div>
-      ${sidebar(posts, categories, tags)}
+      ${sidebar(posts, categories, tags, seriesEntries)}
     </section>
   </main>`;
 
@@ -2170,7 +2181,7 @@ await copyDirectory(path.join(root, "public"), dist).catch((error) => {
   if (error.code !== "ENOENT") throw error;
 });
 
-await writePage(".", homePage(posts, categories, tags));
+await writePage(".", homePage(posts, categories, tags, seriesEntries));
 await writeArchivePages({
   posts,
   allPosts: posts,
