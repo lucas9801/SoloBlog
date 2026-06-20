@@ -56,11 +56,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  background:
-    linear-gradient(90deg, rgba(37, 99, 235, 0.035) 1px, transparent 1px),
-    linear-gradient(rgba(37, 99, 235, 0.028) 1px, transparent 1px),
-    var(--bg);
-  background-size: 56px 56px;
+  background: var(--bg);
 }
 
 body > main {
@@ -356,7 +352,11 @@ pre {
   align-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--surface);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--brand) 6%, transparent) 1px, transparent 1px),
+    var(--surface);
+  background-size: 40px 40px;
 }
 
 .hero-inner::before {
@@ -364,12 +364,9 @@ pre {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--brand) 10%, transparent) 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, var(--brand) 8%, transparent) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: linear-gradient(90deg, var(--surface) 0 42%, transparent 70%);
   content: "";
-  opacity: 0.55;
+  opacity: 0.9;
 }
 
 .hero-inner::after {
@@ -377,7 +374,7 @@ pre {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(90deg, var(--surface) 0 48%, color-mix(in srgb, var(--surface) 78%, transparent) 68%, transparent);
+  background: linear-gradient(90deg, var(--surface) 0 45%, color-mix(in srgb, var(--surface) 82%, transparent) 68%, transparent);
   content: "";
 }
 

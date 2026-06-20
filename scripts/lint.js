@@ -171,6 +171,11 @@ function slugify(value = "") {
     .replace(/^-+|-+$/g, "");
 }
 
+function cssRuleBlock(selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return css.match(new RegExp(`${escapedSelector}\\s*\\{([\\s\\S]*?)\\}`, "m"))?.[1] || "";
+}
+
 function isCanonicalSlug(value) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
 }
@@ -256,6 +261,7 @@ const posts = await Promise.all(
     return { file, raw, ...parsed };
   })
 );
+const bodyRule = cssRuleBlock("body");
 
 if (!site.title || !site.navigation?.length) failures.push("site config needs title and navigation.");
 if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
@@ -269,13 +275,15 @@ if (!css.includes(".article-content")) failures.push("CSS must define article co
 if (
   !css.includes("--shadow-sm: none;") ||
   /--shadow-sm:\s*0\s+\d/.test(css) ||
+  /background-size:\s*\d/.test(bodyRule) ||
+  /linear-gradient|radial-gradient/.test(bodyRule) ||
   css.includes("rgba(4, 8, 14, 0.54)") ||
   css.includes("rgba(4, 8, 14, 0.68)") ||
   /font-weight:\s*9\d\d/.test(css) ||
   /box-shadow:\s*0\s+0\s+0\s+3px/.test(css) ||
   /box-shadow:\s*inset/.test(css)
 ) {
-  failures.push("Visual system must keep the technical archive style restrained without soft card shadows, heavy cover masks, heavy font weights, or strong focus shadows.");
+  failures.push("Visual system must keep the technical archive style restrained without full-page grid decoration, soft card shadows, heavy cover masks, heavy font weights, or strong focus shadows.");
 }
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
 if (
