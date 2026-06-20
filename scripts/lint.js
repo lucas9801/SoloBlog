@@ -810,12 +810,17 @@ if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?
 }
 if (
   !buildScript.includes("recommendedSlugs") ||
+  !buildScript.includes("function featuredPostGrid") ||
+  !buildScript.includes('class="featured-post-grid count-${posts.length}"') ||
   !buildScript.includes("function homePostsPerPage") ||
   !buildScript.includes("posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage())") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
+  !css.includes(".featured-post-grid") ||
+  !css.includes(".featured-post-grid.count-3 .featured-card.is-primary") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
   !testBuildScript.includes("homePostsPerPage: 1") ||
   !testBuildScript.includes("Archive Overflow") ||
+  !testBuildScript.includes("featured-post-grid count-3") ||
   !testBuildScript.includes('href="#latest-posts"') ||
   !checkLayoutScript.includes("home hero latest-posts link points to a missing section")
 ) {

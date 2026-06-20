@@ -1003,6 +1003,18 @@ function archivePostCard(post) {
   </article>`;
 }
 
+function featuredPostGrid(posts) {
+  if (!posts.length) return "";
+  return `<div class="featured-post-grid count-${posts.length}">
+    ${posts
+      .map((post, index) => {
+        const primaryClass = index === 0 ? " is-primary" : "";
+        return archivePostCard(post).replace('<article class="archive-card">', `<article class="archive-card featured-card${primaryClass}">`);
+      })
+      .join("")}
+  </div>`;
+}
+
 function compactPostIndex(posts, title = "最近文章") {
   const items = posts.slice(0, 6);
   if (!items.length) return "";
@@ -1353,9 +1365,7 @@ function homePage(posts, categories, tags) {
               <h2>推荐阅读</h2>
             </div>
           </div>
-          <div class="home-post-grid">
-            ${recommended.map((post) => archivePostCard(post)).join("")}
-          </div>
+          ${featuredPostGrid(recommended)}
         </section>` : ""}
         ${latest.length ? `<section id="latest-posts" class="section-block">
           <div class="section-head">

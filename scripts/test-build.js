@@ -193,6 +193,8 @@ try {
   assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<section id="latest-posts" class="section-block">/);
   assert.match(home, /推荐阅读/);
+  assert.match(home, /<div class="featured-post-grid count-3">/);
+  assert.match(home, /<article class="archive-card featured-card is-primary">/);
   const latestSectionStart = home.indexOf('<section id="latest-posts"');
   const latestSectionEnd = home.indexOf("</section>", latestSectionStart);
   const latestSection = home.slice(latestSectionStart, latestSectionEnd);
