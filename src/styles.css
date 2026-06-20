@@ -1019,7 +1019,8 @@ pre {
 }
 
 .not-found-panel {
-  padding: 28px 32px;
+  padding: 24px 30px;
+  border-radius: 6px;
 }
 
 .not-found-panel > span {
@@ -1034,7 +1035,7 @@ pre {
 .not-found-panel h1 {
   margin: 0;
   color: var(--text);
-  font-size: clamp(32px, 4vw, 46px);
+  font-size: clamp(30px, 3.6vw, 42px);
   line-height: 1.12;
   font-weight: 800;
 }
@@ -1251,17 +1252,19 @@ pre {
 }
 
 .compact-post-index {
-  margin-top: 20px;
+  margin-top: 18px;
   display: grid;
   gap: 10px;
 }
 
 .compact-post-index-head {
   min-height: 32px;
+  padding-left: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  border-left: 3px solid var(--brand);
 }
 
 .compact-post-index-head h2 {
@@ -1281,13 +1284,13 @@ pre {
 .compact-post-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .compact-post-link {
   min-width: 0;
-  min-height: 52px;
-  padding: 10px 12px;
+  min-height: 56px;
+  padding: 11px 12px;
   display: grid;
   gap: 4px;
   align-content: center;
@@ -1299,8 +1302,8 @@ pre {
 
 .compact-post-link:hover,
 .compact-post-link:focus-visible {
-  border-color: var(--brand);
-  background: var(--surface-soft);
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+  background: var(--surface);
 }
 
 .compact-post-link span {
@@ -2840,6 +2843,10 @@ pre {
     padding: 16px;
   }
 
+  .not-found-panel h1 {
+    font-size: 30px;
+  }
+
   .blog-sidebar,
   .compact-post-list,
   .series-index-layout,
@@ -2848,6 +2855,10 @@ pre {
   .featured-post-grid,
   .home-post-grid {
     grid-template-columns: 1fr;
+  }
+
+  .compact-post-link {
+    min-height: 50px;
   }
 
   .content-shell .archive-card {

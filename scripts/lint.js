@@ -676,6 +676,8 @@ if (
   !buildScript.includes("function compactPostIndex") ||
   !buildScript.includes('compactPostIndex(posts, "最近文章")') ||
   !css.includes(".compact-post-list") ||
+  !/\.compact-post-index-head\s*\{[\s\S]*?border-left:\s*3px solid var\(--brand\);/.test(css) ||
+  !/\.compact-post-link\s*\{[\s\S]*?min-height:\s*56px;/.test(css) ||
   !testBuildScript.includes("最近文章")
 ) {
   failures.push("404 recovery must keep a compact recent-post index without adding recent-update blocks to taxonomy indexes.");
