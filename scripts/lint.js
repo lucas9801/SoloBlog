@@ -611,6 +611,7 @@ if (
   !css.includes(".post-index-item") ||
   !/\.post-index-list\s*\{[\s\S]*?width:\s*100%;/.test(css) ||
   !/\.post-index-list\.wide\s*\{[\s\S]*?width:\s*100%;/.test(css) ||
+  !/\.post-index-item\s*\{[\s\S]*?border:\s*1px solid var\(--line\);[\s\S]*?border-radius:\s*6px;/.test(css) ||
   !testBuildScript.includes('class="post-index-list"') ||
   !testBuildScript.includes('assert.doesNotMatch(archive, /class="archive-card-thumb/') ||
   !testBuildScript.includes('assert.doesNotMatch(tagPage, /class="article-index-grid"/)')
