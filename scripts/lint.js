@@ -472,6 +472,15 @@ if (
   failures.push("Archive pages must support quick-link combined year/category filtering with a compact result status.");
 }
 if (
+  !buildScript.includes('placeholder="搜索文章、年份、分类、专题、标签"') ||
+  !buildScript.includes('archiveStatus({ title, count: posts.length, currentPage, totalPages })') ||
+  !buildScript.includes('archiveStatus({ title: `专题：${name}`, count: sorted.length, currentPage, totalPages })') ||
+  !testBuildScript.includes("标签：Markdown") ||
+  !testBuildScript.includes("专题：Markdown Lab")
+) {
+  failures.push("Tag and series detail pages must expose compact result status, and header search copy must mention series.");
+}
+if (
   buildScript.includes("archive-filter-form") ||
   buildScript.includes("<summary>快捷筛选</summary>") ||
   siteScript.includes("data-archive-filter-form") ||

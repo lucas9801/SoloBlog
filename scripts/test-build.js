@@ -260,6 +260,7 @@ try {
   assert.doesNotMatch(tagPage, /class="page-context"/);
   assert.doesNotMatch(tagPage, /class="section-kicker"/);
   assert.match(tagPage, /Markdown 标签/);
+  assert.match(tagPage, /<div class="archive-status" aria-live="polite">[\s\S]*<strong>标签：Markdown<\/strong>[\s\S]*<span>2 篇<\/span>[\s\S]*<span>第 1\/2 页<\/span>/);
   assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
   assert.match(tagPage, /<link rel="next" href="https:\/\/blog\.solus\.games\/tags\/markdown\/page\/2\/" \/>/);
@@ -274,6 +275,7 @@ try {
   assert.match(tagPage2, /aria-current="page" aria-label="第 2 页，当前页">2<\/span>/);
 
   const seriesPage = await readFile(path.join(tempRoot, "dist", "series", "markdown-lab", "index.html"), "utf8");
+  assert.match(seriesPage, /<div class="archive-status" aria-live="polite">[\s\S]*<strong>专题：Markdown Lab<\/strong>[\s\S]*<span>2 篇<\/span>[\s\S]*<span>第 1\/2 页<\/span>/);
   assert.match(seriesPage, /href="\/posts\/markdown-edge-cases\/"/);
   assert.doesNotMatch(seriesPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(seriesPage, /href="\/series\/markdown-lab\/page\/2\/"/);

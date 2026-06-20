@@ -894,7 +894,7 @@ function pageLayout({
       <form class="site-search" action="/search/" method="get">
         <label>
           <span class="sr-only">搜索文章</span>
-          <input name="q" type="search" placeholder="搜索文章、年份、分类、标签" />
+          <input name="q" type="search" placeholder="搜索文章、年份、分类、专题、标签" />
         </label>
         <button type="submit" aria-label="搜索文章"><span class="sr-only">搜索文章</span></button>
       </form>
@@ -1529,6 +1529,7 @@ function tagListPage({ tag, posts, tags, page = 1, basePath }) {
     </section>
     <section class="tag-results">
       <h2 class="sr-only">${escapeHtml(`${tag} 相关文章`)}</h2>
+      ${archiveStatus({ title, count: posts.length, currentPage, totalPages })}
       <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
       ${paginationNav(basePath, currentPage, totalPages)}
     </section>
@@ -1641,6 +1642,7 @@ function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
     <h1 class="sr-only">${escapeHtml(name)}</h1>
     <div class="series-detail-layout${relatedSeries.length ? "" : " no-related"}">
       <div class="series-detail-main">
+        ${archiveStatus({ title: `专题：${name}`, count: sorted.length, currentPage, totalPages })}
         <section class="series-timeline" aria-label="${escapeAttr(name)} 专题文章">
           ${items
             .map(
