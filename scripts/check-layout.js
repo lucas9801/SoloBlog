@@ -673,7 +673,11 @@ async function checkViewport(viewport, page) {
               if (innerWidth <= 720) {
                 const filterPanel = document.querySelector(".search-filter-panel");
                 const filterHeight = filterPanel instanceof HTMLElement ? Math.round(filterPanel.getBoundingClientRect().height) : 0;
-                if (filterHeight > 190) failures.push("mobile search filter panel is too tall");
+                const facetsStyle = facets instanceof HTMLElement ? getComputedStyle(facets) : null;
+                if (filterHeight > 92) failures.push("mobile search filter panel is too tall");
+                if (facetsStyle?.display !== "flex" || !["auto", "scroll"].includes(facetsStyle?.overflowX || "")) {
+                  failures.push("mobile search facets must use a horizontal scroller");
+                }
               }
               if (invalidFacetUrl && new URL(location.href).search !== "") {
                 failures.push("search page did not remove invalid facet URL params");

@@ -836,10 +836,14 @@ if (searchScript.includes("search-facets-title") || css.includes(".search-facets
 }
 if (
   !css.includes(".facet-list::-webkit-scrollbar") ||
+  !css.includes(".search-facets::-webkit-scrollbar") ||
+  !css.includes("scroll-snap-type: x proximity;") ||
+  !css.includes("mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);") ||
   !css.includes("flex-wrap: nowrap;") ||
-  !checkLayoutScript.includes("mobile search filter panel is too tall")
+  !checkLayoutScript.includes("mobile search filter panel is too tall") ||
+  !checkLayoutScript.includes("mobile search facets must use a horizontal scroller")
 ) {
-  failures.push("Mobile search filters must stay compact with horizontal facet rows.");
+  failures.push("Mobile search filters must stay compact with horizontal facet groups and rows.");
 }
 if (!searchScript.includes("fields.year") || !searchScript.includes("state.year") || !searchScript.includes("fields.series") || !searchScript.includes("state.series")) {
   failures.push("Search page must index and filter post years and series for archive-scale discovery.");

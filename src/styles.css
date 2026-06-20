@@ -2932,6 +2932,8 @@ pre {
     position: static;
     min-width: calc(100vw - 48px);
     overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
   }
 
   .search-controls {
@@ -2942,10 +2944,25 @@ pre {
     justify-self: start;
   }
 
+  .search-facets {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .search-facets::-webkit-scrollbar {
+    display: none;
+  }
+
   .facet-group {
+    flex: 0 0 min(310px, calc(100vw - 48px));
     grid-template-columns: 42px minmax(0, 1fr);
     gap: 8px;
     align-items: center;
+    scroll-snap-align: start;
   }
 
   .facet-group > span {
