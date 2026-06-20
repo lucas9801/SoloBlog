@@ -81,7 +81,7 @@ async function defaultPaths() {
     paths.splice(seriesIndex === -1 ? paths.length : seriesIndex + 1, 0, `/series/${slugifyForPath(firstSeries)}/`);
   }
   const searchIndexPath = paths.indexOf("/search/");
-  paths.splice(searchIndexPath === -1 ? paths.length : searchIndexPath + 1, 0, "/search/?year=__missing__&category=__missing__&tag=__missing__");
+  paths.splice(searchIndexPath === -1 ? paths.length : searchIndexPath + 1, 0, "/search/?year=__missing__&category=__missing__&series=__missing__&tag=__missing__");
 
   return [...new Set(paths)];
 }
@@ -733,6 +733,93 @@ async function checkViewport(viewport, page) {
                 }
               } else {
                 failures.push("category quick filter has no selectable category");
+              }
+
+              let seriesButton = firstFacetButton("series");
+              let selectedSeries = "";
+              if (!(seriesButton instanceof HTMLButtonElement) && selectedCategory) {
+                const blockingCategoryChip = activeFilters.querySelector('[data-remove-filter="category"]');
+                if (blockingCategoryChip instanceof HTMLButtonElement) {
+                  blockingCategoryChip.click();
+                  await waitFor(() => !new URL(location.href).searchParams.get("category"));
+                  selectedCategory = "";
+                  seriesButton = firstFacetButton("series");
+                }
+              }
+              if (seriesButton instanceof HTMLButtonElement) {
+                selectedSeries = seriesButton.dataset.facetValue || "";
+                seriesButton.click();
+                await waitFor(() => new URL(location.href).searchParams.get("series") === selectedSeries);
+                const url = new URL(location.href);
+                if (!url.searchParams.get("series")) {
+                  failures.push("series quick filter did not update the URL");
+                }
+                if (selectedYear && url.searchParams.get("year") !== selectedYear) {
+                  failures.push("series quick filter did not preserve the selected year");
+                }
+                if (selectedCategory && url.searchParams.get("category") !== selectedCategory) {
+                  failures.push("series quick filter did not preserve the selected category");
+                }
+                if (!selectedCategory) {
+                  const compatibleCategoryButton = firstFacetButton("category");
+                  if (compatibleCategoryButton instanceof HTMLButtonElement) {
+                    selectedCategory = compatibleCategoryButton.dataset.facetValue || "";
+                    compatibleCategoryButton.click();
+                    await waitFor(() => new URL(location.href).searchParams.get("category") === selectedCategory);
+                    const categoryUrl = new URL(location.href);
+                    if (categoryUrl.searchParams.get("series") !== selectedSeries) {
+                      failures.push("category quick filter did not preserve the selected series");
+                    }
+                    if (selectedYear && categoryUrl.searchParams.get("year") !== selectedYear) {
+                      failures.push("category quick filter after series did not preserve the selected year");
+                    }
+                  } else {
+                    failures.push("series-filtered category list has no selectable category");
+                  }
+                }
+                await wait(120);
+                const resultCards = Array.from(document.querySelectorAll(".search-result-card"));
+                if (resultCards.length === 0) {
+                  failures.push("combined year/category/series filters rendered no result cards");
+                }
+                if (selectedCategory && resultCards.some((card) => card.dataset.resultCategory !== selectedCategory)) {
+                  failures.push("combined search results include posts outside the selected category after series filtering");
+                }
+                if (selectedSeries && resultCards.some((card) => card.dataset.resultSeries !== selectedSeries)) {
+                  failures.push("combined search results include posts outside the selected series");
+                }
+                const summaryText = ((status.textContent || "") + " " + (results.textContent || "")).trim();
+                if (selectedSeries && !summaryText.includes("专题：" + selectedSeries)) {
+                  failures.push("combined search summary does not show the selected series");
+                }
+                if (selectedSeries && !(activeFilters.textContent || "").includes("专题：" + selectedSeries)) {
+                  failures.push("active filter chips do not show the selected series");
+                }
+              } else if (document.querySelectorAll('[data-facet-type="series"]').length === 0) {
+                failures.push("series quick filter group is missing even though indexed posts include series");
+              }
+
+              const seriesChip = activeFilters.querySelector('[data-remove-filter="series"]');
+              if (selectedSeries && seriesChip instanceof HTMLButtonElement) {
+                seriesChip.click();
+                await waitFor(() => !new URL(location.href).searchParams.get("series"));
+                if (new URL(location.href).searchParams.get("series")) {
+                  failures.push("series active filter chip did not remove the series URL param");
+                }
+                if (new URL(location.href).searchParams.get("q") !== "Unity") {
+                  failures.push("series active filter chip did not preserve the query URL param");
+                }
+                if (selectedYear && new URL(location.href).searchParams.get("year") !== selectedYear) {
+                  failures.push("series active filter chip did not preserve the year URL param");
+                }
+                if (selectedCategory && new URL(location.href).searchParams.get("category") !== selectedCategory) {
+                  failures.push("series active filter chip did not preserve the category URL param");
+                }
+                if ((activeFilters.textContent || "").includes("专题：" + selectedSeries)) {
+                  failures.push("series active filter chip did not remove the visible series chip");
+                }
+              } else if (selectedSeries) {
+                failures.push("active filter chips do not include a removable series chip");
               }
 
               const categoryChip = activeFilters.querySelector('[data-remove-filter="category"]');

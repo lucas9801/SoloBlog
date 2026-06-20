@@ -628,15 +628,21 @@ if (
   !searchScript.includes("searchFacets") ||
   !searchScript.includes('facetGroup("年份", "year"') ||
   !searchScript.includes('facetGroup("分类", "category"') ||
+  !searchScript.includes('facetGroup("专题", "series"') ||
   !searchScript.includes('facetGroup("标签", "tag"') ||
   !searchScript.includes("全部年份") ||
   !searchScript.includes("全部分类") ||
+  !searchScript.includes("全部专题") ||
   !searchScript.includes("event.target instanceof Element") ||
-  !searchScript.includes('["year", "category", "tag"].includes(type)') ||
+  !searchScript.includes('["year", "category", "series", "tag"].includes(type)') ||
   !searchScript.includes("function resetSearchState") ||
+  !searchScript.includes("data-result-series") ||
+  !searchScript.includes('next.set("series", state.series)') ||
+  !checkLayoutScript.includes("series quick filter did not update the URL") ||
+  !checkLayoutScript.includes("series active filter chip did not preserve the category URL param") ||
   !checkLayoutScript.includes("Escape did not clear active facets")
 ) {
-  failures.push("Search page must support combined year/category/tag quick filters.");
+  failures.push("Search page must support combined year/category/series/tag quick filters.");
 }
 if (
   searchScript.includes("searchYearFilter") ||
@@ -649,8 +655,8 @@ if (
 if (searchScript.includes("search-facets-title") || css.includes(".search-facets-title")) {
   failures.push("Search page must not render a visible quick-filter title above the facet groups.");
 }
-if (!searchScript.includes("fields.year") || !searchScript.includes("state.year")) {
-  failures.push("Search page must index and filter post years for archive-scale discovery.");
+if (!searchScript.includes("fields.year") || !searchScript.includes("state.year") || !searchScript.includes("fields.series") || !searchScript.includes("state.series")) {
+  failures.push("Search page must index and filter post years and series for archive-scale discovery.");
 }
 if (
   !searchScript.includes("facetScope(posts") ||
@@ -798,6 +804,7 @@ if (
   buildScript.includes("SOLUS ARCHIVE") ||
   postCoverSvgs.some((source) => source.includes("SOLUS ARCHIVE")) ||
   buildScript.includes('placeholder="搜索文章、标签"') ||
+  buildScript.includes('placeholder="搜索标题、摘要、正文、年份、分类或标签"') ||
   buildScript.includes(">⌕</button>")
 ) {
   failures.push("Visible generated surfaces must use current SOLUS wording.");

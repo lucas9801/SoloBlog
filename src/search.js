@@ -19,6 +19,7 @@ const state = {
   query: params.get("q") || "",
   year: params.get("year") || "",
   category: params.get("category") || "",
+  series: params.get("series") || "",
   tag: params.get("tag") || "",
   page: pageNumber(params.get("page"))
 };
@@ -170,6 +171,7 @@ function sanitizeState(posts) {
   let changed = false;
   const years = availableValues(posts, (post) => post.year || String(post.date || "").slice(0, 4));
   const categories = availableValues(posts, (post) => post.category);
+  const series = availableValues(posts, (post) => post.series);
   const tags = availableValues(posts, (post) => post.tags);
 
   if (state.year && !years.has(state.year)) {
@@ -178,6 +180,10 @@ function sanitizeState(posts) {
   }
   if (state.category && !categories.has(state.category)) {
     state.category = "";
+    changed = true;
+  }
+  if (state.series && !series.has(state.series)) {
+    state.series = "";
     changed = true;
   }
   if (state.tag && !tags.has(state.tag)) {
@@ -213,6 +219,7 @@ function renderFacets(posts) {
   if (!facets) return;
   const yearScope = facetScope(posts, "year");
   const categoryScope = facetScope(posts, "category");
+  const seriesScope = facetScope(posts, "series");
   const tagScope = facetScope(posts, "tag");
   const years = includeActiveFacet(
     countEntries(yearScope, postYear).sort(
@@ -221,6 +228,7 @@ function renderFacets(posts) {
     "year"
   );
   const categories = includeActiveFacet(countEntries(categoryScope, (post) => post.category), "category");
+  const series = includeActiveFacet(countEntries(seriesScope, (post) => post.series), "series");
   const tags = limitFacetEntries(
     includeActiveFacet(countEntries(tagScope, (post) => post.tags), "tag"),
     "tag",
@@ -230,6 +238,7 @@ function renderFacets(posts) {
   facets.innerHTML = `
     ${facetGroup("年份", "year", "全部年份", yearScope.length, years)}
     ${facetGroup("分类", "category", "全部分类", categoryScope.length, categories)}
+    ${series.length ? facetGroup("专题", "series", "全部专题", seriesScope.length, series) : ""}
     ${facetGroup("标签", "tag", "全部标签", tagScope.length, tags)}`;
 }
 
@@ -259,8 +268,9 @@ function matchesFilters(post, except = "") {
   const year = postYear(post);
   const yearMatches = except === "year" || !state.year || year === state.year;
   const categoryMatches = except === "category" || !state.category || post.category === state.category;
+  const seriesMatches = except === "series" || !state.series || post.series === state.series;
   const tagMatches = except === "tag" || !state.tag || (post.tags || []).includes(state.tag);
-  return yearMatches && categoryMatches && tagMatches;
+  return yearMatches && categoryMatches && seriesMatches && tagMatches;
 }
 
 function truncate(value, maxLength = 118) {
@@ -290,6 +300,7 @@ function selectedFilters() {
   return [
     state.year ? `年份：${state.year}` : "",
     state.category ? `分类：${state.category}` : "",
+    state.series ? `专题：${state.series}` : "",
     state.tag ? `标签：${state.tag}` : ""
   ]
     .filter(Boolean)
@@ -301,12 +312,13 @@ function selectedFilterItems() {
     normalize(state.query) ? { type: "query", label: `关键词：${state.query.trim()}` } : null,
     state.year ? { type: "year", label: `年份：${state.year}` } : null,
     state.category ? { type: "category", label: `分类：${state.category}` } : null,
+    state.series ? { type: "series", label: `专题：${state.series}` } : null,
     state.tag ? { type: "tag", label: `标签：${state.tag}` } : null
   ].filter(Boolean);
 }
 
 function hasSearchState() {
-  return Boolean(normalize(state.query) || state.year || state.category || state.tag);
+  return Boolean(normalize(state.query) || state.year || state.category || state.series || state.tag);
 }
 
 function paginationItems(currentPage, totalPages) {
@@ -325,6 +337,7 @@ function searchParamsForState(page = state.page) {
   if (normalize(state.query)) next.set("q", state.query.trim());
   if (state.year) next.set("year", state.year);
   if (state.category) next.set("category", state.category);
+  if (state.series) next.set("series", state.series);
   if (state.tag) next.set("tag", state.tag);
   if (page > 1) next.set("page", String(page));
   return next;
@@ -369,7 +382,7 @@ function renderSearchPagination(totalPages) {
 }
 
 function renderCard(post, query) {
-  return `<article class="search-result-card" role="listitem" data-result-year="${escapeHtml(postYear(post))}" data-result-category="${escapeHtml(post.category)}">
+  return `<article class="search-result-card" role="listitem" data-result-year="${escapeHtml(postYear(post))}" data-result-category="${escapeHtml(post.category)}" data-result-series="${escapeHtml(post.series || "")}">
     <a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="阅读文章：${escapeHtml(post.title)}">
       <img src="${escapeHtml(post.cover || "/assets/posts/start-here.svg")}" alt="" width="1200" height="675" loading="lazy" decoding="async" />
       <span>${escapeHtml(post.category)}</span>
@@ -504,6 +517,7 @@ function resetSearchState() {
   state.query = "";
   state.year = "";
   state.category = "";
+  state.series = "";
   state.tag = "";
   state.page = 1;
   if (input) input.value = "";
@@ -541,7 +555,7 @@ async function boot() {
     if (!button) return;
     cancelScheduledSearchRender();
     const type = button.dataset.facetType;
-    if (!["year", "category", "tag"].includes(type)) return;
+    if (!["year", "category", "series", "tag"].includes(type)) return;
     const value = button.dataset.facetValue || "";
     state[type] = state[type] === value ? "" : value;
     state.page = 1;
@@ -563,6 +577,7 @@ async function boot() {
       if (type === "query") state.query = "";
       if (type === "year") state.year = "";
       if (type === "category") state.category = "";
+      if (type === "series") state.series = "";
       if (type === "tag") state.tag = "";
       state.page = 1;
     }

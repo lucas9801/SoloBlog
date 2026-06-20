@@ -1871,7 +1871,7 @@ function searchPage() {
       <div class="search-controls">
         <label class="search-query-control">
           <span class="sr-only">搜索关键词</span>
-          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" />
+          <input id="searchInputPage" type="search" placeholder="搜索标题、摘要、正文、年份、分类、专题或标签" aria-describedby="searchStatus" aria-controls="searchResults searchFacets" />
         </label>
         <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchStatus searchResults searchFacets" hidden>清空</button>
       </div>

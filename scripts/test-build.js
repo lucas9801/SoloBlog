@@ -326,7 +326,7 @@ try {
   assert.match(search, /搜索功能需要启用 JavaScript/);
   assert.doesNotMatch(search, /id="searchYearFilter"/);
   assert.doesNotMatch(search, /id="searchCategoryFilter"/);
-  assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类或标签"/);
+  assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类、专题或标签"/);
   assert.match(search, /id="searchInputPage"[^>]+aria-describedby="searchStatus"[^>]+aria-controls="searchResults searchFacets"/);
   assert.match(search, /id="searchActiveFilters" class="search-active-filters" aria-label="当前筛选" hidden/);
   assert.doesNotMatch(search, /autofocus/);
