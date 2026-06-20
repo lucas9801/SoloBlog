@@ -673,7 +673,8 @@ if (
   !checkLayoutScript.includes("article hero is too tall for a focused technical reading page") ||
   !checkLayoutScript.includes("desktop article text column is too narrow for technical reading") ||
   !checkLayoutScript.includes("desktop article text column is too wide for comfortable long-form reading") ||
-  !css.includes("font-size: clamp(32px, 3.2vw, 44px);")
+  !css.includes("font-size: clamp(31px, 3vw, 42px);") ||
+  !css.includes("color-mix(in srgb, var(--surface-soft) 42%, transparent)")
 ) {
   failures.push("Article page chrome must keep series navigation in the side column and preserve a focused reading header.");
 }
