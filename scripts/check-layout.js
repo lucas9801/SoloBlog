@@ -459,9 +459,12 @@ async function checkViewport(viewport, page) {
               }
               if (failures.length > 0) return failures;
 
-              if (innerWidth <= 720 && hero) {
+              if (hero) {
                 const heroHeight = Math.round(hero.getBoundingClientRect().height);
-                if (heroHeight > 286) {
+                if (innerWidth > 720 && heroHeight > 250) {
+                  failures.push("desktop hero is too tall for an index-first home page");
+                }
+                if (innerWidth <= 720 && heroHeight > 286) {
                   failures.push("mobile hero is too tall for an index-first home page");
                 }
               }

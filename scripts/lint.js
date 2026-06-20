@@ -869,6 +869,8 @@ if (
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
   !css.includes(".featured-post-grid") ||
   !css.includes(".featured-post-grid.count-3 .featured-card.is-primary") ||
+  !css.includes("min-height: 220px;") ||
+  !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
   !testBuildScript.includes("homePostsPerPage: 1") ||
   !testBuildScript.includes("Archive Overflow") ||
