@@ -13,6 +13,7 @@ const viewNodes = Array.from(document.querySelectorAll("[data-view-slug]")).filt
   (node) => node.dataset.viewSlug === postSlug
 );
 const commentsSection = document.querySelector("[data-giscus-comments]");
+const copyButtonStates = new WeakMap();
 let metricsUpdateQueued = false;
 
 function clamp(value, min, max) {
@@ -81,6 +82,48 @@ function updateReadingProgress() {
   pill?.style.setProperty("--reading-progress", `${value}%`);
   percent.textContent = `${value}%`;
   remaining.textContent = remainingMinutes > 0 ? `剩余 ≈ ${remainingMinutes} 分钟` : "已读完";
+}
+
+function beginCopyAction(button) {
+  if (button.dataset.copyPending === "true") return false;
+  button.dataset.copyPending = "true";
+  button.setAttribute("aria-busy", "true");
+  if (button instanceof HTMLButtonElement) button.disabled = true;
+  return true;
+}
+
+function finishCopyAction(button) {
+  delete button.dataset.copyPending;
+  button.removeAttribute("aria-busy");
+  if (button instanceof HTMLButtonElement) button.disabled = false;
+}
+
+function setCopyButtonState(button, options) {
+  const status = options.status || null;
+  const state = copyButtonStates.get(button) || {
+    text: button.textContent || "",
+    label: button.getAttribute("aria-label"),
+    timer: 0
+  };
+
+  if (state.timer) window.clearTimeout(state.timer);
+  copyButtonStates.set(button, state);
+  if (options.className) button.classList.add(options.className);
+  button.textContent = options.text;
+  button.setAttribute("aria-label", options.label);
+  if (status) status.textContent = options.statusMessage || options.label;
+
+  state.timer = window.setTimeout(() => {
+    if (options.className) button.classList.remove(options.className);
+    button.textContent = state.text;
+    if (state.label) {
+      button.setAttribute("aria-label", state.label);
+    } else {
+      button.removeAttribute("aria-label");
+    }
+    if (status) status.textContent = "";
+    copyButtonStates.delete(button);
+  }, options.restoreDelay || 1400);
 }
 
 function setActiveToc(id) {
@@ -196,8 +239,10 @@ function loadComments() {
   }
 
   let slowTimer = 0;
+  let timeoutTimer = 0;
   const finish = () => {
     window.clearTimeout(slowTimer);
+    window.clearTimeout(timeoutTimer);
     loader?.remove();
   };
   const observer =
@@ -215,6 +260,18 @@ function loadComments() {
       loaderText.textContent = "评论加载较慢，请稍候。";
     }
   }, 5000);
+  timeoutTimer = window.setTimeout(() => {
+    if (frame.querySelector("iframe")) return;
+    observer?.disconnect();
+    window.clearTimeout(slowTimer);
+    script.remove();
+    commentsSection.dataset.loaded = "false";
+    if (loaderText) loaderText.textContent = "评论加载超时，请稍后重试。";
+    if (loaderButton) {
+      loaderButton.disabled = false;
+      loaderButton.textContent = "重新加载";
+    }
+  }, 15000);
 
   const script = document.createElement("script");
   script.src = "https://giscus.app/client.js";
@@ -235,6 +292,7 @@ function loadComments() {
   script.addEventListener("error", () => {
     observer?.disconnect();
     window.clearTimeout(slowTimer);
+    window.clearTimeout(timeoutTimer);
     script.remove();
     commentsSection.dataset.loaded = "false";
     if (loaderText) loaderText.textContent = "评论暂时加载失败。";
@@ -278,64 +336,50 @@ updateViewCount().catch(() => {
 article?.addEventListener("click", async (event) => {
   const target = event.target instanceof Element ? event.target : null;
   const articleLinkButton = target?.closest("[data-copy-article-url]");
-  if (articleLinkButton) {
+  if (articleLinkButton instanceof HTMLElement) {
     const status = articleLinkButton.parentElement?.querySelector("[data-copy-article-status]");
-    const previousText = articleLinkButton.textContent;
-    const previousLabel = articleLinkButton.getAttribute("aria-label");
     const url = articleLinkButton.dataset.copyArticleUrl || window.location.href;
+    if (!beginCopyAction(articleLinkButton)) return;
 
-    if (await copyText(url)) {
-      articleLinkButton.textContent = "已复制";
-      articleLinkButton.setAttribute("aria-label", "本文链接已复制");
-      if (status) status.textContent = "本文链接已复制";
-    } else {
-      articleLinkButton.textContent = "复制失败";
-      articleLinkButton.setAttribute("aria-label", "本文链接复制失败");
-      if (status) status.textContent = "本文链接复制失败";
-    }
+    const copied = await copyText(url);
+    finishCopyAction(articleLinkButton);
+    setCopyButtonState(articleLinkButton, {
+      text: copied ? "已复制" : "复制失败",
+      label: copied ? "本文链接已复制" : "本文链接复制失败",
+      status,
+      restoreDelay: copied ? 1400 : 2200
+    });
 
-    window.setTimeout(() => {
-      articleLinkButton.textContent = previousText;
-      if (previousLabel) {
-        articleLinkButton.setAttribute("aria-label", previousLabel);
-      } else {
-        articleLinkButton.removeAttribute("aria-label");
-      }
-      if (status) status.textContent = "";
-    }, 1400);
     return;
   }
 
   const button = target?.closest("[data-copy-code]");
-  if (!button) return;
+  if (!(button instanceof HTMLElement)) return;
 
   const block = button.closest("pre");
   const code = block?.querySelector("code")?.textContent || "";
   const status = block?.querySelector("[data-copy-code-status]");
   if (!code) return;
+  if (!beginCopyAction(button)) return;
 
-  if (await copyText(code)) {
-    button.classList.add("is-copied");
-    button.textContent = "已复制";
-    button.setAttribute("aria-label", "代码已复制");
-    if (status) status.textContent = "代码已复制";
-    window.setTimeout(() => {
-      button.classList.remove("is-copied");
-      button.textContent = "复制";
-      button.setAttribute("aria-label", "复制代码");
-      if (status) status.textContent = "";
-    }, 1400);
+  const copied = await copyText(code);
+  finishCopyAction(button);
+  if (copied) {
+    setCopyButtonState(button, {
+      text: "已复制",
+      label: "代码已复制",
+      status,
+      className: "is-copied"
+    });
     return;
   }
 
-  button.textContent = "复制失败";
-  button.setAttribute("aria-label", "代码复制失败");
-  if (status) status.textContent = "代码复制失败";
-  window.setTimeout(() => {
-    button.textContent = "复制";
-    button.setAttribute("aria-label", "复制代码");
-    if (status) status.textContent = "";
-  }, 1400);
+  setCopyButtonState(button, {
+    text: "复制失败",
+    label: "代码复制失败",
+    status,
+    restoreDelay: 2200
+  });
 });
 
 window.addEventListener("scroll", scheduleArticleMetricsUpdate, { passive: true });

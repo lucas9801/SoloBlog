@@ -515,16 +515,24 @@ async function checkViewport(viewport, page) {
               const rssCopyStatus = rssCopyButton.parentElement?.querySelector("[data-copy-rss-status]");
               const originalClipboard = navigator.clipboard;
               const originalRssCopyText = rssCopyButton.textContent.trim();
+              let rssCopyAttempts = 0;
               try {
                 Object.defineProperty(navigator, "clipboard", {
                   configurable: true,
-                  value: { writeText: async () => {} }
+                  value: { writeText: async () => {
+                    rssCopyAttempts += 1;
+                    await wait(180);
+                  } }
                 });
               } catch {
                 failures.push("RSS copy button clipboard stub could not be installed");
               }
               rssCopyButton.click();
-              await wait(120);
+              rssCopyButton.click();
+              await wait(260);
+              if (rssCopyAttempts !== 1) {
+                failures.push("RSS copy button should ignore repeated clicks while copying");
+              }
               if (rssCopyButton.textContent.trim() !== "已复制") {
                 failures.push("RSS copy button did not expose visible feedback");
               }
@@ -1105,6 +1113,15 @@ async function checkViewport(viewport, page) {
                   failures.push("comments loader did not append the Giscus script");
                 } else if (commentsScript.getAttribute("data-theme") !== "dark") {
                   failures.push("comments loader did not use the current site theme");
+                } else {
+                  commentsScript.dispatchEvent(new Event("error"));
+                  await wait(80);
+                  if (commentsSection.dataset.loaded !== "false") {
+                    failures.push("comments loader did not reset after a Giscus script failure");
+                  }
+                  if (commentsButton.disabled || commentsButton.textContent.trim() !== "重新加载") {
+                    failures.push("comments loader did not expose retry after a Giscus script failure");
+                  }
                 }
                 if (originalTheme) {
                   document.documentElement.dataset.theme = originalTheme;
@@ -1118,11 +1135,78 @@ async function checkViewport(viewport, page) {
               if (!(copyArticleButton instanceof HTMLButtonElement)) {
                 failures.push("article copy link button is missing");
               } else {
+                const originalClipboard = navigator.clipboard;
+                let copyAttempts = 0;
+                try {
+                  Object.defineProperty(navigator, "clipboard", {
+                    configurable: true,
+                    value: { writeText: async () => {
+                      copyAttempts += 1;
+                      await wait(180);
+                    } }
+                  });
+                } catch {
+                  failures.push("article copy link button clipboard stub could not be installed");
+                }
+                copyArticleButton.click();
                 copyArticleButton.click();
                 await waitFor(() => copyArticleButton.textContent.trim() !== "复制链接", 1600);
+                if (copyAttempts !== 1) {
+                  failures.push("article copy link button should ignore repeated clicks while copying");
+                }
                 const copyFeedback = (copyArticleButton.textContent || "") + " " + (copyArticleStatus?.textContent || "");
                 if (!copyFeedback.includes("已复制") && !copyFeedback.includes("复制失败")) {
                   failures.push("article copy link button did not expose feedback");
+                }
+                await waitFor(() => copyArticleButton.textContent.trim() === "复制链接", 2200);
+                if (copyArticleButton.textContent.trim() !== "复制链接") {
+                  failures.push("article copy link button did not restore its original label");
+                }
+                try {
+                  Object.defineProperty(navigator, "clipboard", {
+                    configurable: true,
+                    value: originalClipboard
+                  });
+                } catch {
+                  // The test page is disposable; restoring is best effort.
+                }
+              }
+
+              const codeCopyButton = document.querySelector("[data-copy-code]");
+              if (codeCopyButton instanceof HTMLButtonElement) {
+                const originalClipboard = navigator.clipboard;
+                let codeCopyAttempts = 0;
+                try {
+                  Object.defineProperty(navigator, "clipboard", {
+                    configurable: true,
+                    value: { writeText: async () => {
+                      codeCopyAttempts += 1;
+                      await wait(180);
+                    } }
+                  });
+                } catch {
+                  failures.push("code copy button clipboard stub could not be installed");
+                }
+                codeCopyButton.click();
+                codeCopyButton.click();
+                await waitFor(() => codeCopyButton.textContent.trim() !== "复制", 1600);
+                if (codeCopyAttempts !== 1) {
+                  failures.push("code copy button should ignore repeated clicks while copying");
+                }
+                if (codeCopyButton.textContent.trim() !== "已复制" || !codeCopyButton.classList.contains("is-copied")) {
+                  failures.push("code copy button did not expose copied feedback");
+                }
+                await waitFor(() => codeCopyButton.textContent.trim() === "复制", 2200);
+                if (codeCopyButton.textContent.trim() !== "复制" || codeCopyButton.classList.contains("is-copied")) {
+                  failures.push("code copy button did not restore its original label");
+                }
+                try {
+                  Object.defineProperty(navigator, "clipboard", {
+                    configurable: true,
+                    value: originalClipboard
+                  });
+                } catch {
+                  // The test page is disposable; restoring is best effort.
                 }
               }
 

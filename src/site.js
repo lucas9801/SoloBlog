@@ -1,5 +1,6 @@
 const header = document.querySelector(".site-header");
 const themeToggle = document.querySelector("[data-theme-toggle]");
+const rssCopyStates = new WeakMap();
 let lastScrollY = window.scrollY;
 let ticking = false;
 
@@ -148,22 +149,28 @@ for (const form of document.querySelectorAll(".site-search")) {
 }
 
 function setRssCopyState(button, visibleText, statusMessage = visibleText, restoreDelay = 1600) {
-  const previous = button.textContent;
-  const previousLabel = button.getAttribute("aria-label");
   const status = button.parentElement?.querySelector("[data-copy-rss-status]");
+  const state = rssCopyStates.get(button) || {
+    text: button.textContent || "",
+    label: button.getAttribute("aria-label"),
+    timer: 0
+  };
 
+  if (state.timer) window.clearTimeout(state.timer);
+  rssCopyStates.set(button, state);
   button.textContent = visibleText;
   button.setAttribute("aria-label", statusMessage);
   if (status) status.textContent = statusMessage;
 
-  window.setTimeout(() => {
-    button.textContent = previous;
-    if (previousLabel) {
-      button.setAttribute("aria-label", previousLabel);
+  state.timer = window.setTimeout(() => {
+    button.textContent = state.text;
+    if (state.label) {
+      button.setAttribute("aria-label", state.label);
     } else {
       button.removeAttribute("aria-label");
     }
     if (status) status.textContent = "";
+    rssCopyStates.delete(button);
   }, restoreDelay);
 }
 
@@ -171,11 +178,20 @@ document.addEventListener("click", async (event) => {
   const target = event.target instanceof Element ? event.target : null;
   const button = target?.closest("[data-copy-rss]");
   if (!(button instanceof HTMLElement)) return;
+  if (button.dataset.copyPending === "true") return;
 
   const url = button.dataset.copyRss;
   if (!url) return;
 
-  if (await copyText(url)) {
+  button.dataset.copyPending = "true";
+  button.setAttribute("aria-busy", "true");
+  if (button instanceof HTMLButtonElement) button.disabled = true;
+  const copied = await copyText(url);
+  delete button.dataset.copyPending;
+  button.removeAttribute("aria-busy");
+  if (button instanceof HTMLButtonElement) button.disabled = false;
+
+  if (copied) {
     setRssCopyState(button, "已复制", "RSS 链接已复制");
     return;
   }

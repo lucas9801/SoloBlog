@@ -721,6 +721,14 @@ if (!articleScript.includes("giscusTheme") || !articleScript.includes("preferred
   failures.push("Article script must load Giscus with the current site theme.");
 }
 if (
+  !articleScript.includes("timeoutTimer") ||
+  !articleScript.includes("评论加载超时，请稍后重试。") ||
+  !articleScript.includes('commentsSection.dataset.loaded = "false"') ||
+  !checkLayoutScript.includes("comments loader did not expose retry after a Giscus script failure")
+) {
+  failures.push("Giscus comment loading must reset to a retryable state after failure or timeout.");
+}
+if (
   !articleScript.includes("readingTarget") ||
   !articleScript.includes(".article-content") ||
   !checkLayoutScript.includes("reading progress should stay a restrained top-edge line")
@@ -742,7 +750,11 @@ if (
   !buildScript.includes('tabindex="0" aria-label="${escapeAttr(scrollLabel)}"') ||
   !articleScript.includes("代码已复制") ||
   !articleScript.includes("async function copyText") ||
-  !articleScript.includes('document.execCommand("copy")')
+  !articleScript.includes('document.execCommand("copy")') ||
+  !articleScript.includes("function beginCopyAction") ||
+  !articleScript.includes("function setCopyButtonState") ||
+  !articleScript.includes("button.disabled = true") ||
+  !checkLayoutScript.includes("code copy button should ignore repeated clicks while copying")
 ) {
   failures.push("Article code blocks must expose keyboard scroll and accessible copy feedback.");
 }
@@ -752,7 +764,8 @@ if (
   !articleScript.includes("data-copy-article-url") ||
   !articleScript.includes("本文链接已复制") ||
   !css.includes(".article-footer-tools") ||
-  !articleScript.includes("event.target instanceof Element")
+  !articleScript.includes("event.target instanceof Element") ||
+  !checkLayoutScript.includes("article copy link button should ignore repeated clicks while copying")
 ) {
   failures.push("Article pages must expose an accessible permalink copy action.");
 }
@@ -1051,8 +1064,12 @@ if (
   !siteScript.includes("RSS 链接复制失败") ||
   !siteScript.includes("async function copyText") ||
   !siteScript.includes('document.execCommand("copy")') ||
+  !siteScript.includes("rssCopyStates") ||
+  !siteScript.includes("copyPending") ||
+  !siteScript.includes("button.disabled = true") ||
   !checkLayoutScript.includes("RSS copy button did not expose visible feedback") ||
-  !checkLayoutScript.includes("RSS copy button did not restore its original label")
+  !checkLayoutScript.includes("RSS copy button did not restore its original label") ||
+  !checkLayoutScript.includes("RSS copy button should ignore repeated clicks while copying")
 ) {
   failures.push("Subscribe card must expose RSS, JSON Feed, and a clear RSS copy state.");
 }
