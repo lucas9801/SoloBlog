@@ -244,9 +244,12 @@ if (
   !css.includes("--shadow-sm: none;") ||
   /--shadow-sm:\s*0\s+\d/.test(css) ||
   css.includes("rgba(4, 8, 14, 0.54)") ||
-  css.includes("rgba(4, 8, 14, 0.68)")
+  css.includes("rgba(4, 8, 14, 0.68)") ||
+  /font-weight:\s*9\d\d/.test(css) ||
+  /box-shadow:\s*0\s+0\s+0\s+3px/.test(css) ||
+  /box-shadow:\s*inset/.test(css)
 ) {
-  failures.push("Visual system must keep the technical archive style restrained without soft card shadows or heavy cover masks.");
+  failures.push("Visual system must keep the technical archive style restrained without soft card shadows, heavy cover masks, heavy font weights, or strong focus shadows.");
 }
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
 if (

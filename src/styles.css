@@ -172,7 +172,7 @@ pre {
 .brand strong {
   font-size: 15px;
   line-height: 1;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .brand small {
@@ -201,7 +201,7 @@ pre {
   color: var(--brand);
   content: "S";
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -645,7 +645,7 @@ pre {
 
 .search-page-card input:focus {
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 14%, transparent);
 }
 
 .archive-filter-links {
@@ -2872,7 +2872,7 @@ pre {
   }
 
   .article-content .table-scroll {
-    box-shadow: inset -28px 0 26px -28px color-mix(in srgb, var(--text) 46%, transparent);
+    box-shadow: none;
   }
 
   .comments-loader {
