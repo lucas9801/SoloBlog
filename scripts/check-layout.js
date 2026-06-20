@@ -642,6 +642,11 @@ async function checkViewport(viewport, page) {
               if (facetButtons === 0) failures.push("search page did not render facet buttons");
               if (!clearButtonIsHidden()) failures.push("clear button is visible before any search state");
               if (!activeFilters.hidden) failures.push("active filter chips are visible before any search state");
+              if (innerWidth <= 720) {
+                const filterPanel = document.querySelector(".search-filter-panel");
+                const filterHeight = filterPanel instanceof HTMLElement ? Math.round(filterPanel.getBoundingClientRect().height) : 0;
+                if (filterHeight > 190) failures.push("mobile search filter panel is too tall");
+              }
               if (invalidFacetUrl && new URL(location.href).search !== "") {
                 failures.push("search page did not remove invalid facet URL params");
               }

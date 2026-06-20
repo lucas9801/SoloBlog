@@ -2892,11 +2892,13 @@ pre {
 
   .search-layout {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 14px;
   }
 
   .search-filter-panel {
     position: static;
+    min-width: calc(100vw - 48px);
+    overflow: hidden;
   }
 
   .search-controls {
@@ -2908,12 +2910,32 @@ pre {
   }
 
   .facet-group {
-    grid-template-columns: 1fr;
-    gap: 6px;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
   }
 
   .facet-group > span {
     padding-top: 0;
+  }
+
+  .facet-list {
+    min-width: 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .facet-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .facet-button {
+    flex: 0 0 auto;
+    min-height: 28px;
+    padding: 0 8px;
+    font-size: 12px;
   }
 
   .post-navigation {
