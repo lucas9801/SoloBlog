@@ -269,6 +269,15 @@ const posts = await Promise.all(
 const bodyRule = cssRuleBlock("body");
 
 if (!site.title || !site.navigation?.length) failures.push("site config needs title and navigation.");
+const navigationHrefs = new Set((site.navigation || []).map((item) => item?.href).filter(Boolean));
+for (const href of ["/", "/archive/", "/tags/", "/about/"]) {
+  if (!navigationHrefs.has(href)) {
+    failures.push(`site primary navigation must include ${href}.`);
+  }
+}
+if (navigationHrefs.has("/series/")) {
+  failures.push("Series pages should stay available through sidebars, article series panels, search facets, and sitemap, not the primary navigation.");
+}
 if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
   failures.push("site baseUrl must be an https URL ending with /.");
 }
