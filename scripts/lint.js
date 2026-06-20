@@ -537,6 +537,14 @@ if (
 if (!checkLayoutScript.includes("footer is floating above the viewport bottom")) {
   failures.push("Layout checks must prevent short-page footers from floating mid-viewport.");
 }
+if (
+  !checkLayoutScript.includes("did not use a dark theme surface") ||
+  !checkLayoutScript.includes("dark theme text color is too dim for the main UI") ||
+  !checkLayoutScript.includes("channelMax") ||
+  !checkLayoutScript.includes("channelMin")
+) {
+  failures.push("Layout checks must verify that key UI surfaces and text actually switch to the dark theme.");
+}
 if (!checkLayoutScript.includes("const originalTheme = document.documentElement.dataset.theme")) {
   failures.push("Layout checks must restore the article theme after testing comments.");
 }

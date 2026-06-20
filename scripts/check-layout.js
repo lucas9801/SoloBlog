@@ -514,6 +514,43 @@ async function checkViewport(viewport, page) {
               } catch {
                 // Storage can be unavailable; the click behavior still matters.
               }
+              if (expectedNext === "dark") {
+                const channelMax = (color) => {
+                  const match = String(color).match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+                  return match ? Math.max(Number(match[1]), Number(match[2]), Number(match[3])) : 255;
+                };
+                const channelMin = (color) => {
+                  const match = String(color).match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+                  return match ? Math.min(Number(match[1]), Number(match[2]), Number(match[3])) : 0;
+                };
+                const darkSurfaceSelectors = [
+                  "body",
+                  ".site-header",
+                  ".site-search",
+                  ".theme-toggle",
+                  ".site-footer",
+                  ".sidebar-card",
+                  ".archive-card",
+                  ".post-index-item",
+                  ".search-filter-panel",
+                  ".search-result-card",
+                  ".article-page",
+                  ".not-found-panel"
+                ];
+                for (const selector of darkSurfaceSelectors) {
+                  const element = document.querySelector(selector);
+                  if (!element) continue;
+                  const background = getComputedStyle(element).backgroundColor;
+                  if (channelMax(background) > 48) {
+                    failures.push(selector + " did not use a dark theme surface");
+                    break;
+                  }
+                }
+                const textSample = document.querySelector(".brand strong, .article-content, .search-count, .site-footer");
+                if (textSample && channelMin(getComputedStyle(textSample).color) < 140) {
+                  failures.push("dark theme text color is too dim for the main UI");
+                }
+              }
               toggle.click();
               await wait(120);
               if (document.documentElement.dataset.theme !== originalTheme) {
