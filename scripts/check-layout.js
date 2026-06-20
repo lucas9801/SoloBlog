@@ -917,6 +917,26 @@ async function checkViewport(viewport, page) {
             })()`
           })
         : { result: { value: [] } };
+    const tagRuntime =
+      page.pathname === "/tags/"
+        ? await send("Runtime.evaluate", {
+            returnByValue: true,
+            expression: `(() => {
+              const failures = [];
+              const matrix = document.querySelector(".tag-matrix");
+              if (!(matrix instanceof HTMLElement)) return ["tag matrix is missing"];
+              const items = matrix.querySelectorAll(".tag-index-item");
+              if (items.length === 0) failures.push("tag matrix has no tag items");
+              if (innerWidth <= 720) {
+                const height = Math.round(matrix.getBoundingClientRect().height);
+                const columns = getComputedStyle(matrix).gridTemplateColumns.split(" ").filter(Boolean).length;
+                if (height > 330) failures.push("mobile tag matrix is too tall");
+                if (columns < 2) failures.push("mobile tag matrix should use at least two columns");
+              }
+              return failures;
+            })()`
+          })
+        : { result: { value: [] } };
     const archiveNavigationFailures = [];
     const archiveYearPath = archiveRuntime.result.value?.yearPath || "";
     if (archiveYearPath) {
@@ -1175,6 +1195,7 @@ async function checkViewport(viewport, page) {
       ...(siteRuntime.result.value || []),
       ...(searchRuntime.result.value || []),
       ...(archiveRuntime.result.value?.failures || archiveRuntime.result.value || []),
+      ...(tagRuntime.result.value || []),
       ...archiveNavigationFailures,
       ...headerSearchFailures,
       ...(articleRuntime.result.value || []),

@@ -519,6 +519,17 @@ if (!buildScript.includes("writeTagPages") || !buildScript.includes("tagListPage
   failures.push("Tag result pages must be paginated.");
 }
 if (
+  !buildScript.includes("function tagWeightClass") ||
+  !buildScript.includes("tag-matrix") ||
+  !css.includes(".tag-matrix") ||
+  !css.includes(".tag-index-item.active") ||
+  !checkLayoutScript.includes("mobile tag matrix should use at least two columns") ||
+  !checkLayoutScript.includes("mobile tag matrix is too tall") ||
+  !testBuildScript.includes('assert.doesNotMatch(tagIndex, /class="compact-post-index"/)')
+) {
+  failures.push("Tag index must use a compact tag matrix without recent update blocks.");
+}
+if (
   !buildScript.includes("function postIndexList") ||
   !buildScript.includes("postIndexList(items, currentPage, perPage)") ||
   !buildScript.includes('postIndexList(items, currentPage, perPage, "wide")') ||
