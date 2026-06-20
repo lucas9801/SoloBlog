@@ -2936,7 +2936,8 @@ pre {
 
   .search-filter-panel {
     position: static;
-    min-width: calc(100vw - 48px);
+    width: 100%;
+    min-width: 0;
     overflow: hidden;
     -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
     mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
@@ -2964,7 +2965,8 @@ pre {
   }
 
   .facet-group {
-    flex: 0 0 min(310px, calc(100vw - 48px));
+    flex: 0 0 100%;
+    min-width: 100%;
     grid-template-columns: 42px minmax(0, 1fr);
     gap: 8px;
     align-items: center;
