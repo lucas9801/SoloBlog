@@ -315,6 +315,10 @@ try {
   assert.doesNotMatch(seriesIndex, /class="compact-post-index"/);
   assert.doesNotMatch(seriesIndex, />专题<\/span>/);
   assert.doesNotMatch(seriesIndex, /最近 \d{4}/);
+  assert.match(seriesIndex, /class="series-index-layout"/);
+  assert.match(seriesIndex, /<aside class="series-index-sidebar" aria-label="专题快速索引">/);
+  assert.match(seriesIndex, /href="#series-markdown-lab"/);
+  assert.match(seriesIndex, /id="series-markdown-lab"/);
   assert.match(seriesIndex, /class="series-card-head"/);
   assert.match(seriesIndex, /class="series-card-meta"/);
   assert.match(seriesIndex, /更新 2026\/06\/14/);

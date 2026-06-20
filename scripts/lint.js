@@ -522,6 +522,18 @@ if (
 if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPage({ name, posts, seriesEntries, page")) {
   failures.push("Series detail pages must be paginated.");
 }
+if (
+  !buildScript.includes("series-index-layout") ||
+  !buildScript.includes('<aside class="series-index-sidebar" aria-label="专题快速索引">') ||
+  !buildScript.includes('href="#series-${slugify(name)}"') ||
+  !css.includes(".series-index-layout") ||
+  !css.includes(".series-index-sidebar") ||
+  !css.includes(".series-index-nav") ||
+  !testBuildScript.includes('class="series-index-layout"') ||
+  !testBuildScript.includes('href="#series-markdown-lab"')
+) {
+  failures.push("Series index pages must use a compact topic index layout with a side quick index.");
+}
 if (!buildScript.includes("series-card-list") || !css.includes(".series-card-list")) {
   failures.push("Series index cards must preview posts inside each series.");
 }

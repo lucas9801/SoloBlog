@@ -372,6 +372,8 @@ async function checkViewport(viewport, page) {
           ".compact-post-index",
           ".compact-post-list",
           ".series-page",
+          ".series-index-layout",
+          ".series-index-sidebar",
           ".series-detail-layout",
           ".series-grid",
           ".article-shell",

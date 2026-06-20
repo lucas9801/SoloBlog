@@ -1620,38 +1620,54 @@ function sortSeriesPosts(posts) {
 function seriesIndexPage(entries, posts) {
   const body = `<main class="page-shell series-page">
     <h1 class="sr-only">专题索引</h1>
-    <section class="series-grid">
-      ${entries
-        .map(([name, list], entryIndex) => {
-          const sorted = sortSeriesPosts(list);
-          const latest = [...list].sort(comparePostsNewestFirst)[0];
-          return `<article class="series-card">
-            <a class="series-card-head" href="/series/${slugify(name)}/">
-              <b>${String(entryIndex + 1).padStart(2, "0")}</b>
-              <strong class="series-card-title">${escapeHtml(name)}</strong>
-              <span class="series-card-meta">
-                <span>${list.length} 篇</span>
-                <span>更新 ${formatDate(latest?.date || latestPostDate(list))}</span>
-              </span>
-            </a>
-            <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
-            <ol class="series-card-list">
-              ${sorted
-                .slice(0, 4)
-                .map(
-                  (post, index) => `<li>
-                    <a href="${post.url}">
-                      <b>${String(index + 1).padStart(2, "0")}</b>
-                      <span>${escapeHtml(post.title)}</span>
-                    </a>
-                  </li>`
-                )
-                .join("")}
-            </ol>
-          </article>`;
-        })
-        .join("")}
-    </section>
+    <div class="series-index-layout">
+      <section class="series-grid" aria-label="专题列表">
+        ${entries
+          .map(([name, list], entryIndex) => {
+            const sorted = sortSeriesPosts(list);
+            const latest = [...list].sort(comparePostsNewestFirst)[0];
+            return `<article class="series-card" id="series-${slugify(name)}">
+              <a class="series-card-head" href="/series/${slugify(name)}/">
+                <b>${String(entryIndex + 1).padStart(2, "0")}</b>
+                <strong class="series-card-title">${escapeHtml(name)}</strong>
+                <span class="series-card-meta">
+                  <span>${list.length} 篇</span>
+                  <span>更新 ${formatDate(latest?.date || latestPostDate(list))}</span>
+                </span>
+              </a>
+              <p>${escapeHtml(latest?.summary || `${list.length} 篇技术笔记`)}</p>
+              <ol class="series-card-list">
+                ${sorted
+                  .slice(0, 4)
+                  .map(
+                    (post, index) => `<li>
+                      <a href="${post.url}">
+                        <b>${String(index + 1).padStart(2, "0")}</b>
+                        <span>${escapeHtml(post.title)}</span>
+                      </a>
+                    </li>`
+                  )
+                  .join("")}
+              </ol>
+            </article>`;
+          })
+          .join("")}
+      </section>
+      <aside class="series-index-sidebar" aria-label="专题快速索引">
+        <nav class="series-index-nav">
+          ${entries
+            .map(([name, list], index) => {
+              const latest = [...list].sort(comparePostsNewestFirst)[0];
+              return `<a href="#series-${slugify(name)}">
+                <b>${String(index + 1).padStart(2, "0")}</b>
+                <span>${escapeHtml(name)}</span>
+                <small>${list.length} 篇 · ${formatDate(latest?.date || latestPostDate(list))}</small>
+              </a>`;
+            })
+            .join("")}
+        </nav>
+      </aside>
+    </div>
   </main>`;
   return pageLayout({
     title: "专题",
