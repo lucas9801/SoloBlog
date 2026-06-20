@@ -474,6 +474,10 @@ async function checkViewport(viewport, page) {
                 if (columns.length !== 1) {
                   failures.push("mobile recommended posts should use a single readable column");
                 }
+                const overlayLabel = featuredGrid.querySelector(".archive-card-thumb span");
+                if (overlayLabel instanceof HTMLElement && getComputedStyle(overlayLabel).display !== "none") {
+                  failures.push("mobile recommended card covers should not repeat the visible card title");
+                }
               }
               if (headerSearchButton.getAttribute("aria-label") !== "搜索文章") {
                 failures.push("header search icon button is missing its accessible label");

@@ -1064,6 +1064,7 @@ if (
   !css.includes(".featured-note-card") ||
   !css.includes("min-height: 220px;") ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
+  !checkLayoutScript.includes("mobile recommended card covers should not repeat the visible card title") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
   !testBuildScript.includes("homePostsPerPage: 1") ||
   !testBuildScript.includes("Archive Overflow") ||

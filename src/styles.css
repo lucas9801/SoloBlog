@@ -2815,6 +2815,22 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .content-shell .archive-card-thumb {
+    aspect-ratio: 16 / 4.4;
+  }
+
+  .content-shell .archive-card-thumb::after {
+    background: transparent;
+  }
+
+  .content-shell .archive-card-thumb img {
+    object-position: top center;
+  }
+
+  .content-shell .archive-card-thumb span {
+    display: none;
+  }
+
   .archive-filter-stack {
     padding-bottom: 0;
   }
