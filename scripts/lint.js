@@ -884,7 +884,7 @@ if (!searchScript.includes("function highlight") || !searchScript.includes("<mar
 }
 if (
   !searchScript.includes("function safePostHref") ||
-  !searchScript.includes('raw.startsWith("/posts/")') ||
+  !searchScript.includes('^\\/posts\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/$') ||
   !searchScript.includes("function sanitizePosts") ||
   !searchScript.includes("sanitizePosts(await response.json())") ||
   !searchScript.includes('href="${escapeHtml(postHref)}"') ||

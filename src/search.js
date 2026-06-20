@@ -96,15 +96,8 @@ function slugify(value = "") {
 
 function safePostHref(value = "") {
   const raw = String(value || "").trim();
-  if (!raw.startsWith("/posts/")) return "";
-
-  try {
-    const url = new URL(raw, window.location.origin);
-    if (url.origin !== window.location.origin || !url.pathname.startsWith("/posts/")) return "";
-    return `${url.pathname}${url.search}${url.hash}`;
-  } catch {
-    return "";
-  }
+  if (!/^\/posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(raw)) return "";
+  return raw;
 }
 
 function tagHref(tag) {
