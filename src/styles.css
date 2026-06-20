@@ -550,15 +550,17 @@ pre {
 
 .content-shell .archive-card {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  min-height: 168px;
+  grid-template-columns: 248px minmax(0, 1fr);
+  min-height: 172px;
 }
 
 .content-shell .archive-card-thumb {
   height: 100%;
   aspect-ratio: auto;
   border-right: 1px solid var(--line);
-  background: #08111c;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 42%),
+    #08111c;
 }
 
 .content-shell .archive-card-thumb::after {
@@ -566,11 +568,12 @@ pre {
 }
 
 .content-shell .archive-card-thumb img {
-  width: 210%;
-  max-width: none;
-  height: 100%;
-  object-position: top left;
-  opacity: 0.9;
+  width: 100%;
+  max-width: 100%;
+  height: 200%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0.92;
 }
 
 .content-shell .archive-card-thumb span {
@@ -1088,18 +1091,18 @@ pre {
 }
 
 .tag-matrix-page {
-  padding: 18px;
+  padding: 14px;
 }
 
 .tag-matrix {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
 }
 
 .tag-index-item {
-  min-height: 48px;
-  padding: 0 12px;
+  min-height: 42px;
+  padding: 0 10px 0 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1115,12 +1118,12 @@ pre {
 .tag-index-item:hover,
 .tag-index-item.active {
   border-color: var(--brand);
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--brand) 7%, var(--surface));
 }
 
 .tag-index-item b {
-  min-width: 24px;
-  height: 24px;
+  min-width: 22px;
+  height: 22px;
   display: grid;
   place-items: center;
   border-radius: 4px;
@@ -1140,7 +1143,7 @@ pre {
 }
 
 .tag-results {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .post-index-list {
@@ -2805,14 +2808,14 @@ pre {
 
   .content-shell .archive-card-thumb {
     height: auto;
-    aspect-ratio: 16 / 5.2;
+    aspect-ratio: 16 / 7;
     border-right: 0;
   }
 
   .content-shell .archive-card-thumb img {
     width: 100%;
     max-width: 100%;
-    height: 150%;
+    height: 178%;
     object-position: top center;
   }
 

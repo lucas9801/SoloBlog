@@ -619,6 +619,12 @@ if (
   failures.push("Archive and tag result pages must use compact technical index lists instead of large cover cards.");
 }
 if (
+  /content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?width:\s*210%;/.test(css) ||
+  !/content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*200%;[\s\S]*?object-fit:\s*cover;[\s\S]*?object-position:\s*top center;/.test(css)
+) {
+  failures.push("Home article thumbnails must use restrained top-cropped technical previews instead of oversized poster crops.");
+}
+if (
   /post-index-list(?:\.wide)?\s*\{[\s\S]*?max-width:\s*(?:920|1040)px/.test(css) ||
   /\.series-index-layout\.single-series\s+\.series-card\s*\{[\s\S]*?max-width:\s*920px/.test(css)
 ) {
@@ -1070,7 +1076,8 @@ if (
   !css.includes(".hero-visual") ||
   !css.includes("min-height: 198px;") ||
   !css.includes(".content-shell .archive-card") ||
-  !css.includes("grid-template-columns: 220px minmax(0, 1fr);") ||
+  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*(?:2[2-8]\d|300)px minmax\(0,\s*1fr\);/.test(css) ||
+  !/\.content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*200%;[\s\S]*?object-position:\s*top center;/.test(css) ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   !checkLayoutScript.includes("mobile recommended card covers should not repeat the visible card title") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
