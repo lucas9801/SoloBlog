@@ -34,6 +34,7 @@ const requiredFiles = [
   "assets/hero/solus-hero.svg",
   ".node-version",
   "docs/cloudflare-pages.md",
+  "docs/dynamic-features.md",
   "assets/og/solus-og.svg",
   "assets/og/solus-og.png",
   "migrations/0002_post_view_events.sql",
@@ -76,7 +77,8 @@ const [
   rootIndex,
   readme,
   blogOperationsDocs,
-  cloudflareDocs
+  cloudflareDocs,
+  dynamicFeaturesDocs
 ] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
@@ -107,7 +109,8 @@ const [
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "README.md"), "utf8"),
   readFile(path.join(root, "docs/blog-operations.md"), "utf8"),
-  readFile(path.join(root, "docs/cloudflare-pages.md"), "utf8")
+  readFile(path.join(root, "docs/cloudflare-pages.md"), "utf8"),
+  readFile(path.join(root, "docs/dynamic-features.md"), "utf8")
 ]);
 
 const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file) =>
@@ -984,8 +987,10 @@ if (blogOperationsDocs.includes("分类页和默认封面会保持一致")) {
 }
 if (
   blogOperationsDocs.includes("可以，但需要额外接动态能力") ||
+  dynamicFeaturesDocs.includes("预留了两个动态功能") ||
   !blogOperationsDocs.includes("当前博客已经支持阅读量和评论") ||
-  !blogOperationsDocs.includes("[阅读量和评论配置](dynamic-features.md)")
+  !blogOperationsDocs.includes("[阅读量和评论配置](dynamic-features.md)") ||
+  !dynamicFeaturesDocs.includes("已经实现了两个动态功能")
 ) {
   failures.push("Blog operations docs must describe the implemented views/comments features instead of an old future-plan note.");
 }

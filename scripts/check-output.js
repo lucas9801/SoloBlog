@@ -8,6 +8,7 @@ const site = JSON.parse(await readFile(path.join(root, "content", "site.json"), 
 const siteBaseUrl = new URL(site.baseUrl);
 const siteOrigin = siteBaseUrl.origin;
 const absoluteSiteRoot = new URL("/", siteBaseUrl).toString();
+const internalProjectNames = ["soloblog-4w3"];
 
 async function exists(file) {
   try {
@@ -168,6 +169,14 @@ function checkDocumentBasics(file, html) {
 
   const h1Count = [...html.matchAll(/<h1\b[^>]*>/gi)].length;
   if (h1Count !== 1) failures.push(`${relative} must contain exactly one h1 element.`);
+}
+
+function checkNoInternalProjectNames(name, text) {
+  for (const internalName of internalProjectNames) {
+    if (String(text || "").includes(internalName)) {
+      failures.push(`${name} must not expose internal Cloudflare project name: ${internalName}`);
+    }
+  }
 }
 
 function checkContentLandmarks(file, html) {
@@ -1046,9 +1055,11 @@ async function main() {
   const searchIndex = await readFile(path.join(dist, "search-index.json"), "utf8")
     .then(JSON.parse)
     .catch(() => null);
+  checkNoInternalProjectNames("dist/search-index.json", JSON.stringify(searchIndex || ""));
   await checkSearchIndex(searchIndex);
 
   const robots = await readFile(path.join(dist, "robots.txt"), "utf8").catch(() => "");
+  checkNoInternalProjectNames("dist/robots.txt", robots);
   const expectedSitemap = `Sitemap: ${new URL("/sitemap.xml", absoluteSiteRoot).toString()}`;
   if (!robots.includes("User-agent: *")) failures.push("dist/robots.txt must include a default user-agent rule.");
   if (!robots.includes("Allow: /")) failures.push("dist/robots.txt must allow the site root.");
@@ -1056,17 +1067,21 @@ async function main() {
   if (/pages\.dev/i.test(robots)) failures.push("dist/robots.txt must not contain a pages.dev URL.");
 
   const rss = await readFile(path.join(dist, "rss.xml"), "utf8").catch(() => "");
+  checkNoInternalProjectNames("dist/rss.xml", rss);
   await checkRss(rss);
 
   const jsonFeed = await readFile(path.join(dist, "feed.json"), "utf8")
     .then(JSON.parse)
     .catch(() => null);
+  checkNoInternalProjectNames("dist/feed.json", JSON.stringify(jsonFeed || ""));
   await checkJsonFeed(jsonFeed);
 
   const openSearch = await readFile(path.join(dist, "opensearch.xml"), "utf8").catch(() => "");
+  checkNoInternalProjectNames("dist/opensearch.xml", openSearch);
   await checkOpenSearch(openSearch);
 
   const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8").catch(() => "");
+  checkNoInternalProjectNames("dist/sitemap.xml", sitemap);
   await checkSitemap(sitemap);
   checkSitemapCoverage(sitemap, searchIndex);
 
@@ -1076,6 +1091,7 @@ async function main() {
     const html = await readFile(file, "utf8");
     const relative = displayPath(file);
 
+    checkNoInternalProjectNames(relative, html);
     if (/pages\.dev/i.test(html)) failures.push(`${relative} must not contain a pages.dev URL.`);
     if (/javascript:|data:text\/html/i.test(html)) failures.push(`${relative} contains an unsafe URL scheme.`);
     if (/\son(?:click|error|load|mouseover)=/i.test(html)) failures.push(`${relative} contains an inline event handler.`);

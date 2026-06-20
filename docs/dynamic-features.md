@@ -1,6 +1,6 @@
 # 阅读量和评论配置
 
-当前博客已经预留了两个动态功能：
+当前博客已经实现了两个动态功能；部署时只需要在 Cloudflare 和 GitHub 里完成对应配置：
 
 - 阅读量：Cloudflare Pages Functions + D1，接口路径是 `/api/views`。
 - 评论：Giscus，数据存放在 GitHub Discussions。
@@ -43,7 +43,7 @@ BLOG_DB
 8. D1 database 选择刚创建的 `soloblog`。
 9. 重新部署一次 Pages 项目。
 
-表结构会由接口自动创建。也可以手动执行：
+表结构会由接口自动创建，当前仓库也保留了对应迁移文件，方便需要时手动执行：
 
 ```bash
 npx wrangler d1 execute soloblog --file=migrations/0001_post_views.sql --remote
