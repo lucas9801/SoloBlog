@@ -385,6 +385,9 @@ if (
 if (!buildScript.includes("theme-color")) failures.push("Page head must define browser theme colors.");
 if (!buildScript.includes('name="robots"')) failures.push("Page head must define robots indexing policy.");
 if (!buildScript.includes('name="color-scheme"')) failures.push("Page head must declare supported color schemes.");
+if (!buildScript.includes("function absoluteAssetUrl") || !checkOutputScript.includes("function isVersionedSiteImage")) {
+  failures.push("Social, structured data, and feed image URLs must use versioned local asset URLs.");
+}
 if (!buildScript.includes("og:image:width") || !buildScript.includes("og:image:height")) {
   failures.push("Page head must expose Open Graph image dimensions.");
 }

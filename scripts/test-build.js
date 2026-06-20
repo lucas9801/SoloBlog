@@ -159,6 +159,7 @@ try {
   const breadcrumb = articleJsonLd.find((item) => item["@type"] === "BreadcrumbList");
   assert.equal(techArticle.url, "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.equal(techArticle.mainEntityOfPage, "https://blog.solus.games/posts/markdown-edge-cases/");
+  assert.match(techArticle.image, /^https:\/\/blog\.solus\.games\/assets\/og\/solus-og\.png\?v=[a-f0-9]{12}$/);
   assert.equal(techArticle.headline, "Markdown Edge Cases");
   assert.equal(breadcrumb.itemListElement.at(-1).item, "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(article, /<td data-align="left">A \| B<\/td>/);
@@ -222,6 +223,8 @@ try {
   assert.match(home, /<link rel="apple-touch-icon" href="\/icon-192\.png" \/>/);
   assert.match(home, /<meta name="theme-color" media="\(prefers-color-scheme: light\)" content="#f6f8fb" \/>/);
   assert.match(home, /<meta name="theme-color" media="\(prefers-color-scheme: dark\)" content="#090d12" \/>/);
+  assert.match(home, /<meta property="og:image" content="https:\/\/blog\.solus\.games\/assets\/og\/solus-og\.png\?v=[a-f0-9]{12}" \/>/);
+  assert.match(home, /<meta name="twitter:image" content="https:\/\/blog\.solus\.games\/assets\/og\/solus-og\.png\?v=[a-f0-9]{12}" \/>/);
   assert.match(home, /\/src\/styles\.css\?v=[0-9a-f]{12}/);
   assert.doesNotMatch(home, /[?&]v=local/);
   assert.doesNotMatch(home, /draft-only|Draft Only/);
@@ -416,7 +419,8 @@ try {
   assert.equal(jsonFeed.items[0].summary, "第二篇同标签文章用于验证标签分页和 sitemap 输出。");
   assert.equal(jsonFeed.items[0].tags.includes("图形渲染"), true);
   assert.equal(jsonFeed.items[0].authors[0].name, "SOLUS");
-  assert.equal(jsonFeed.items[0].image, "https://blog.solus.games/assets/posts/inline.svg");
+  assert.match(jsonFeed.icon, /^https:\/\/blog\.solus\.games\/assets\/og\/solus-og\.png\?v=[a-f0-9]{12}$/);
+  assert.match(jsonFeed.items[0].image, /^https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}$/);
   assert.equal(jsonFeed.items.some((item) => item.url.includes("/draft-only/")), false);
   const feedMarkdownEdge = jsonFeed.items.find((item) => item.url === "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(feedMarkdownEdge.content_html, /src="https:\/\/blog\.solus\.games\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}"/);

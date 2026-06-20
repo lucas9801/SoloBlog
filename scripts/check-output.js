@@ -123,6 +123,12 @@ function checkVersionedLocalImages(file, html) {
   }
 }
 
+function isVersionedSiteImage(url) {
+  return url?.origin === siteOrigin && url.pathname.startsWith("/assets/")
+    ? /^[a-f0-9]{12}$/i.test(url.searchParams.get("v") || "")
+    : true;
+}
+
 function checkTimeElements(file, html) {
   const relative = displayPath(file);
   for (const match of html.matchAll(/<time\b[^>]*>/gi)) {
@@ -365,6 +371,9 @@ async function checkSocialMeta(file, html) {
     if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
       failures.push(`${relative} ${property} references missing local target: ${value}`);
     }
+    if (!isVersionedSiteImage(url)) {
+      failures.push(`${relative} ${property} must use a versioned local asset URL: ${value}`);
+    }
   }
 
   for (const property of ["og:image:alt", "twitter:image:alt"]) {
@@ -533,6 +542,9 @@ async function checkStructuredDataUrls(relative, value) {
       const url = checkSiteUrl(`${relative} JSON-LD ${key}`, probe);
       if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
         failures.push(`${relative} JSON-LD ${key} references missing local target: ${item}`);
+      }
+      if (key === "image" && !isVersionedSiteImage(url)) {
+        failures.push(`${relative} JSON-LD image must use a versioned local asset URL: ${item}`);
       }
     }
     await checkStructuredDataUrls(relative, item);
@@ -928,6 +940,9 @@ async function checkJsonFeed(feed) {
     if (url?.origin === siteOrigin && !(await localTargetExists(url.pathname))) {
       failures.push(`dist/feed.json ${label} references missing local target: ${value}`);
     }
+    if (label === "icon" && !isVersionedSiteImage(url)) {
+      failures.push(`dist/feed.json ${label} must use a versioned local asset URL: ${value}`);
+    }
   }
 
   if (!Array.isArray(feed.items) || feed.items.length === 0) {
@@ -962,6 +977,9 @@ async function checkJsonFeed(feed) {
     const image = checkSiteUrl("dist/feed.json item image", item.image || "");
     if (image?.origin === siteOrigin && !(await localTargetExists(image.pathname))) {
       failures.push(`dist/feed.json item image references missing local target: ${item.image}`);
+    }
+    if (!isVersionedSiteImage(image)) {
+      failures.push(`dist/feed.json item image must use a versioned local asset URL: ${item.image}`);
     }
     if (!isValidDate(item.date_published)) failures.push(`dist/feed.json item has invalid published date: ${item.id}`);
     if (previousDate && new Date(item.date_published) > new Date(previousDate)) {

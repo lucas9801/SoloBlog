@@ -54,6 +54,10 @@ function assetUrl(pathname) {
   return `${pathname}${separator}v=${assetVersion}`;
 }
 
+function absoluteAssetUrl(pathname) {
+  return absoluteUrl(pathname.startsWith("/assets/") ? assetUrl(pathname) : pathname);
+}
+
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -755,7 +759,7 @@ function articleSchema(post, image = post.cover) {
     description: post.summary,
     url: absoluteUrl(post.url),
     mainEntityOfPage: absoluteUrl(post.url),
-    image: absoluteUrl(image),
+    image: absoluteAssetUrl(image),
     datePublished: post.date,
     dateModified: post.updated || post.date,
     inLanguage: site.language || "zh-CN",
@@ -821,7 +825,7 @@ function pageLayout({
   const fullTitle = title === site.title ? title : `${title} | ${site.title}`;
   const pageDescription = description || site.description;
   const canonicalUrl = absoluteUrl(canonical);
-  const socialImage = absoluteUrl(image || site.socialImage || site.heroCover || "/assets/posts/start-here.svg");
+  const socialImage = absoluteAssetUrl(image || site.socialImage || site.heroCover || "/assets/posts/start-here.svg");
   const bodyWithContentTarget = body.includes('id="content"')
     ? body
     : body.replace("<main", '<main id="content" tabindex="-1"');
@@ -2065,7 +2069,7 @@ function jsonFeed(posts) {
       date_modified: new Date(post.updated || post.date).toISOString(),
       authors: [{ name: site.brand || site.title }],
       tags,
-      image: absoluteUrl(post.cover)
+      image: absoluteAssetUrl(post.cover)
     };
   });
 
@@ -2078,7 +2082,7 @@ function jsonFeed(posts) {
       description: site.description,
       language: site.language || "zh-CN",
       favicon: absoluteUrl("/favicon.svg"),
-      icon: absoluteUrl(site.socialImage || "/favicon.svg"),
+      icon: absoluteAssetUrl(site.socialImage || "/favicon.svg"),
       authors: [{ name: site.brand || site.title }],
       items
     },
