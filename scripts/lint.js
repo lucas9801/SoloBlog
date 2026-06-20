@@ -1065,6 +1065,13 @@ if (
   failures.push("Blog operations docs must describe the implemented views/comments features instead of an old future-plan note.");
 }
 if (
+  !blogOperationsDocs.includes("技术文章建议总是写代码块语言") ||
+  !blogOperationsDocs.includes("复制 powershell 代码") ||
+  !blogOperationsDocs.includes("```powershell\nnpm run check:all")
+) {
+  failures.push("Blog operations docs must explain language-labeled code blocks and copy-button context.");
+}
+if (
   buildScript.includes('class="page-title"') ||
   buildScript.includes('class="section-kicker"') ||
   css.includes(".page-title") ||

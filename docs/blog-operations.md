@@ -398,6 +398,17 @@ Debug.Log("Hello");
 ```
 ````
 
+技术文章建议总是写代码块语言，例如 `powershell`、`csharp`、`js`、`json`、`hlsl`。构建后代码块顶部会显示语言，复制按钮也会带上语言上下文，例如“复制 powershell 代码”。如果不写语言，页面仍会显示为通用 `CODE`，但读者和读屏用户都少了一层上下文。
+
+命令行步骤建议用对应 shell 的语言标识：
+
+````markdown
+```powershell
+npm run check:all
+git push
+```
+````
+
 链接：
 
 ```markdown
