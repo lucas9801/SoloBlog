@@ -671,6 +671,8 @@ if (
   !testBuildScript.includes("series-panel compact") ||
   !checkLayoutScript.includes("article series panel is not in the side column") ||
   !checkLayoutScript.includes("article hero is too tall for a focused technical reading page") ||
+  !checkLayoutScript.includes("desktop article text column is too narrow for technical reading") ||
+  !checkLayoutScript.includes("desktop article text column is too wide for comfortable long-form reading") ||
   !css.includes("font-size: clamp(32px, 3.2vw, 44px);")
 ) {
   failures.push("Article page chrome must keep series navigation in the side column and preserve a focused reading header.");

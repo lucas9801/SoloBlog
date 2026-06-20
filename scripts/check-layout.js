@@ -1127,6 +1127,19 @@ async function checkViewport(viewport, page) {
                 }
               }
               if (!articleContent) failures.push("article content is missing");
+              if (innerWidth > 1180 && articleContent instanceof HTMLElement) {
+                const contentStyle = getComputedStyle(articleContent);
+                const contentWidth =
+                  articleContent.getBoundingClientRect().width -
+                  Number.parseFloat(contentStyle.paddingLeft || "0") -
+                  Number.parseFloat(contentStyle.paddingRight || "0");
+                if (contentWidth < 760) {
+                  failures.push("desktop article text column is too narrow for technical reading");
+                }
+                if (contentWidth > 860) {
+                  failures.push("desktop article text column is too wide for comfortable long-form reading");
+                }
+              }
               if (anySeries && !sidebarSeries) failures.push("article series panel is not in the side column");
               if (footerSeries) failures.push("article series panel should not render inside the footer");
               if (tocLinks.length < 3) failures.push("article table of contents has fewer than 3 links");
