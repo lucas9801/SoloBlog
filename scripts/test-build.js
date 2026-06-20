@@ -342,6 +342,19 @@ try {
     "https://blog.solus.games/series/"
   );
 
+  const singleSeriesRoot = await mkdtemp(path.join(os.tmpdir(), "solus-single-series-"));
+  try {
+    await writeFixtureProject(singleSeriesRoot);
+    await rm(path.join(singleSeriesRoot, "content", "posts", "2026-06-14-markdown-same-day.md"));
+    const singleSeriesResult = await runBuild(singleSeriesRoot);
+    assert.equal(singleSeriesResult.code, 0, singleSeriesResult.stderr || singleSeriesResult.stdout);
+    const singleSeriesIndex = await readFile(path.join(singleSeriesRoot, "dist", "series", "index.html"), "utf8");
+    assert.match(singleSeriesIndex, /class="series-index-layout single-series"/);
+    assert.doesNotMatch(singleSeriesIndex, /class="series-index-sidebar"/);
+  } finally {
+    await rm(singleSeriesRoot, { recursive: true, force: true });
+  }
+
   const about = await readFile(path.join(tempRoot, "dist", "about", "index.html"), "utf8");
   assert.match(about, /class="page-shell narrow about-page"/);
   assert.match(about, /class="about-profile"/);

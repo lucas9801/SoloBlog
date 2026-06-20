@@ -1305,6 +1305,14 @@ pre {
   align-items: start;
 }
 
+.series-index-layout.single-series {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.series-index-layout.single-series .series-card {
+  max-width: 920px;
+}
+
 .series-detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;

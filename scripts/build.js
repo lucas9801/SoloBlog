@@ -1643,9 +1643,10 @@ function sortSeriesPosts(posts) {
 }
 
 function seriesIndexPage(entries, posts) {
+  const showQuickIndex = entries.length > 1;
   const body = `<main class="page-shell series-page">
     <h1 class="sr-only">专题索引</h1>
-    <div class="series-index-layout">
+    <div class="series-index-layout${showQuickIndex ? "" : " single-series"}">
       <section class="series-grid" aria-label="专题列表">
         ${entries
           .map(([name, list], entryIndex) => {
@@ -1678,7 +1679,9 @@ function seriesIndexPage(entries, posts) {
           })
           .join("")}
       </section>
-      <aside class="series-index-sidebar" aria-label="专题快速索引">
+      ${
+        showQuickIndex
+          ? `<aside class="series-index-sidebar" aria-label="专题快速索引">
         <nav class="series-index-nav">
           ${entries
             .map(([name, list], index) => {
@@ -1691,7 +1694,9 @@ function seriesIndexPage(entries, posts) {
             })
             .join("")}
         </nav>
-      </aside>
+      </aside>`
+          : ""
+      }
     </div>
   </main>`;
   return pageLayout({

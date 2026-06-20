@@ -596,15 +596,20 @@ if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPa
 }
 if (
   !buildScript.includes("series-index-layout") ||
+  !buildScript.includes("const showQuickIndex = entries.length > 1") ||
+  !buildScript.includes('${showQuickIndex ? "" : " single-series"}') ||
   !buildScript.includes('<aside class="series-index-sidebar" aria-label="专题快速索引">') ||
   !buildScript.includes('href="#series-${slugify(name)}"') ||
   !css.includes(".series-index-layout") ||
+  !css.includes(".series-index-layout.single-series") ||
   !css.includes(".series-index-sidebar") ||
   !css.includes(".series-index-nav") ||
   !testBuildScript.includes('class="series-index-layout"') ||
-  !testBuildScript.includes('href="#series-markdown-lab"')
+  !testBuildScript.includes('href="#series-markdown-lab"') ||
+  !testBuildScript.includes('class="series-index-layout single-series"') ||
+  !testBuildScript.includes('assert.doesNotMatch(singleSeriesIndex, /class="series-index-sidebar"/)')
 ) {
-  failures.push("Series index pages must use a compact topic index layout with a side quick index.");
+  failures.push("Series index pages must use a compact topic index, while hiding the duplicate side quick index for single-series sites.");
 }
 if (!buildScript.includes("series-card-list") || !css.includes(".series-card-list")) {
   failures.push("Series index cards must preview posts inside each series.");
