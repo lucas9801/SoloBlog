@@ -202,8 +202,8 @@ function coverMotif(post, colors) {
       <rect x="778" y="242" width="256" height="62" rx="10" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".4"/>
       <rect x="778" y="340" width="256" height="62" rx="10" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
       <path d="M906 206v36M906 304v36M778 371h-64M778 273h-64M778 175h-64" stroke="${colors[1]}" stroke-opacity=".38" stroke-width="4"/>
-      <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
-      <circle cx="974" cy="522" r="42" fill="${colors[2]}" opacity=".72"/>`;
+      <circle cx="864" cy="522" r="34" fill="${colors[1]}" opacity=".72"/>
+      <circle cx="974" cy="522" r="34" fill="${colors[2]}" opacity=".58"/>`;
   }
   if (post.category === "性能优化" || (!hasSpecificCoverCategory && /性能|profiler|cpu|gpu|内存|io|优化/.test(text))) {
     return `<rect x="132" y="130" width="392" height="286" rx="16" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
@@ -326,48 +326,38 @@ async function generatedPostCover(post) {
   const url = `/assets/posts/${post.slug}.svg`;
   const colors = coverPalette(post);
   const seed = coverVisualSeed(post);
-  const glowX = 180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5;
-  const glowY = 90 + Number.parseInt(seed.slice(2, 4), 16) * 1.2;
+  const verticalRuleX = 180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5;
+  const horizontalRuleY = 108 + Number.parseInt(seed.slice(2, 4), 16) * 1.15;
   const motif = coverMotif(post, colors);
   const dateLabel = post.date.replaceAll("-", ".");
+  const issueLabel = seed.slice(0, 4).toUpperCase();
   const titleLines = coverTextLines(post.title, 17.2, 2);
   const summaryLines = coverTextLines(post.summary, 38, 2);
   const summaryY = 420 + titleLines.length * 54 + 28;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(post.title)}">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="${colors[0]}"/>
-      <stop offset=".56" stop-color="#111827"/>
-      <stop offset="1" stop-color="#05070d"/>
-    </linearGradient>
-    <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
-      <stop offset="0" stop-color="${colors[4]}"/>
-      <stop offset=".38" stop-color="${colors[1]}"/>
-      <stop offset="1" stop-color="${colors[2]}"/>
-    </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
       <path d="M54 0H0v54" fill="none" stroke="${colors[4]}" stroke-opacity=".06"/>
     </pattern>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#000" flood-opacity=".42"/>
-    </filter>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="${colors[0]}"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="${glowX}" cy="${glowY}" r="260" fill="${colors[1]}" opacity=".12"/>
-  <circle cx="982" cy="188" r="210" fill="${colors[2]}" opacity=".12"/>
-  <circle cx="990" cy="548" r="168" fill="${colors[1]}" opacity=".08"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".16" stroke-width="3"/>
-  <g filter="url(#shadow)">${motif}</g>
+  <path d="M64 102H1136M64 574H1136" stroke="${colors[4]}" stroke-opacity=".08"/>
+  <path d="M924 96v480" stroke="${colors[4]}" stroke-opacity=".08"/>
+  <path d="M64 ${horizontalRuleY}H1136" stroke="${colors[1]}" stroke-opacity=".16"/>
+  <path d="M${verticalRuleX} 96v480" stroke="${colors[2]}" stroke-opacity=".13"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".12" stroke-width="2"/>
+  <g opacity=".94">${motif}</g>
   <g>
-    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="${colors[1]}" stroke-opacity=".3"/>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".86" stroke="${colors[1]}" stroke-opacity=".34"/>
     <text fill="${colors[4]}" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(titleLines, { x: 96, y: 420, lineHeight: 54 })}</text>
     <text fill="${colors[4]}" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(summaryLines, { x: 96, y: summaryY, lineHeight: 32 })}</text>
   </g>
   <g>
     <rect x="64" y="54" width="${Math.max(118, Array.from(post.category).length * 18 + 52)}" height="38" rx="6" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
     <text x="84" y="79" fill="${colors[4]}" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)}</text>
+    <text x="1012" y="79" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. ${escapeHtml(issueLabel)}</text>
     <text x="64" y="618" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
     <text x="1136" y="618" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">${escapeHtml(dateLabel)}</text>
   </g>

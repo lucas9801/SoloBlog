@@ -669,9 +669,14 @@ if (
   !buildScript.includes("function svgTextBlock") ||
   !buildScript.includes("svgTextBlock(titleLines") ||
   !buildScript.includes("svgTextBlock(summaryLines") ||
-  buildScript.includes("existingGeneratedCover")
+  !buildScript.includes("issueLabel") ||
+  !buildScript.includes("NO. ${escapeHtml(issueLabel)}") ||
+  buildScript.includes("existingGeneratedCover") ||
+  buildScript.includes("<radialGradient") ||
+  buildScript.includes("<feDropShadow") ||
+  postCoverSvgs.some((source) => /<(?:radialGradient|feDropShadow)\b|url\(#sphere\)/.test(source))
 ) {
-  failures.push("Generated post covers must include wrapped title and summary text instead of reusing stale decorative SVGs.");
+  failures.push("Generated post covers must keep the restrained technical archive card system without stale decorative gradients or shadows.");
 }
 if (!buildScript.includes("data-giscus-comments")) failures.push("Giscus comments must render a lazy-load container.");
 if (!buildScript.includes("includeViewsScript") || !buildScript.includes("viewsScript: false")) {

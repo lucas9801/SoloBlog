@@ -1,45 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="渲染优化排查清单">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#07111f"/>
-      <stop offset=".56" stop-color="#111827"/>
-      <stop offset="1" stop-color="#05070d"/>
-    </linearGradient>
-    <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
-      <stop offset="0" stop-color="#f8fafc"/>
-      <stop offset=".38" stop-color="#22d3ee"/>
-      <stop offset="1" stop-color="#60a5fa"/>
-    </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
       <path d="M54 0H0v54" fill="none" stroke="#f8fafc" stroke-opacity=".06"/>
     </pattern>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#000" flood-opacity=".42"/>
-    </filter>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="#07111f"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="627.5" cy="126" r="260" fill="#22d3ee" opacity=".12"/>
-  <circle cx="982" cy="188" r="210" fill="#60a5fa" opacity=".12"/>
-  <circle cx="990" cy="548" r="168" fill="#22d3ee" opacity=".08"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#22d3ee" stroke-opacity=".16" stroke-width="3"/>
-  <g filter="url(#shadow)"><rect x="146" y="120" width="568" height="394" rx="16" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".52"/>
+  <path d="M64 102H1136M64 574H1136" stroke="#f8fafc" stroke-opacity=".08"/>
+  <path d="M924 96v480" stroke="#f8fafc" stroke-opacity=".08"/>
+  <path d="M64 142.5H1136" stroke="#22d3ee" stroke-opacity=".16"/>
+  <path d="M627.5 96v480" stroke="#60a5fa" stroke-opacity=".13"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#22d3ee" stroke-opacity=".12" stroke-width="2"/>
+  <g opacity=".94"><rect x="146" y="120" width="568" height="394" rx="16" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".52"/>
       <path d="M188 426L306 292l126 82 142-168 98 126" fill="none" stroke="#22d3ee" stroke-width="5" opacity=".86"/>
       <path d="M188 456h484M188 386h484M188 316h484M188 246h484M266 164v320M392 164v320M518 164v320M644 164v320" stroke="#8fb8d7" stroke-opacity=".16"/>
       <rect x="778" y="144" width="256" height="62" rx="10" fill="#111d2d" stroke="#60a5fa" stroke-opacity=".4"/>
       <rect x="778" y="242" width="256" height="62" rx="10" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".4"/>
       <rect x="778" y="340" width="256" height="62" rx="10" fill="#111d2d" stroke="#60a5fa" stroke-opacity=".4"/>
       <path d="M906 206v36M906 304v36M778 371h-64M778 273h-64M778 175h-64" stroke="#22d3ee" stroke-opacity=".38" stroke-width="4"/>
-      <circle cx="864" cy="522" r="42" fill="url(#sphere)"/>
-      <circle cx="974" cy="522" r="42" fill="#60a5fa" opacity=".72"/></g>
+      <circle cx="864" cy="522" r="34" fill="#22d3ee" opacity=".72"/>
+      <circle cx="974" cy="522" r="34" fill="#60a5fa" opacity=".58"/></g>
   <g>
-    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="#22d3ee" stroke-opacity=".3"/>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".86" stroke="#22d3ee" stroke-opacity=".34"/>
     <text fill="#f8fafc" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">渲染优化排查清单</tspan></text>
     <text fill="#f8fafc" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">一份用于定位渲染性能问题的实践清单，覆盖帧调试、Draw Call、Overdraw、纹理和</tspan><tspan x="96" y="534">Shader 分支。</tspan></text>
   </g>
   <g>
     <rect x="64" y="54" width="124" height="38" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#f8fafc" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">图形渲染</text>
+    <text x="1012" y="79" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. B31E</text>
     <text x="64" y="618" fill="#f8fafc" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
     <text x="1136" y="618" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
   </g>

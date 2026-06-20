@@ -380,6 +380,8 @@ try {
   assert.match(generatedCover, /Markdown Same Day/);
   assert.match(generatedCover, /同日文章用于验证构建输出的稳定排序。/);
   assert.match(generatedCover, /SOLUS DEV NOTES/);
+  assert.match(generatedCover, /NO\. [A-F0-9]{4}/);
+  assert.doesNotMatch(generatedCover, /<radialGradient|<feDropShadow|url\(#sphere\)/);
 
   const notFound = await readFile(path.join(tempRoot, "dist", "404.html"), "utf8");
   assert.match(notFound, /<meta name="robots" content="noindex,follow" \/>/);

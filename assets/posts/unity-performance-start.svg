@@ -1,29 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Unity 性能分析从哪里下手">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1020"/>
-      <stop offset=".56" stop-color="#111827"/>
-      <stop offset="1" stop-color="#05070d"/>
-    </linearGradient>
-    <radialGradient id="sphere" cx=".34" cy=".25" r=".74">
-      <stop offset="0" stop-color="#eef4ff"/>
-      <stop offset=".38" stop-color="#60a5fa"/>
-      <stop offset="1" stop-color="#8b5cf6"/>
-    </radialGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
       <path d="M54 0H0v54" fill="none" stroke="#eef4ff" stroke-opacity=".06"/>
     </pattern>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="26" stdDeviation="22" flood-color="#000" flood-opacity=".42"/>
-    </filter>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="#0b1020"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <circle cx="197.5" cy="390" r="260" fill="#60a5fa" opacity=".12"/>
-  <circle cx="982" cy="188" r="210" fill="#8b5cf6" opacity=".12"/>
-  <circle cx="990" cy="548" r="168" fill="#60a5fa" opacity=".08"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#60a5fa" stroke-opacity=".16" stroke-width="3"/>
-  <g filter="url(#shadow)"><rect x="146" y="116" width="410" height="438" rx="14" fill="#151827" stroke="#60a5fa" stroke-opacity=".38"/>
+  <path d="M64 102H1136M64 574H1136" stroke="#eef4ff" stroke-opacity=".08"/>
+  <path d="M924 96v480" stroke="#eef4ff" stroke-opacity=".08"/>
+  <path d="M64 395.5H1136" stroke="#60a5fa" stroke-opacity=".16"/>
+  <path d="M197.5 96v480" stroke="#8b5cf6" stroke-opacity=".13"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#60a5fa" stroke-opacity=".12" stroke-width="2"/>
+  <g opacity=".94"><rect x="146" y="116" width="410" height="438" rx="14" fill="#151827" stroke="#60a5fa" stroke-opacity=".38"/>
       <rect x="146" y="116" width="410" height="48" rx="14" fill="#020617" opacity=".38"/>
       <circle cx="184" cy="140" r="8" fill="#60a5fa" opacity=".8"/>
       <circle cx="212" cy="140" r="8" fill="#8b5cf6" opacity=".72"/>
@@ -35,13 +23,14 @@
       <rect x="830" y="380" width="182" height="118" rx="14" fill="#151827" stroke="#8b5cf6" stroke-opacity=".32"/>
       <path d="M654 440h90M874 440h94" stroke="#eef4ff" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/></g>
   <g>
-    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".76" stroke="#60a5fa" stroke-opacity=".3"/>
+    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".86" stroke="#60a5fa" stroke-opacity=".34"/>
     <text fill="#eef4ff" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">Unity 性能分析从哪里下手</tspan></text>
     <text fill="#eef4ff" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">面对卡顿问题时，先建立性能预算，再用 Profiler 区分 CPU、GPU、内存和 IO</tspan><tspan x="96" y="534">的瓶颈。</tspan></text>
   </g>
   <g>
     <rect x="64" y="54" width="142" height="38" rx="6" fill="#0f172a" stroke="#60a5fa" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#eef4ff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">Unity</text>
+    <text x="1012" y="79" text-anchor="end" fill="#eef4ff" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. 07FA</text>
     <text x="64" y="618" fill="#eef4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
     <text x="1136" y="618" text-anchor="end" fill="#eef4ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
   </g>
