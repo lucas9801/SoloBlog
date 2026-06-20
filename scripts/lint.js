@@ -630,6 +630,12 @@ if (
 ) {
   failures.push("Desktop archive, tag, and single-series indexes must use the full page shell instead of narrow template-era caps.");
 }
+if (
+  !/\.series-timeline\s*\{[\s\S]*?border:\s*0;[\s\S]*?background:\s*transparent;/.test(css) ||
+  !/\.series-timeline-item\s*\{[\s\S]*?border:\s*1px solid var\(--line\);[\s\S]*?border-radius:\s*6px;/.test(css)
+) {
+  failures.push("Series detail pages must use individual technical index cards instead of one large timeline container.");
+}
 if (!buildScript.includes("writeSeriesPages") || !buildScript.includes("seriesPage({ name, posts, seriesEntries, page")) {
   failures.push("Series detail pages must be paginated.");
 }
@@ -920,6 +926,13 @@ if (!searchScript.includes("data-search-clear") || !searchScript.includes("Escap
 }
 if (!searchScript.includes("function highlight") || !searchScript.includes("<mark>$&</mark>") || !css.includes(".search-result-card mark")) {
   failures.push("Search results must highlight matched query terms.");
+}
+if (
+  !/\.search-page-card\s*\{[\s\S]*?background:\s*transparent;[\s\S]*?border-color:\s*transparent;/.test(css) ||
+  !/\.search-filter-panel\s*\{[\s\S]*?border:\s*1px solid var\(--line\);[\s\S]*?border-radius:\s*6px;[\s\S]*?background:\s*var\(--surface\);/.test(css) ||
+  !/\.search-summary\s*\{[\s\S]*?border-left:\s*3px solid var\(--brand\);/.test(css)
+) {
+  failures.push("Search page must keep a restrained tool-panel layout with compact result status.");
 }
 if (
   !searchScript.includes("function safePostHref") ||
