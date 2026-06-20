@@ -78,6 +78,7 @@ const [
   socialImageStats,
   rootIndex,
   readme,
+  aboutMarkdown,
   blogOperationsDocs,
   cloudflareDocs,
   dynamicFeaturesDocs,
@@ -112,6 +113,7 @@ const [
   stat(path.join(root, "assets/og/solus-og.png")),
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "README.md"), "utf8"),
+  readFile(path.join(root, "content/about.md"), "utf8"),
   readFile(path.join(root, "docs/blog-operations.md"), "utf8"),
   readFile(path.join(root, "docs/cloudflare-pages.md"), "utf8"),
   readFile(path.join(root, "docs/dynamic-features.md"), "utf8"),
@@ -1201,6 +1203,10 @@ if (
   !buildScript.includes('class="about-profile"') ||
   !css.includes(".about-profile") ||
   !css.includes(".about-content") ||
+  !css.includes(".about-content li") ||
+  !aboutMarkdown.includes("## 记录范围") ||
+  !aboutMarkdown.includes("## 写作原则") ||
+  !aboutMarkdown.includes("## 长期方向") ||
   !testBuildScript.includes('assert.doesNotMatch(about, /class="page-title"/)')
 ) {
   failures.push("About page must use the restrained SOLUS profile layout instead of the generic title card.");
