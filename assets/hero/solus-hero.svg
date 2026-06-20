@@ -1,9 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="SOLUS 工程界面抽象图">
   <defs>
-    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#17202b"/>
-      <stop offset="1" stop-color="#090d12"/>
-    </linearGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
       <path d="M54 0H0v54" fill="none" stroke="#edf2f7" stroke-opacity=".07"/>
     </pattern>
@@ -11,12 +7,10 @@
   <rect width="1200" height="675" fill="#090d12"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
   <path d="M118 527C232 438 360 596 486 456s272-112 408-18 206 28 286-54" fill="none" stroke="#94a3b8" stroke-opacity=".18" stroke-width="3"/>
-  <circle cx="310" cy="170" r="230" fill="#2563eb" opacity=".08"/>
-  <circle cx="982" cy="210" r="218" fill="#14b8a6" opacity=".12"/>
-  <circle cx="1020" cy="542" r="178" fill="#64748b" opacity=".09"/>
-  <g fill="url(#panel)" stroke="#334155">
-    <rect x="196" y="138" width="412" height="322" rx="10"/>
-    <rect x="664" y="116" width="342" height="404" rx="10"/>
+  <path d="M118 112H1082M118 566H1082M162 112v454M1038 112v454" fill="none" stroke="#edf2f7" stroke-opacity=".08"/>
+  <g fill="#111821" stroke="#334155">
+    <rect x="196" y="138" width="412" height="322" rx="8"/>
+    <rect x="664" y="116" width="342" height="404" rx="8"/>
     <rect x="286" y="500" width="568" height="42" rx="8"/>
   </g>
   <g stroke="#334155" stroke-width="2">

@@ -75,6 +75,7 @@ const [
   packageConfig,
   wranglerConfig,
   socialImageSvg,
+  heroImageSvg,
   socialImageStats,
   rootIndex,
   readme,
@@ -110,6 +111,7 @@ const [
   readFile(path.join(root, "package.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "wrangler.toml"), "utf8"),
   readFile(path.join(root, "assets/og/solus-og.svg"), "utf8"),
+  readFile(path.join(root, "assets/hero/solus-hero.svg"), "utf8"),
   stat(path.join(root, "assets/og/solus-og.png")),
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "README.md"), "utf8"),
@@ -1415,6 +1417,12 @@ if (
   )
 ) {
   failures.push("Category covers must use the restrained SOLUS technical channel system without legacy gradients, shadows, or bright decorative colors.");
+}
+if (
+  /<(?:linearGradient|radialGradient|feDropShadow)\b|url\(#(?:bg|panel)\)/i.test(`${heroImageSvg}\n${socialImageSvg}`) ||
+  /rx="(?:1[2-9]|[2-9]\d)"/.test(`${heroImageSvg}\n${socialImageSvg}`)
+) {
+  failures.push("Hero and Open Graph source SVGs must use restrained flat technical panels without gradients, shadows, or large radii.");
 }
 const knownCategories = new Set(Object.keys(site.categoryCovers || {}));
 if (!site.defaultPostCategory || !knownCategories.has(site.defaultPostCategory)) {
