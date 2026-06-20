@@ -334,6 +334,10 @@ try {
   );
 
   const about = await readFile(path.join(tempRoot, "dist", "about", "index.html"), "utf8");
+  assert.match(about, /class="page-shell narrow about-page"/);
+  assert.match(about, /class="about-profile"/);
+  assert.match(about, /class="article-content about-content"/);
+  assert.doesNotMatch(about, /class="page-title"/);
   assert.equal(jsonLdObjects(about).find((item) => item["@type"] === "AboutPage").url, "https://blog.solus.games/about/");
 
   const search = await readFile(path.join(tempRoot, "dist", "search", "index.html"), "utf8");

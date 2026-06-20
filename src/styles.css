@@ -1042,6 +1042,49 @@ pre {
   line-height: 1.75;
 }
 
+.about-page {
+  max-width: 900px;
+}
+
+.about-profile {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.about-profile-head {
+  padding: 28px 42px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.about-profile-head span {
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.about-profile-head h1 {
+  margin: 8px 0 10px;
+  color: var(--text);
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1.12;
+  font-weight: 800;
+}
+
+.about-profile-head p {
+  max-width: 700px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.about-content {
+  max-width: 760px;
+  padding-top: 34px;
+}
+
 .tag-matrix-page {
   padding: 18px;
 }

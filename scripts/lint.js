@@ -949,6 +949,15 @@ if (buildScript.includes('<span class="section-kicker">About</span>')) {
   failures.push("About page must not expose an English template kicker.");
 }
 if (
+  !buildScript.includes('class="page-shell narrow about-page"') ||
+  !buildScript.includes('class="about-profile"') ||
+  !css.includes(".about-profile") ||
+  !css.includes(".about-content") ||
+  !testBuildScript.includes('assert.doesNotMatch(about, /class="page-title"/)')
+) {
+  failures.push("About page must use the restrained SOLUS profile layout instead of the generic title card.");
+}
+if (
   !buildScript.includes("data-copy-rss-status") ||
   !buildScript.includes('href="/feed.json">JSON Feed</a>') ||
   !buildScript.includes(">复制 RSS</button>") ||

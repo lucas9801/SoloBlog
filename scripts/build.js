@@ -1914,13 +1914,14 @@ async function aboutPage() {
   const rendered = markdownToHtml(body);
   const title = data.title || "关于";
   const description = data.summary || site.description;
-  const pageBody = `<main class="page-shell narrow">
-    <article class="article-page simple-page">
-      <header class="page-title">
+  const pageBody = `<main class="page-shell narrow about-page">
+    <article class="about-profile">
+      <header class="about-profile-head">
+        <span>SOLUS</span>
         <h1>${escapeHtml(title)}</h1>
         <p>${escapeHtml(data.summary || "")}</p>
       </header>
-      <div class="article-content">${rendered.html}</div>
+      <div class="article-content about-content">${rendered.html}</div>
     </article>
   </main>`;
   return pageLayout({
