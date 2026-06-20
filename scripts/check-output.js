@@ -1084,6 +1084,12 @@ async function main() {
     if (html.includes("@@INLINE_HTML_")) failures.push(`${relative} contains an unreplaced inline token.`);
     if (/[?&]v=local\b/.test(html)) failures.push(`${relative} contains an unversioned local asset URL.`);
     if (html.includes("/assets/hero-game-tech.png")) failures.push(`${relative} references the retired hero PNG.`);
+    if (relative === "dist/index.html" && !html.includes('class="hero-cover" src="/assets/hero/solus-hero.svg"')) {
+      failures.push("dist/index.html must use the dedicated SOLUS hero asset.");
+    }
+    if (relative === "dist/index.html" && html.includes('class="hero-cover" src="/assets/posts/')) {
+      failures.push("dist/index.html must not reuse an article cover as the hero image.");
+    }
     if (/<a\b[^>]*\saria-hidden="true"/i.test(html)) failures.push(`${relative} contains an aria-hidden link.`);
     if (relative.startsWith("dist/posts/") && html.includes("/src/views.js")) {
       failures.push(`${relative} loads views.js even though article.js handles article views.`);

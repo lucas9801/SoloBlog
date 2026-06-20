@@ -8,7 +8,7 @@
   --brand: #2563eb;
   --accent: #14b8a6;
   --code-bg: #101826;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: none;
   color: var(--text);
   font-family:
     Inter,
@@ -701,7 +701,7 @@ pre {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 48%, rgba(4, 8, 14, 0.54));
+  background: linear-gradient(180deg, transparent 55%, rgba(4, 8, 14, 0.42));
   content: "";
 }
 
@@ -737,7 +737,7 @@ pre {
   display: inline-flex;
   align-items: center;
   border-radius: 4px;
-  background: rgba(4, 8, 14, 0.68);
+  background: rgba(4, 8, 14, 0.6);
   color: #fff;
   font-size: 12px;
   font-weight: 600;

@@ -31,6 +31,7 @@ const requiredFiles = [
   "public/icon-512.png",
   "public/site.webmanifest",
   "wrangler.toml",
+  "assets/hero/solus-hero.svg",
   ".node-version",
   "docs/cloudflare-pages.md",
   "assets/og/solus-og.svg",
@@ -239,6 +240,14 @@ if (site.homePostsPerPage !== 6) {
 }
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
+if (
+  !css.includes("--shadow-sm: none;") ||
+  /--shadow-sm:\s*0\s+\d/.test(css) ||
+  css.includes("rgba(4, 8, 14, 0.54)") ||
+  css.includes("rgba(4, 8, 14, 0.68)")
+) {
+  failures.push("Visual system must keep the technical archive style restrained without soft card shadows or heavy cover masks.");
+}
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
 if (
   !css.includes("@media print") ||
@@ -277,6 +286,12 @@ if (site.heroCover) {
   await existsLocalPath(site.heroCover).catch(() => {
     failures.push(`site heroCover does not exist: ${site.heroCover}`);
   });
+  if (site.heroCover.startsWith("/assets/posts/")) {
+    failures.push("site heroCover must use a dedicated hero asset, not a text-bearing article cover.");
+  }
+  if (site.heroCover !== "/assets/hero/solus-hero.svg") {
+    failures.push("site heroCover must point to the dedicated SOLUS hero asset.");
+  }
 }
 if (site.socialImage && !/^\/assets\/og\/.+\.(svg|png|jpe?g|webp)$/i.test(site.socialImage)) {
   failures.push("site socialImage should point to a dedicated Open Graph asset under /assets/og/.");

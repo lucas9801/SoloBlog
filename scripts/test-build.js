@@ -38,6 +38,7 @@ async function writeFixtureProject(target) {
   await cp(path.join(root, "src"), path.join(target, "src"), { recursive: true });
   await cp(path.join(root, "public"), path.join(target, "public"), { recursive: true });
   await cp(path.join(root, "assets", "og"), path.join(target, "assets", "og"), { recursive: true });
+  await cp(path.join(root, "assets", "hero"), path.join(target, "assets", "hero"), { recursive: true });
   await mkdir(path.join(target, "assets", "posts"), { recursive: true });
   await mkdir(path.join(target, "content", "posts"), { recursive: true });
 
@@ -65,7 +66,7 @@ async function writeFixtureProject(target) {
         postsPerPage: 9,
         archivePostsPerPage: 1,
         socialImage: "/assets/og/solus-og.png",
-        heroCover: "/assets/posts/inline.svg",
+        heroCover: "/assets/hero/solus-hero.svg",
         views: { enabled: false },
         comments: { enabled: false },
         hero: {
@@ -188,8 +189,8 @@ try {
   assert.equal(archiveCollection.mainEntity.itemListElement.length, 1);
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
-  assert.match(home, /<img class="hero-cover" src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<a class="button-link" href="#latest-posts">最新文章<\/a>/);
+  assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.svg" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<section id="latest-posts" class="section-block">/);
   assert.match(home, /推荐阅读/);
   const latestSectionStart = home.indexOf('<section id="latest-posts"');

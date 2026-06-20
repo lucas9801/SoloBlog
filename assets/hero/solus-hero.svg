@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="SOLUS 工程界面抽象图">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17202b"/>
+      <stop offset="1" stop-color="#090d12"/>
+    </linearGradient>
+    <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
+      <path d="M54 0H0v54" fill="none" stroke="#edf2f7" stroke-opacity=".07"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="675" fill="#090d12"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <path d="M118 527C232 438 360 596 486 456s272-112 408-18 206 28 286-54" fill="none" stroke="#94a3b8" stroke-opacity=".18" stroke-width="3"/>
+  <circle cx="310" cy="170" r="230" fill="#2563eb" opacity=".08"/>
+  <circle cx="982" cy="210" r="218" fill="#14b8a6" opacity=".12"/>
+  <circle cx="1020" cy="542" r="178" fill="#64748b" opacity=".09"/>
+  <g fill="url(#panel)" stroke="#334155">
+    <rect x="196" y="138" width="412" height="322" rx="10"/>
+    <rect x="664" y="116" width="342" height="404" rx="10"/>
+    <rect x="286" y="500" width="568" height="42" rx="8"/>
+  </g>
+  <g stroke="#334155" stroke-width="2">
+    <path d="M196 194h412M664 174h342M664 432h342"/>
+    <path d="M254 246h296M254 302h220M254 358h264M722 228h224M722 284h162M722 340h204"/>
+  </g>
+  <g stroke="#60a5fa" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M246 412l62-82 84 56 106-142"/>
+    <path d="M724 490h54l34-60 54 60h88"/>
+  </g>
+  <g fill="#2dd4bf">
+    <circle cx="308" cy="330" r="8"/>
+    <circle cx="392" cy="386" r="8"/>
+    <circle cx="498" cy="244" r="8"/>
+    <circle cx="812" cy="430" r="8"/>
+    <circle cx="866" cy="490" r="8"/>
+  </g>
+  <g fill="#94a3b8" opacity=".7">
+    <rect x="236" y="158" width="74" height="14" rx="7"/>
+    <rect x="704" y="136" width="64" height="14" rx="7"/>
+    <rect x="720" y="468" width="108" height="10" rx="5"/>
+    <rect x="338" y="514" width="420" height="10" rx="5"/>
+  </g>
+  <g stroke="#2dd4bf" stroke-opacity=".65" stroke-width="3">
+    <path d="M1060 150v380"/>
+    <circle cx="1060" cy="206" r="24" fill="#2dd4bf" fill-opacity=".6"/>
+    <circle cx="1060" cy="338" r="24" fill="#94a3b8" fill-opacity=".52" stroke="#94a3b8"/>
+    <circle cx="1060" cy="470" r="24" fill="#2dd4bf" fill-opacity=".38"/>
+  </g>
+</svg>

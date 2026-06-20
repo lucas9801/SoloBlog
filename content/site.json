@@ -10,7 +10,7 @@
   "archivePostsPerPage": 9,
   "defaultPostCategory": "游戏开发",
   "socialImage": "/assets/og/solus-og.png",
-  "heroCover": "/assets/posts/start-here.svg",
+  "heroCover": "/assets/hero/solus-hero.svg",
   "categoryCovers": {
     "随笔": "/assets/categories/notes.svg",
     "Unity": "/assets/categories/unity.svg",
