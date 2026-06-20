@@ -1107,6 +1107,11 @@ function archivePostsPerPage() {
   return Number.isFinite(configured) && configured > 0 ? configured : 9;
 }
 
+function homePostsPerPage() {
+  const configured = Number.parseInt(site.homePostsPerPage || 6, 10);
+  return Number.isFinite(configured) && configured > 0 ? configured : 6;
+}
+
 function pageHref(basePath, page) {
   const cleanBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
   return page === 1 ? cleanBase : `${cleanBase}page/${page}/`;
@@ -1313,7 +1318,7 @@ function homePage(posts, categories, tags) {
   const hero = site.hero;
   const recommended = featuredPosts.slice(0, 3);
   const recommendedSlugs = new Set(recommended.map((post) => post.slug));
-  const latest = posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, site.postsPerPage || 9);
+  const latest = posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage());
   const primaryActionHref = latest.length ? "#latest-posts" : "/archive/";
 
   const body = `<main>

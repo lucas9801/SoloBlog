@@ -324,7 +324,7 @@ seriesOrder: 1
 featured: true
 ```
 
-首页会展示所有设置为 `featured: true` 的文章，并按发布时间倒序排列。
+首页“推荐阅读”最多展示 3 篇设置为 `featured: true` 的文章，并按发布时间倒序排列。更多精选文章仍然会出现在文章归档、标签、分类和搜索页里。
 
 如果不想让某篇文章出现在精选区，把它改成 `featured: false` 或删除这个字段。
 
@@ -451,6 +451,8 @@ content/site.json
   "tagline": "技术档案",
   "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
   "baseUrl": "https://blog.solus.games/",
+  "homePostsPerPage": 6,
+  "archivePostsPerPage": 9,
   "defaultPostCategory": "游戏开发",
   "socialImage": "/assets/og/solus-og.png"
 }
@@ -465,6 +467,8 @@ content/site.json
 | `tagline` | 品牌副标题 |
 | `description` | 网站描述 |
 | `baseUrl` | 正式站点地址，用于 canonical URL、RSS、sitemap 和 robots.txt |
+| `homePostsPerPage` | 首页“最新文章”最多显示几篇，推荐保持 6 |
+| `archivePostsPerPage` | 文章、标签、分类、年份和专题分页每页显示几篇 |
 | `defaultPostCategory` | `new:post` 不带 `--category` 时使用的默认分类，必须存在于 `categoryCovers` |
 | `socialImage` | 首页、归档、标签、专题等页面默认分享图，当前 PNG 由 `assets/og/solus-og.svg` 生成 |
 | `navigation` | 顶部导航 |

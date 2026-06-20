@@ -234,6 +234,9 @@ if (!site.title || !site.navigation?.length) failures.push("site config needs ti
 if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
   failures.push("site baseUrl must be an https URL ending with /.");
 }
+if (site.homePostsPerPage !== 6) {
+  failures.push("site homePostsPerPage must keep the homepage latest list capped at 6.");
+}
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
@@ -764,8 +767,12 @@ if (/Recommended|Latest Posts|Technical Archive/.test(buildScript) || site.hero?
 }
 if (
   !buildScript.includes("recommendedSlugs") ||
+  !buildScript.includes("function homePostsPerPage") ||
+  !buildScript.includes("posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage())") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
+  !testBuildScript.includes("homePostsPerPage: 1") ||
+  !testBuildScript.includes("Archive Overflow") ||
   !testBuildScript.includes('href="#latest-posts"') ||
   !checkLayoutScript.includes("home hero latest-posts link points to a missing section")
 ) {

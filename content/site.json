@@ -5,6 +5,7 @@
   "description": "游戏开发、图形渲染和工程实践的长期技术档案。",
   "baseUrl": "https://blog.solus.games/",
   "language": "zh-CN",
+  "homePostsPerPage": 6,
   "postsPerPage": 9,
   "archivePostsPerPage": 9,
   "defaultPostCategory": "游戏开发",
