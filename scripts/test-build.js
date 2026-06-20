@@ -194,6 +194,8 @@ try {
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<a class="button-link" href="#latest-posts">最新文章<\/a>/);
   assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.svg\?v=[a-f0-9]{12}" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
+  assert.match(home, /<img src="\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}" alt="Markdown Followup 封面" width="1200" height="675" loading="lazy" decoding="async" \/>/);
+  assert.match(home, /<img src="\/assets\/posts\/archive-latest\.svg\?v=[a-f0-9]{12}" alt="Archive Latest 封面" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(home, /<section id="latest-posts" class="section-block">/);
   assert.match(home, /推荐阅读/);
   assert.match(home, /<div class="featured-post-grid count-3">/);

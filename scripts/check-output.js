@@ -578,6 +578,10 @@ function checkImages(file, html) {
       failures.push(`${relative} contains an img without an alt attribute: ${src || tag}`);
     } else if (isArticleContentImage(html, match.index) && !attrs.get("alt")?.trim()) {
       failures.push(`${relative} article content image must have descriptive alt text: ${src || tag}`);
+    } else if (isCoverImage && !isHero && !attrs.get("alt")?.trim()) {
+      failures.push(`${relative} article card cover image must have descriptive alt text: ${src || tag}`);
+    } else if (isCoverImage && !isHero && !attrs.get("alt")?.includes("封面")) {
+      failures.push(`${relative} article card cover alt text must identify the image as a cover: ${src || tag}`);
     }
 
     if (attrs.get("decoding") !== "async") {

@@ -410,6 +410,13 @@ if (!checkOutputScript.includes("checkStructuredData") || !checkOutputScript.inc
 if (!checkOutputScript.includes("checkInteractiveNames")) {
   failures.push("Output checks must validate accessible names for interactive elements.");
 }
+if (
+  !buildScript.includes('coverImage(post.cover, { alt: `${post.title} 封面` })') ||
+  !checkOutputScript.includes("article card cover image must have descriptive alt text") ||
+  !checkOutputScript.includes("article card cover alt text must identify the image as a cover")
+) {
+  failures.push("Article card cover images must keep descriptive alt text while decorative hero images stay separate.");
+}
 if (!checkOutputScript.includes("must not render the page context title block")) {
   failures.push("Output checks must prevent title context blocks on archive index pages.");
 }
