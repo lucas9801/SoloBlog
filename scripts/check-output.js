@@ -539,8 +539,7 @@ function checkImages(file, html) {
     const isCoverImage =
       isHero ||
       html.lastIndexOf('class="thumb', match.index) > html.lastIndexOf("</a>", match.index) ||
-      html.lastIndexOf('class="archive-card-thumb', match.index) > html.lastIndexOf("</a>", match.index) ||
-      html.lastIndexOf('class="search-result-thumb', match.index) > html.lastIndexOf("</a>", match.index);
+      html.lastIndexOf('class="archive-card-thumb', match.index) > html.lastIndexOf("</a>", match.index);
 
     if (!src.trim()) failures.push(`${relative} contains an img without a src.`);
     if (!attrs.has("alt")) {
@@ -600,7 +599,7 @@ function checkLinks(file, html) {
 function checkCardThumbs(file, html) {
   const relative = displayPath(file);
 
-  for (const match of html.matchAll(/<(a|div)\b[^>]*class="[^"]*(?:archive-card-thumb|search-result-thumb)[^"]*"[^>]*>/gi)) {
+  for (const match of html.matchAll(/<(a|div)\b[^>]*class="[^"]*archive-card-thumb[^"]*"[^>]*>/gi)) {
     const tagName = match[1].toLowerCase();
     const attrs = tagAttributes(match[0]);
     if (tagName !== "a") {
