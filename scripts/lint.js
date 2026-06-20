@@ -1201,6 +1201,9 @@ if (!headers.includes("/icon-192.png") || !headers.includes("/icon-512.png")) {
 if (!headers.includes("/site.webmanifest")) failures.push("Cloudflare headers must cache site.webmanifest.");
 if (!headers.includes("/feed.json")) failures.push("Cloudflare headers must cache feed.json.");
 if (!headers.includes("/opensearch.xml")) failures.push("Cloudflare headers must cache opensearch.xml.");
+if (!/\/assets\/\*\s+Cache-Control: public, max-age=31536000, immutable/s.test(headers)) {
+  failures.push("Cloudflare headers must cache versioned assets as immutable.");
+}
 if (!/\/src\/\*\s+Cache-Control: public, max-age=31536000, immutable/s.test(headers)) {
   failures.push("Cloudflare headers must cache versioned src assets as immutable.");
 }

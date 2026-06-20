@@ -1081,6 +1081,9 @@ async function main() {
   if (!headers.includes("connect-src 'self' https://giscus.app https://*.giscus.app")) {
     failures.push("dist/_headers connect-src must allow Giscus comment loading.");
   }
+  if (!/\/assets\/\*\s+Cache-Control: public, max-age=31536000, immutable/s.test(headers)) {
+    failures.push("dist/_headers must cache versioned assets as immutable.");
+  }
   if (/script-src[^;\n]*'unsafe-inline'/.test(headers)) {
     failures.push("dist/_headers script-src must not allow unsafe-inline.");
   }
