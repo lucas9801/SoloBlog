@@ -895,8 +895,11 @@ async function checkViewport(viewport, page) {
             expression: `(() => {
               const failures = [];
               const quickFilters = document.querySelector(".archive-filter-links");
+              const status = document.querySelector(".archive-status");
               const duplicateForm = document.querySelector(".archive-filter-form, [data-archive-filter-form]");
               if (!(quickFilters instanceof HTMLElement)) failures.push("archive quick filters are missing");
+              if (!(status instanceof HTMLElement)) failures.push("archive result status is missing");
+              if (status && !/篇/.test(status.textContent || "")) failures.push("archive result status does not show a post count");
               if (quickFilters?.querySelector("summary")) failures.push("archive quick filters should not render a visible summary label");
               if (duplicateForm) failures.push("archive duplicate dropdown filters are still rendered");
               if (failures.length > 0) return { failures };
@@ -926,8 +929,10 @@ async function checkViewport(viewport, page) {
           expression: `(() => {
             const failures = [];
             const quickFilters = document.querySelector(".archive-filter-links");
+            const status = document.querySelector(".archive-status");
             const duplicateForm = document.querySelector(".archive-filter-form, [data-archive-filter-form]");
             if (!(quickFilters instanceof HTMLElement)) failures.push("archive quick filters are missing on year page");
+            if (!(status instanceof HTMLElement)) failures.push("archive result status is missing on year page");
             if (quickFilters?.querySelector("summary")) failures.push("archive quick filters should not render a visible summary label on year page");
             if (duplicateForm) failures.push("archive duplicate dropdown filters are still rendered on year page");
             if (failures.length > 0) return { failures };
@@ -948,6 +953,8 @@ async function checkViewport(viewport, page) {
           archiveNavigationFailures.push("archive combined year/category quick filter did not navigate to " + archiveTargetPath);
         } else if (archiveTargetPath && !(await waitForSelector(".archive-filter-links"))) {
           archiveNavigationFailures.push("archive quick filters are missing on combined archive page");
+        } else if (archiveTargetPath && !(await waitForSelector(".archive-status"))) {
+          archiveNavigationFailures.push("archive result status is missing on combined archive page");
         }
       }
       await send("Page.navigate", { url: page.url });

@@ -174,6 +174,7 @@ try {
   assert.doesNotMatch(archive, /data-archive-year/);
   assert.doesNotMatch(archive, /data-category-slug/);
   assert.match(archive, /<div class="archive-filter-links" aria-label="文章筛选">/);
+  assert.match(archive, /<div class="archive-status" aria-live="polite">[\s\S]*<strong>全部文章<\/strong>[\s\S]*<span>5 篇<\/span>[\s\S]*<span>第 1\/5 页<\/span>/);
   assert.doesNotMatch(archive, /<summary>快捷筛选<\/summary>/);
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /href="\/categories\/图形渲染\/"/);
@@ -243,6 +244,7 @@ try {
   );
   assert.doesNotMatch(combinedArchivePage, /class="page-title"/);
   assert.doesNotMatch(combinedArchivePage, /class="archive-filter-form"/);
+  assert.match(combinedArchivePage, /<div class="archive-status" aria-live="polite">[\s\S]*<strong>2026 年 图形渲染<\/strong>[\s\S]*<span>2 篇<\/span>/);
   assert.match(combinedArchivePage, /href="\/posts\/markdown-followup\/"/);
   assert.match(combinedArchivePage, /href="\/categories\/图形渲染\/">全部年份 <b>2<\/b><\/a>/);
   assert.match(combinedArchivePage, /href="\/years\/2026\/">全部分类 <b>5<\/b><\/a>/);

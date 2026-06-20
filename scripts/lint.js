@@ -458,12 +458,18 @@ if (
   !buildScript.includes("archiveSelectionPath") ||
   !buildScript.includes("archiveSelectionRoute") ||
   !buildScript.includes("filterArchivePosts") ||
+  !buildScript.includes("function archiveStatus") ||
   !buildScript.includes("archive-filter-links") ||
+  !buildScript.includes('class="archive-status"') ||
+  !css.includes(".archive-status") ||
+  !testBuildScript.includes("archive-status") ||
+  !testBuildScript.includes("5 篇") ||
+  !testBuildScript.includes("第 1\\/5 页") ||
   !buildScript.includes("archiveFilterRow") ||
   !buildScript.includes("archiveSelectionPath({ category: activeCategory, year })") ||
   !buildScript.includes("archiveSelectionPath({ category, year: activeYear })")
 ) {
-  failures.push("Archive pages must support quick-link combined year and category filtering.");
+  failures.push("Archive pages must support quick-link combined year/category filtering with a compact result status.");
 }
 if (
   buildScript.includes("archive-filter-form") ||

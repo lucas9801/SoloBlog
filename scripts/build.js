@@ -1217,6 +1217,15 @@ function archiveFilters(
   </div>`;
 }
 
+function archiveStatus({ title, count, currentPage, totalPages }) {
+  const pageText = totalPages > 1 ? `第 ${currentPage}/${totalPages} 页` : "单页";
+  return `<div class="archive-status" aria-live="polite">
+    <strong>${escapeHtml(title)}</strong>
+    <span>${count} 篇</span>
+    <span>${pageText}</span>
+  </div>`;
+}
+
 function paginationNav(basePath, currentPage, totalPages) {
   if (totalPages <= 1) return "";
   const previous =
@@ -1414,6 +1423,7 @@ function archivePage({
       categoryTotalCount: categoryScopePosts.length,
       yearTotalCount: yearScopePosts.length
     })}
+    ${archiveStatus({ title, count: posts.length, currentPage, totalPages })}
     <div class="article-index-grid">${items.map((post) => archivePostCard(post)).join("")}</div>
     ${paginationNav(basePath, currentPage, totalPages)}
   </main>`;

@@ -566,6 +566,36 @@ pre {
   gap: 8px;
 }
 
+.archive-status {
+  min-height: 36px;
+  margin: -4px 0 14px;
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  border-left: 3px solid var(--brand);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.archive-status strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.archive-status span {
+  min-height: 24px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
 .search-page-card input:focus {
   border-color: var(--brand);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
