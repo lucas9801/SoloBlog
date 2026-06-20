@@ -710,8 +710,8 @@ if (
 ) {
   failures.push("Search facets must update against the current query and selected filters.");
 }
-if (!searchScript.includes('width="1200" height="675"')) {
-  failures.push("Search result cover images must reserve their 1200x675 aspect ratio.");
+if (!searchScript.includes('class="search-result-index"') || searchScript.includes('class="search-result-thumb"')) {
+  failures.push("Search results must use compact indexed rows instead of cover thumbnails.");
 }
 if (
   !searchScript.includes("function dateTime") ||
@@ -875,18 +875,18 @@ if (
 }
 if (
   !buildScript.includes('<a class="archive-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="阅读文章：${escapeAttr(post.title)}">') ||
-  !searchScript.includes('<a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="阅读文章：${escapeHtml(post.title)}">') ||
   buildScript.includes('class="archive-card-thumb ${post.categorySlug}" aria-hidden="true"') ||
-  searchScript.includes('class="search-result-thumb" aria-hidden="true"') ||
-  !checkOutputScript.includes("card thumbnails must be article links") ||
-  !checkLayoutScript.includes("search result card is missing a thumbnail article link")
+  !checkOutputScript.includes("card thumbnails must be article links")
 ) {
   failures.push("Article card thumbnails must be accessible article links, while cover images stay decorative.");
 }
 if (
   !/\.archive-card h2\s*\{[\s\S]*?min-height:\s*calc\(1\.38em \* 2\);[\s\S]*?-webkit-line-clamp:\s*2;/.test(css) ||
+  !searchScript.includes('class="search-result-index"') ||
+  !checkLayoutScript.includes("search result card is missing a result index") ||
   !/\.search-result-card h2\s*\{[\s\S]*?-webkit-line-clamp:\s*2;/.test(css) ||
   !/\.search-result-card p\s*\{[\s\S]*?-webkit-line-clamp:\s*2;/.test(css) ||
+  !css.includes(".search-result-index") ||
   !css.includes(".archive-card-thumb:focus-visible") ||
   !css.includes(".search-result-card:focus-within")
 ) {

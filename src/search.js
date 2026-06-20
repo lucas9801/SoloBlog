@@ -381,15 +381,13 @@ function renderSearchPagination(totalPages) {
   pagination.innerHTML = `${previous}${pages}${next}`;
 }
 
-function renderCard(post, query) {
+function renderCard(post, query, index) {
   return `<article class="search-result-card" role="listitem" data-result-year="${escapeHtml(postYear(post))}" data-result-category="${escapeHtml(post.category)}" data-result-series="${escapeHtml(post.series || "")}">
-    <a class="search-result-thumb" href="${escapeHtml(post.url)}" aria-label="阅读文章：${escapeHtml(post.title)}">
-      <img src="${escapeHtml(post.cover || "/assets/posts/start-here.svg")}" alt="" width="1200" height="675" loading="lazy" decoding="async" />
-      <span>${escapeHtml(post.category)}</span>
-    </a>
+    <span class="search-result-index" aria-hidden="true">${escapeHtml(String(index).padStart(2, "0"))}</span>
     <div class="search-result-body">
       <div class="post-meta">
         <time datetime="${escapeHtml(post.date)}">${formatDate(post.date)}</time>
+        <span>${escapeHtml(post.category)}</span>
         <span>${escapeHtml(post.readingTime || "")}</span>
       </div>
       <h2><a href="${escapeHtml(post.url)}">${highlight(post.title, query)}</a></h2>
@@ -495,7 +493,9 @@ function render(posts) {
       .join("")}
   </div>`;
   }
-  results.innerHTML = visible.map((post) => renderCard(post, state.query)).join("");
+  results.innerHTML = visible
+    .map((post, index) => renderCard(post, state.query, (state.page - 1) * SEARCH_RESULTS_PER_PAGE + index + 1))
+    .join("");
 }
 
 function cancelScheduledSearchRender() {

@@ -613,22 +613,14 @@ async function checkViewport(viewport, page) {
                 failures.push("search result cards must be inside a list container");
               }
               for (const card of document.querySelectorAll(".search-result-card")) {
-                const thumbLink = card.querySelector("a.search-result-thumb");
+                const indexNode = card.querySelector(".search-result-index");
                 const titleLink = card.querySelector(".search-result-body h2 a");
-                if (!(thumbLink instanceof HTMLAnchorElement)) {
-                  failures.push("search result card is missing a thumbnail article link");
-                  break;
-                }
-                if (!thumbLink.getAttribute("aria-label")) {
-                  failures.push("search result thumbnail link is missing an accessible name");
+                if (!(indexNode instanceof HTMLElement)) {
+                  failures.push("search result card is missing a result index");
                   break;
                 }
                 if (!(titleLink instanceof HTMLAnchorElement)) {
                   failures.push("search result card is missing a title article link");
-                  break;
-                }
-                if (thumbLink.href !== titleLink.href) {
-                  failures.push("search result thumbnail link does not match the title link");
                   break;
                 }
               }
