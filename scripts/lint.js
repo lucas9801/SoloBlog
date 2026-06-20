@@ -685,10 +685,17 @@ if (
 }
 if (
   !buildScript.includes('id="searchStatus"') ||
+  !buildScript.includes('id="searchActiveFilters"') ||
   !buildScript.includes('aria-describedby="searchStatus"') ||
   !buildScript.includes('aria-controls="searchResults searchFacets"') ||
   !buildScript.includes('aria-controls="searchInputPage searchStatus searchResults searchFacets"') ||
   !buildScript.includes('id="searchPagination"') ||
+  !searchScript.includes("function selectedFilterItems") ||
+  !searchScript.includes("data-remove-filter") ||
+  !searchScript.includes("data-clear-active-filters") ||
+  !css.includes(".search-active-filters") ||
+  !checkLayoutScript.includes("active filter chips did not show the current query") ||
+  !checkLayoutScript.includes("category active filter chip did not preserve the query URL param") ||
   !searchScript.includes('aria-controls="searchResults searchStatus"') ||
   !searchScript.includes('results.setAttribute("role", "list")') ||
   !searchScript.includes('results.removeAttribute("role")')

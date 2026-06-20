@@ -2,6 +2,7 @@ const input = document.querySelector("#searchInputPage");
 const results = document.querySelector("#searchResults");
 const status = document.querySelector("#searchStatus");
 const facets = document.querySelector("#searchFacets");
+const activeFilters = document.querySelector("#searchActiveFilters");
 const pagination = document.querySelector("#searchPagination");
 const clearButton = document.querySelector("[data-search-clear]");
 const params = new URLSearchParams(window.location.search);
@@ -295,6 +296,15 @@ function selectedFilters() {
     .join(" · ");
 }
 
+function selectedFilterItems() {
+  return [
+    normalize(state.query) ? { type: "query", label: `关键词：${state.query.trim()}` } : null,
+    state.year ? { type: "year", label: `年份：${state.year}` } : null,
+    state.category ? { type: "category", label: `分类：${state.category}` } : null,
+    state.tag ? { type: "tag", label: `标签：${state.tag}` } : null
+  ].filter(Boolean);
+}
+
 function hasSearchState() {
   return Boolean(normalize(state.query) || state.year || state.category || state.tag);
 }
@@ -406,6 +416,22 @@ function syncControls() {
   if (input && input.value !== state.query) input.value = state.query;
   const hasState = hasSearchState();
   if (clearButton) clearButton.hidden = !hasState;
+  if (activeFilters) {
+    const items = selectedFilterItems();
+    activeFilters.hidden = items.length === 0;
+    activeFilters.innerHTML = items.length
+      ? `<span>当前筛选</span>
+        <div class="active-filter-list">
+          ${items
+            .map(
+              (item) =>
+                `<button class="active-filter-chip" type="button" data-remove-filter="${escapeHtml(item.type)}" aria-label="移除${escapeHtml(item.label)}">${escapeHtml(item.label)}</button>`
+            )
+            .join("")}
+        </div>
+        <button class="active-filter-clear" type="button" data-clear-active-filters>清除全部</button>`
+      : "";
+  }
   for (const button of facets?.querySelectorAll("[data-facet-type]") || []) {
     const type = button.dataset.facetType;
     const value = button.dataset.facetValue || "";
@@ -521,6 +547,28 @@ async function boot() {
     state.page = 1;
     updateUrl();
     render(posts);
+  });
+
+  activeFilters?.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const clear = target?.closest("[data-clear-active-filters]");
+    const remove = target?.closest("[data-remove-filter]");
+    if (!clear && !remove) return;
+
+    cancelScheduledSearchRender();
+    if (clear) {
+      resetSearchState();
+    } else {
+      const type = remove.dataset.removeFilter;
+      if (type === "query") state.query = "";
+      if (type === "year") state.year = "";
+      if (type === "category") state.category = "";
+      if (type === "tag") state.tag = "";
+      state.page = 1;
+    }
+    updateUrl();
+    render(posts);
+    input.focus();
   });
 
   pagination?.addEventListener("click", (event) => {

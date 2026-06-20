@@ -328,6 +328,7 @@ try {
   assert.doesNotMatch(search, /id="searchCategoryFilter"/);
   assert.match(search, /placeholder="搜索标题、摘要、正文、年份、分类或标签"/);
   assert.match(search, /id="searchInputPage"[^>]+aria-describedby="searchStatus"[^>]+aria-controls="searchResults searchFacets"/);
+  assert.match(search, /id="searchActiveFilters" class="search-active-filters" aria-label="当前筛选" hidden/);
   assert.doesNotMatch(search, /autofocus/);
   assert.match(search, /data-search-clear[^>]+aria-controls="searchInputPage searchStatus searchResults searchFacets"/);
   assert.match(search, /id="searchStatus" class="search-status" role="status" aria-live="polite"/);

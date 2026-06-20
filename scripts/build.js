@@ -1875,6 +1875,7 @@ function searchPage() {
         </label>
         <button class="secondary-button search-clear" type="button" data-search-clear aria-controls="searchInputPage searchStatus searchResults searchFacets" hidden>清空</button>
       </div>
+      <div id="searchActiveFilters" class="search-active-filters" aria-label="当前筛选" hidden></div>
       <div class="search-layout">
         <aside class="search-filter-panel" aria-label="筛选条件">
           <div id="searchFacets" class="search-facets" aria-label="搜索筛选"></div>

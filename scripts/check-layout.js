@@ -589,6 +589,7 @@ async function checkViewport(viewport, page) {
               const results = document.querySelector("#searchResults");
               const status = document.querySelector("#searchStatus");
               const facets = document.querySelector("#searchFacets");
+              const activeFilters = document.querySelector("#searchActiveFilters");
               const pagination = document.querySelector("#searchPagination");
               const clearButton = document.querySelector("[data-search-clear]");
               const invalidFacetUrl = ${JSON.stringify(page.search.includes("__missing__"))};
@@ -596,6 +597,7 @@ async function checkViewport(viewport, page) {
               if (!results) failures.push("search results container is missing");
               if (!status) failures.push("search status container is missing");
               if (!facets) failures.push("search facets container is missing");
+              if (!activeFilters) failures.push("search active filters container is missing");
               if (!pagination) failures.push("search pagination container is missing");
               if (!clearButton) failures.push("search clear button is missing");
               if (failures.length > 0) return failures;
@@ -642,6 +644,7 @@ async function checkViewport(viewport, page) {
               }
               if (facetButtons === 0) failures.push("search page did not render facet buttons");
               if (!clearButtonIsHidden()) failures.push("clear button is visible before any search state");
+              if (!activeFilters.hidden) failures.push("active filter chips are visible before any search state");
               if (invalidFacetUrl && new URL(location.href).search !== "") {
                 failures.push("search page did not remove invalid facet URL params");
               }
@@ -664,6 +667,9 @@ async function checkViewport(viewport, page) {
               if (!results.querySelector("mark")) failures.push("search query results did not highlight matched terms");
               if (!new URL(location.href).searchParams.get("q")) failures.push("search query did not update the URL");
               if (!clearButtonIsVisible()) failures.push("clear button stayed hidden after search input");
+              if (activeFilters.hidden || !activeFilters.textContent.includes("关键词：Unity")) {
+                failures.push("active filter chips did not show the current query");
+              }
 
               const firstFacetButton = (type) =>
                 Array.from(document.querySelectorAll('[data-facet-type="' + type + '"]')).find(
@@ -718,8 +724,35 @@ async function checkViewport(viewport, page) {
                 if (selectedCategory && !summaryText.includes("分类：" + selectedCategory)) {
                   failures.push("combined search summary does not show the selected category");
                 }
+                const activeFilterText = activeFilters.textContent || "";
+                if (selectedYear && !activeFilterText.includes("年份：" + selectedYear)) {
+                  failures.push("active filter chips do not show the selected year");
+                }
+                if (selectedCategory && !activeFilterText.includes("分类：" + selectedCategory)) {
+                  failures.push("active filter chips do not show the selected category");
+                }
               } else {
                 failures.push("category quick filter has no selectable category");
+              }
+
+              const categoryChip = activeFilters.querySelector('[data-remove-filter="category"]');
+              if (selectedCategory && categoryChip instanceof HTMLButtonElement) {
+                categoryChip.click();
+                await waitFor(() => !new URL(location.href).searchParams.get("category"));
+                if (new URL(location.href).searchParams.get("category")) {
+                  failures.push("category active filter chip did not remove the category URL param");
+                }
+                if (new URL(location.href).searchParams.get("q") !== "Unity") {
+                  failures.push("category active filter chip did not preserve the query URL param");
+                }
+                if (selectedYear && new URL(location.href).searchParams.get("year") !== selectedYear) {
+                  failures.push("category active filter chip did not preserve the year URL param");
+                }
+                if ((activeFilters.textContent || "").includes("分类：" + selectedCategory)) {
+                  failures.push("category active filter chip did not remove the visible category chip");
+                }
+              } else if (selectedCategory) {
+                failures.push("active filter chips do not include a removable category chip");
               }
 
               const pollutedUrlBefore = location.href;
@@ -742,6 +775,7 @@ async function checkViewport(viewport, page) {
               if (Array.from(document.querySelectorAll("[data-facet-type].active")).some((button) => button.dataset.facetValue)) {
                 failures.push("Escape did not clear active facets");
               }
+              if (!activeFilters.hidden) failures.push("Escape did not hide active filter chips");
               input.value = "Unity";
               input.dispatchEvent(new Event("input", { bubbles: true }));
               await waitFor(() => new URL(location.href).searchParams.get("q"));
@@ -760,6 +794,7 @@ async function checkViewport(viewport, page) {
                 failures.push("clear button did not restore list semantics for results");
               }
               if (!clearButtonIsHidden()) failures.push("clear button stayed visible after clearing search state");
+              if (!activeFilters.hidden) failures.push("clear button did not hide active filter chips");
               document.activeElement?.blur?.();
 
               return failures;
