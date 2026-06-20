@@ -364,7 +364,7 @@ async function checkViewport(viewport, page) {
           ".home-post-grid",
           ".blog-sidebar",
           ".article-index-page",
-          ".article-index-grid",
+          ".post-index-list",
           ".archive-filters",
           ".pagination",
           ".tag-matrix-page",

@@ -180,8 +180,10 @@ try {
   assert.match(archive, /href="\/years\/2026\/"/);
   assert.match(archive, /href="\/categories\/图形渲染\/"/);
   assert.match(archive, />全部年份 <b>5<\/b><\/a>[\s\S]*>全部分类 <b>5<\/b><\/a>/);
-  assert.match(archive, /<a class="archive-card-thumb 图形渲染" href="\/posts\/markdown-followup\/" aria-label="阅读文章：Markdown Followup">\s*<img src="\/assets\/posts\/inline\.svg" alt="" width="1200" height="675" loading="lazy" decoding="async" \/>/);
-  assert.doesNotMatch(archive, /class="archive-card-thumb[^"]*" aria-hidden="true"/);
+  assert.match(archive, /class="post-index-list wide"/);
+  assert.match(archive, /class="post-index-item"/);
+  assert.doesNotMatch(archive, /class="article-index-grid"/);
+  assert.doesNotMatch(archive, /class="archive-card-thumb/);
   assert.match(archive, /href="\/archive\/page\/2\/"/);
   const archiveCollection = jsonLdObjects(archive).find((item) => item["@type"] === "CollectionPage");
   assert.equal(archiveCollection.url, "https://blog.solus.games/archive/");
@@ -264,8 +266,8 @@ try {
   assert.doesNotMatch(tagPage, /class="section-kicker"/);
   assert.match(tagPage, /Markdown 标签/);
   assert.match(tagPage, /<div class="archive-status" aria-live="polite">[\s\S]*<strong>标签：Markdown<\/strong>[\s\S]*<span>2 篇<\/span>[\s\S]*<span>第 1\/2 页<\/span>/);
-  assert.match(tagPage, /class="tag-result-list"/);
-  assert.match(tagPage, /class="tag-result-item"/);
+  assert.match(tagPage, /class="post-index-list"/);
+  assert.match(tagPage, /class="post-index-item"/);
   assert.doesNotMatch(tagPage, /class="article-index-grid"/);
   assert.match(tagPage, /href="\/posts\/markdown-followup\/"/);
   assert.match(tagPage, /href="\/tags\/markdown\/page\/2\/"/);
