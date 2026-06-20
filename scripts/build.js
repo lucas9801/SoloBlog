@@ -847,6 +847,9 @@ function pageLayout({
       return `<a class="${activeClass}" href="${item.href}"${ariaCurrent}>${escapeHtml(item.label)}</a>`;
     })
     .join("");
+  const quickComments = body.includes('id="comments"')
+    ? `<a class="quick-action quick-action-comments" href="#comments" aria-label="跳到评论"><span class="sr-only">跳到评论</span></a>`
+    : "";
 
   return `<!doctype html>
 <html lang="${escapeAttr(site.language || "zh-CN")}">
@@ -908,6 +911,10 @@ function pageLayout({
       </button>
     </header>
     ${bodyWithContentTarget}
+    <div class="quick-actions" aria-label="快捷操作">
+      ${quickComments}
+      <button class="quick-action quick-action-top" type="button" data-scroll-top aria-label="返回顶部"><span class="sr-only">返回顶部</span></button>
+    </div>
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">站点地图</a></p>
     </footer>
@@ -1041,6 +1048,45 @@ function compactPostIndex(posts, title = "最近文章") {
   </section>`;
 }
 
+function siteOverviewCard(posts, categories, tags, seriesEntries = []) {
+  const latest = latestPostDate(posts);
+  const stats = [
+    { label: "文章", value: posts.length, href: "/archive/" },
+    { label: "分类", value: categories.length, href: "/archive/" },
+    { label: "标签", value: tags.length, href: "/tags/" },
+    ...(seriesEntries.length ? [{ label: "专题", value: seriesEntries.length, href: "/series/" }] : [])
+  ];
+
+  return `<section class="sidebar-card site-overview-card" aria-labelledby="site-overview-title">
+    <h2 id="site-overview-title">站点索引</h2>
+    <div class="site-overview-grid">
+      ${stats
+        .map(
+          (item) => `<a href="${item.href}">
+            <b>${item.value}</b>
+            <span>${escapeHtml(item.label)}</span>
+          </a>`
+        )
+        .join("")}
+    </div>
+    <p class="site-overview-update"><span>最近更新</span><time datetime="${escapeAttr(latest)}">${formatDate(latest)}</time></p>
+  </section>`;
+}
+
+function yearArchiveCard(posts) {
+  const years = groupByYear(posts).slice(0, 6);
+  if (!years.length) return "";
+
+  return `<section class="sidebar-card sidebar-index-card archive-years-card">
+    <h2>年度归档</h2>
+    <div class="category-list archive-year-list">
+      ${years
+        .map(([year, list]) => `<a href="/years/${slugify(year)}/"><span>${escapeHtml(year)}</span><b>${list.length}</b></a>`)
+        .join("")}
+    </div>
+  </section>`;
+}
+
 function rankingPayload(posts) {
   return escapeAttr(
     JSON.stringify(
@@ -1058,6 +1104,7 @@ function rankingPayload(posts) {
 function sidebar(posts, categories, tags, seriesEntries = []) {
   const fallbackRanking = posts.slice(0, 5);
   return `<aside class="blog-sidebar">
+    ${siteOverviewCard(posts, categories, tags, seriesEntries)}
     <section class="sidebar-card sidebar-index-card">
       <h2>分类</h2>
       <div class="category-list">${categories
@@ -1085,6 +1132,7 @@ function sidebar(posts, categories, tags, seriesEntries = []) {
         .map(([tag, list]) => `<a href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`)
         .join("")}</div>
     </section>
+    ${yearArchiveCard(posts)}
     <section class="sidebar-card subscribe-card">
       <h2>${escapeHtml(site.subscribe.title)}</h2>
       <p>${escapeHtml(site.subscribe.description)}</p>

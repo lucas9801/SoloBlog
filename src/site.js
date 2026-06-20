@@ -1,5 +1,6 @@
 const header = document.querySelector(".site-header");
 const themeToggle = document.querySelector("[data-theme-toggle]");
+const scrollTopButton = document.querySelector("[data-scroll-top]");
 const rssCopyStates = new WeakMap();
 let lastScrollY = window.scrollY;
 let ticking = false;
@@ -118,17 +119,27 @@ function updateHeaderVisibility() {
   ticking = false;
 }
 
+function updateScrollTopButton() {
+  if (!scrollTopButton) return;
+  scrollTopButton.classList.toggle("is-visible", window.scrollY > 420);
+}
+
 header?.addEventListener("focusin", revealHeader);
+scrollTopButton?.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
 window.addEventListener(
   "scroll",
   () => {
+    updateScrollTopButton();
     if (ticking) return;
     ticking = true;
     window.requestAnimationFrame(updateHeaderVisibility);
   },
   { passive: true }
 );
+updateScrollTopButton();
 
 function siteSearchTarget(form) {
   const input = form.querySelector('input[name="q"]');
