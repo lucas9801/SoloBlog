@@ -1010,36 +1010,12 @@ function archivePostCard(post) {
 
 function featuredPostGrid(posts) {
   if (!posts.length) return "";
-  if (posts.length === 2) {
-    return `<div class="featured-post-grid count-2 even-featured-grid">
+  return `<div class="featured-post-grid count-${posts.length}">
     ${posts
       .map((post) =>
         archivePostCard(post).replace('<article class="archive-card">', '<article class="archive-card featured-card">')
       )
       .join("")}
-  </div>`;
-  }
-
-  const [primary, ...secondary] = posts;
-  return `<div class="featured-post-grid count-${posts.length}">
-    ${archivePostCard(primary).replace('<article class="archive-card">', '<article class="archive-card featured-card is-primary">')}
-    ${
-      secondary.length
-        ? `<div class="featured-note-list">${secondary
-            .map(
-              (post) => `<article class="featured-note-card">
-                ${postMeta(post)}
-                <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
-                <p>${escapeHtml(post.summary)}</p>
-                <div class="tag-row">${post.tags
-                  .slice(0, 3)
-                  .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
-                  .join("")}</div>
-              </article>`
-            )
-            .join("")}</div>`
-        : ""
-    }
   </div>`;
 }
 
@@ -1384,7 +1360,6 @@ function homePage(posts, categories, tags, seriesEntries = []) {
   const body = `<main>
     <section class="hero-section">
       <div class="hero-inner">
-        ${coverImage(site.heroCover || "/assets/posts/start-here.svg", { className: "hero-cover", loading: "", fetchPriority: "high" })}
         <div class="hero-copy">
           <p class="eyebrow">${escapeHtml(hero.eyebrow)}</p>
           <h1>${escapeHtml(hero.title)}</h1>
@@ -1394,6 +1369,9 @@ function homePage(posts, categories, tags, seriesEntries = []) {
             <a class="ghost-link" href="/archive/">${escapeHtml(hero.secondaryAction)}</a>
           </div>
         </div>
+        <figure class="hero-visual" aria-hidden="true">
+          ${coverImage(site.heroCover || "/assets/posts/start-here.svg", { className: "hero-cover", loading: "", fetchPriority: "high" })}
+        </figure>
       </div>
     </section>
     <section class="content-shell">

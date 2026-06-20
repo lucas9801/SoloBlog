@@ -336,16 +336,15 @@ pre {
 }
 
 .hero-section {
-  padding: 18px 16px 12px;
+  padding: 14px 16px 8px;
 }
 
 .hero-inner {
   position: relative;
-  overflow: hidden;
   width: min(1180px, 100%);
-  min-height: 220px;
+  min-height: 198px;
   margin: 0 auto;
-  padding: clamp(18px, 2.4vw, 28px) clamp(24px, 3vw, 40px);
+  padding: clamp(14px, 1.7vw, 20px) clamp(22px, 2.6vw, 34px);
   display: grid;
   grid-template-columns: minmax(0, 1.28fr) minmax(260px, 0.72fr);
   gap: 28px;
@@ -359,38 +358,27 @@ pre {
   background-size: 40px 40px;
 }
 
-.hero-inner::before {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(90deg, var(--surface) 0 42%, transparent 70%);
-  content: "";
-  opacity: 0.9;
-}
-
-.hero-inner::after {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(90deg, var(--surface) 0 45%, color-mix(in srgb, var(--surface) 82%, transparent) 68%, transparent);
-  content: "";
+.hero-visual {
+  position: relative;
+  overflow: hidden;
+  height: 146px;
+  min-height: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--code-bg);
 }
 
 .hero-cover {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 0;
-  width: 56%;
+  width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0.86;
 }
 
 .hero-copy {
   position: relative;
-  z-index: 3;
+  z-index: 1;
 }
 
 .hero-copy {
@@ -410,14 +398,14 @@ pre {
   max-width: 760px;
   margin: 0;
   color: var(--text);
-  font-size: clamp(30px, 3.3vw, 40px);
+  font-size: clamp(30px, 3.1vw, 38px);
   line-height: 1.08;
   font-weight: 800;
 }
 
 .hero-copy > p:not(.eyebrow) {
   max-width: 620px;
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.62;
@@ -425,7 +413,7 @@ pre {
 }
 
 .hero-actions {
-  margin-top: 14px;
+  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -537,23 +525,19 @@ pre {
 
 .home-post-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
 .featured-post-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(240px, 0.92fr);
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   align-items: start;
 }
 
 .featured-post-grid.count-1 {
   grid-template-columns: 1fr;
-}
-
-.featured-post-grid.even-featured-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .home-post-grid .archive-card {
@@ -564,59 +548,50 @@ pre {
   height: 100%;
 }
 
-.featured-card.is-primary .archive-card-thumb {
-  aspect-ratio: 16 / 9;
-}
-
-.featured-card.is-primary h2 {
-  font-size: 22px;
-}
-
-.featured-note-list {
+.content-shell .archive-card {
   display: grid;
-  gap: 12px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: 168px;
 }
 
-.featured-note-card {
-  min-width: 0;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
+.content-shell .archive-card-thumb {
+  height: 100%;
+  aspect-ratio: auto;
+  border-right: 1px solid var(--line);
+  background: #08111c;
 }
 
-.featured-note-card:hover,
-.featured-note-card:focus-within {
-  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+.content-shell .archive-card-thumb::after {
+  display: none;
 }
 
-.featured-note-card h3 {
-  margin: 8px 0;
-  color: var(--text);
-  font-size: 18px;
-  line-height: 1.38;
-  font-weight: 700;
+.content-shell .archive-card-thumb img {
+  width: 210%;
+  max-width: none;
+  height: 100%;
+  object-position: top left;
+  opacity: 0.9;
 }
 
-.featured-note-card h3 a:hover {
-  color: var(--brand);
+.content-shell .archive-card-thumb span {
+  display: none;
 }
 
-.featured-note-card p {
-  margin: 0 0 14px;
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.65;
-  -webkit-box-orient: vertical;
+.content-shell .archive-card-body {
+  padding: 18px 20px;
+  justify-content: center;
+}
+
+.content-shell .archive-card h2 {
+  min-height: 0;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.content-shell .archive-card p {
+  min-height: 0;
+  margin-bottom: 16px;
   -webkit-line-clamp: 2;
-}
-
-.featured-note-card .tag-row {
-  margin-top: auto;
 }
 
 .article-index-page,
@@ -755,7 +730,7 @@ pre {
   position: relative;
   overflow: hidden;
   display: block;
-  background: linear-gradient(135deg, #111821, #263241);
+  background: var(--code-bg);
 }
 
 .archive-card-thumb::after {
@@ -763,7 +738,7 @@ pre {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 55%, rgba(4, 8, 14, 0.42));
+  background: linear-gradient(180deg, transparent 62%, rgba(4, 8, 14, 0.28));
   content: "";
 }
 
@@ -796,7 +771,8 @@ pre {
   display: inline-flex;
   align-items: center;
   border-radius: 4px;
-  background: rgba(4, 8, 14, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 8, 14, 0.46);
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -2756,26 +2732,20 @@ pre {
   }
 
   .hero-inner {
-    min-height: 268px;
-    padding: 18px 24px;
+    min-height: 0;
+    padding: 16px 22px;
     grid-template-columns: 1fr;
-    align-items: end;
+    gap: 0;
+    align-items: start;
   }
 
-  .hero-inner::after {
-    background: linear-gradient(180deg, var(--surface) 0 42%, color-mix(in srgb, var(--surface) 78%, transparent) 72%, color-mix(in srgb, var(--surface) 38%, transparent));
-  }
-
-  .hero-cover {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-    height: 64%;
+  .hero-visual {
+    display: none;
   }
 
   .hero-copy h1 {
-    font-size: 30px;
-    line-height: 1.07;
+    font-size: 28px;
+    line-height: 1.1;
   }
 
   .hero-copy > p:not(.eyebrow) {
@@ -2785,7 +2755,7 @@ pre {
   }
 
   .hero-actions {
-    margin-top: 16px;
+    margin-top: 14px;
     gap: 8px;
   }
 
@@ -2810,20 +2780,25 @@ pre {
   .series-detail-layout,
   .series-grid,
   .featured-post-grid,
-  .featured-post-grid.even-featured-grid,
   .home-post-grid {
     grid-template-columns: 1fr;
   }
 
-  .content-shell .archive-card-thumb {
-    aspect-ratio: 16 / 4.4;
+  .content-shell .archive-card {
+    grid-template-columns: 1fr;
+    min-height: 0;
   }
 
-  .content-shell .archive-card-thumb::after {
-    background: transparent;
+  .content-shell .archive-card-thumb {
+    height: auto;
+    aspect-ratio: 16 / 5.2;
+    border-right: 0;
   }
 
   .content-shell .archive-card-thumb img {
+    width: 100%;
+    max-width: 100%;
+    height: 150%;
     object-position: top center;
   }
 

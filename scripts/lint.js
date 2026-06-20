@@ -1055,27 +1055,32 @@ if (
   !buildScript.includes("recommendedSlugs") ||
   !buildScript.includes("function featuredPostGrid") ||
   !buildScript.includes('class="featured-post-grid count-${posts.length}"') ||
-  !buildScript.includes("const [primary, ...secondary] = posts") ||
-  !buildScript.includes('class="featured-note-list"') ||
-  !buildScript.includes('class="featured-note-card"') ||
+  buildScript.includes("const [primary, ...secondary] = posts") ||
+  buildScript.includes('class="featured-note-list"') ||
+  buildScript.includes('class="featured-note-card"') ||
+  !buildScript.includes('class="archive-card featured-card"') ||
   !buildScript.includes("function homePostsPerPage") ||
   !buildScript.includes("posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage())") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
   !css.includes(".featured-post-grid") ||
-  !css.includes(".featured-note-list") ||
-  !css.includes(".featured-note-card") ||
-  !css.includes("min-height: 220px;") ||
+  css.includes(".featured-note-list") ||
+  css.includes(".featured-note-card") ||
+  !css.includes(".hero-visual") ||
+  !css.includes("min-height: 198px;") ||
+  !css.includes(".content-shell .archive-card") ||
+  !css.includes("grid-template-columns: 220px minmax(0, 1fr);") ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   !checkLayoutScript.includes("mobile recommended card covers should not repeat the visible card title") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
   !testBuildScript.includes("homePostsPerPage: 1") ||
   !testBuildScript.includes("Archive Overflow") ||
   !testBuildScript.includes("featured-post-grid count-3") ||
-  !testBuildScript.includes("featured-note-card") ||
+  !testBuildScript.includes("assert.doesNotMatch(home, /featured-note-card|featured-note-list|featured-card is-primary/)") ||
+  !testBuildScript.includes('<article class="archive-card featured-card">') ||
   !testBuildScript.includes('href="#latest-posts"') ||
   !checkLayoutScript.includes("home hero latest-posts link points to a missing section")
 ) {
-  failures.push("Home page must avoid duplicate recommendations without creating a broken latest-posts hero link.");
+  failures.push("Home page must use a compact technical hero and consistent recommendation cards without duplicate latest posts.");
 }
 if (site.tagline === "Game Development Archive" || readme.includes("My Game Dev Blog") || rootIndex.includes("My Game Dev Blog")) {
   failures.push("Project identity must not keep initial template naming.");
