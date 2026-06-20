@@ -219,6 +219,23 @@ function normalizedLabel(value) {
     .toLowerCase();
 }
 
+function checkDocumentedPostWorkflow(source, name) {
+  const lines = String(source || "").split(/\r?\n/);
+  lines.forEach((line, index) => {
+    if (
+      /npm run new:post -- "[^"]*\p{Script=Han}[^"]*"/u.test(line) &&
+      !/\s--slug\s+[a-z0-9]+(?:-[a-z0-9]+)*\b/.test(line)
+    ) {
+      failures.push(`${name}:${index + 1} documented Chinese-title new:post commands must include an English --slug.`);
+    }
+
+    const slugExample = line.match(/^\s*slug:\s*["']?([^"'\s]+)["']?\s*$/);
+    if (slugExample && !isCanonicalSlug(slugExample[1])) {
+      failures.push(`${name}:${index + 1} documented slug examples must use canonical English slugs.`);
+    }
+  });
+}
+
 if (postFiles.length === 0) {
   failures.push("content/posts must contain at least one markdown post.");
 }
@@ -955,6 +972,8 @@ if (
 if (/Game Development Archive|Deploy To Cloudflare Pages|Recommended: Git Integration/.test(`${blogOperationsDocs}\n${cloudflareDocs}`)) {
   failures.push("Project docs must not keep initial English template wording.");
 }
+checkDocumentedPostWorkflow(readme, "README.md");
+checkDocumentedPostWorkflow(blogOperationsDocs, "docs/blog-operations.md");
 for (const requiredCloudflareDocText of ["JSON Feed", "OpenSearch", "search-index.json", "feed.json", "opensearch.xml"]) {
   if (!cloudflareDocs.includes(requiredCloudflareDocText)) {
     failures.push(`Cloudflare docs must mention ${requiredCloudflareDocText}.`);

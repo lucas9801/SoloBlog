@@ -135,7 +135,7 @@ content/posts/2026-06-04-unity-performance-notes.md
 ```yaml
 ---
 title: Unity 性能优化记录
-slug: unity-性能优化记录
+slug: unity-performance-notes
 date: 2026-06-04
 category: Unity
 tags: ["Unity", "性能", "Profiler"]
@@ -639,8 +639,10 @@ npm run build
 
 ```powershell
 cd D:\MyBlog
-npm run new:post -- "文章标题"
+npm run new:post -- "文章标题" --slug article-slug
 ```
+
+如果标题是中文，`--slug` 不要省略；如果标题是纯英文、数字和符号，才可以让脚本自动生成 slug。
 
 编辑生成的 Markdown：
 

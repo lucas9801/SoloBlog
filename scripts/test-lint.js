@@ -58,6 +58,28 @@ try {
   assert.match(result.stderr, /initial template naming/);
   await writeFile(rootIndexPath, rootIndex, "utf8");
 
+  const blogOperationsPath = path.join(tempRoot, "docs", "blog-operations.md");
+  const blogOperations = await readFile(blogOperationsPath, "utf8");
+  await writeFile(
+    blogOperationsPath,
+    `${blogOperations}
+
+\`\`\`powershell
+npm run new:post -- "中文文章标题"
+\`\`\`
+
+\`\`\`yaml
+slug: unity-性能优化记录
+\`\`\`
+`,
+    "utf8"
+  );
+  result = await runLint(tempRoot);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Chinese-title new:post commands must include an English --slug/);
+  assert.match(result.stderr, /documented slug examples must use canonical English slugs/);
+  await writeFile(blogOperationsPath, blogOperations, "utf8");
+
   const coversDir = path.join(tempRoot, "assets", "posts");
   const firstCover = (await readdir(coversDir)).find((file) => file.endsWith(".svg"));
   assert.ok(firstCover, "fixture should include at least one post cover");
