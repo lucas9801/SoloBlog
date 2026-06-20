@@ -38,6 +38,7 @@ const requiredFiles = [
   "assets/og/solus-og.svg",
   "assets/og/solus-og.png",
   "migrations/0002_post_view_events.sql",
+  ".github/workflows/check.yml",
   "README.md"
 ];
 
@@ -79,7 +80,8 @@ const [
   readme,
   blogOperationsDocs,
   cloudflareDocs,
-  dynamicFeaturesDocs
+  dynamicFeaturesDocs,
+  checkWorkflow
 ] = await Promise.all([
   readFile(path.join(root, "content/site.json"), "utf8").then(JSON.parse),
   readFile(path.join(root, "public/site.webmanifest"), "utf8").then(JSON.parse),
@@ -112,7 +114,8 @@ const [
   readFile(path.join(root, "README.md"), "utf8"),
   readFile(path.join(root, "docs/blog-operations.md"), "utf8"),
   readFile(path.join(root, "docs/cloudflare-pages.md"), "utf8"),
-  readFile(path.join(root, "docs/dynamic-features.md"), "utf8")
+  readFile(path.join(root, "docs/dynamic-features.md"), "utf8"),
+  readFile(path.join(root, ".github/workflows/check.yml"), "utf8")
 ]);
 
 const postFiles = (await readdir(path.join(root, "content/posts"))).filter((file) =>
@@ -1265,6 +1268,18 @@ if (packageConfig.scripts?.["test:preview"] !== "node scripts/test-preview.js") 
 }
 if (packageConfig.scripts?.["test:views"] !== "node scripts/test-views.js") {
   failures.push("package scripts must expose test:views.");
+}
+if (
+  !checkWorkflow.includes("actions/checkout@v4") ||
+  !checkWorkflow.includes("actions/setup-node@v4") ||
+  !checkWorkflow.includes("node-version: 24") ||
+  !checkWorkflow.includes("npm run check:all") ||
+  !checkWorkflow.includes("pull_request") ||
+  !checkWorkflow.includes("branches: [main]") ||
+  !readme.includes("GitHub Actions") ||
+  !readme.includes("npm run check:all")
+) {
+  failures.push("GitHub Actions check workflow must run npm run check:all on main pushes and pull requests.");
 }
 if (!packageConfig.scripts?.["deploy:cloudflare"]?.includes("--project-name soloblog-4w3")) {
   failures.push("deploy:cloudflare must target the current Cloudflare Pages project.");

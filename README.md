@@ -51,6 +51,8 @@ Build output directory: dist
 Node version: 20
 ```
 
+GitHub Actions 会在 `main` 分支 push 和 Pull Request 上运行 `npm run check:all`，用于提前发现构建、输出、布局和动态接口回归。
+
 ## 文档
 
 - [博客操作手册](docs/blog-operations.md)
