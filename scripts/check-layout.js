@@ -1175,6 +1175,9 @@ async function checkViewport(viewport, page) {
               const codeCopyButton = document.querySelector("[data-copy-code]");
               if (codeCopyButton instanceof HTMLButtonElement) {
                 const originalClipboard = navigator.clipboard;
+                const originalCodeCopyLabel = codeCopyButton.getAttribute("aria-label") || "";
+                const codeCopyLanguage = codeCopyButton.dataset.codeLanguage?.trim() || "";
+                const expectedCopiedLabel = codeCopyLanguage ? codeCopyLanguage + " 代码已复制" : "代码已复制";
                 let codeCopyAttempts = 0;
                 try {
                   Object.defineProperty(navigator, "clipboard", {
@@ -1196,9 +1199,16 @@ async function checkViewport(viewport, page) {
                 if (codeCopyButton.textContent.trim() !== "已复制" || !codeCopyButton.classList.contains("is-copied")) {
                   failures.push("code copy button did not expose copied feedback");
                 }
+                const copiedLabel = codeCopyButton.getAttribute("aria-label") || "";
+                if (copiedLabel !== expectedCopiedLabel) {
+                  failures.push("code copy button did not preserve language context in copied feedback");
+                }
                 await waitFor(() => codeCopyButton.textContent.trim() === "复制", 2200);
                 if (codeCopyButton.textContent.trim() !== "复制" || codeCopyButton.classList.contains("is-copied")) {
                   failures.push("code copy button did not restore its original label");
+                }
+                if (codeCopyButton.getAttribute("aria-label") !== originalCodeCopyLabel) {
+                  failures.push("code copy button did not restore its original aria label");
                 }
                 try {
                   Object.defineProperty(navigator, "clipboard", {

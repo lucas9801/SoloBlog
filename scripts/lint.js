@@ -761,15 +761,21 @@ if (
 }
 if (
   !buildScript.includes("data-copy-code-status") ||
-  !buildScript.includes('aria-label="复制代码"') ||
+  !buildScript.includes("data-code-language") ||
+  !buildScript.includes("copyLabel") ||
+  !buildScript.includes("复制 ${block.language} 代码") ||
   !buildScript.includes('tabindex="0" aria-label="${escapeAttr(scrollLabel)}"') ||
-  !articleScript.includes("代码已复制") ||
+  !articleScript.includes("codeLabel") ||
+  !articleScript.includes("`${codeLabel}已复制`") ||
+  !articleScript.includes("`${codeLabel}复制失败`") ||
   !articleScript.includes("async function copyText") ||
   !articleScript.includes('document.execCommand("copy")') ||
   !articleScript.includes("function beginCopyAction") ||
   !articleScript.includes("function setCopyButtonState") ||
   !articleScript.includes("button.disabled = true") ||
-  !checkLayoutScript.includes("code copy button should ignore repeated clicks while copying")
+  !checkLayoutScript.includes("code copy button should ignore repeated clicks while copying") ||
+  !checkLayoutScript.includes("code copy button did not preserve language context in copied feedback") ||
+  !checkLayoutScript.includes("code copy button did not restore its original aria label")
 ) {
   failures.push("Article code blocks must expose keyboard scroll and accessible copy feedback.");
 }

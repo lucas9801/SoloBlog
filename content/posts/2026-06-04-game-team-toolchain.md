@@ -20,6 +20,12 @@ status: published
 - 版本号生成
 - 基础冒烟测试
 
+```powershell
+npm run export:config
+npm run check:assets
+npm run build:client
+```
+
 ## 输出要可追踪
 
 自动化脚本要留下日志、产物路径和失败原因。没有可追踪输出的工具，很难在团队里长期使用。

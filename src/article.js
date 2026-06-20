@@ -359,6 +359,8 @@ article?.addEventListener("click", async (event) => {
   const block = button.closest("pre");
   const code = block?.querySelector("code")?.textContent || "";
   const status = block?.querySelector("[data-copy-code-status]");
+  const language = button.dataset.codeLanguage?.trim();
+  const codeLabel = language ? `${language} 代码` : "代码";
   if (!code) return;
   if (!beginCopyAction(button)) return;
 
@@ -367,7 +369,7 @@ article?.addEventListener("click", async (event) => {
   if (copied) {
     setCopyButtonState(button, {
       text: "已复制",
-      label: "代码已复制",
+      label: `${codeLabel}已复制`,
       status,
       className: "is-copied"
     });
@@ -376,7 +378,7 @@ article?.addEventListener("click", async (event) => {
 
   setCopyButtonState(button, {
     text: "复制失败",
-    label: "代码复制失败",
+    label: `${codeLabel}复制失败`,
     status,
     restoreDelay: 2200
   });
