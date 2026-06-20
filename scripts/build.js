@@ -1812,12 +1812,16 @@ function seriesPanel(post, posts, { compact = false } = {}) {
 }
 
 function postNavigation(post, posts) {
-  const index = posts.findIndex((item) => item.slug === post.slug);
+  const navigationPosts = post.series
+    ? sortSeriesPosts(posts.filter((item) => item.series === post.series))
+    : posts;
+  const index = navigationPosts.findIndex((item) => item.slug === post.slug);
   if (index === -1) return "";
 
-  const previous = posts[index - 1] || null;
-  const next = posts[index + 1] || null;
+  const previous = navigationPosts[index - 1] || null;
+  const next = navigationPosts[index + 1] || null;
   if (!previous && !next) return "";
+  const context = post.series ? `${post.series} 专题` : "时间线";
 
   const link = (item, label) =>
     item
@@ -1828,7 +1832,7 @@ function postNavigation(post, posts) {
       </a>`
       : `<span class="post-nav-empty" aria-hidden="true"></span>`;
 
-  return `<nav id="post-navigation" class="post-navigation" aria-label="文章前后导航">
+  return `<nav id="post-navigation" class="post-navigation" aria-label="${escapeAttr(context)}文章前后导航">
     ${link(previous, "上一篇")}
     ${link(next, "下一篇")}
   </nav>`;

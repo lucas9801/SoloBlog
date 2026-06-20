@@ -639,6 +639,14 @@ if (
   failures.push("Article page chrome must keep series navigation in the side column and preserve a focused reading header.");
 }
 if (
+  !buildScript.includes("const navigationPosts = post.series") ||
+  !buildScript.includes("sortSeriesPosts(posts.filter((item) => item.series === post.series))") ||
+  !buildScript.includes('aria-label="${escapeAttr(context)}文章前后导航"') ||
+  !testBuildScript.includes("Markdown Lab 专题文章前后导航")
+) {
+  failures.push("Article previous/next navigation must follow series order before falling back to the global timeline.");
+}
+if (
   !buildScript.includes('<nav class="sidebar-card toc" aria-labelledby="article-toc-title">') ||
   !articleScript.includes('aria-current", "location"') ||
   !checkLayoutScript.includes("active toc entry must mark the current reading location")
