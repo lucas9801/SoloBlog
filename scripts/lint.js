@@ -380,6 +380,16 @@ if (
 ) {
   failures.push("Search index text must strip Markdown table syntax into readable plain text.");
 }
+if (
+  !buildScript.includes("function searchText") ||
+  !buildScript.includes("maxLength = 5000") ||
+  !buildScript.includes("const text = searchText(body)") ||
+  !checkOutputScript.includes("dist/search-index.json item text is too large") ||
+  !testBuildScript.includes("search-long-body") ||
+  !testBuildScript.includes("longBodyPost.text.length <= 5000")
+) {
+  failures.push("Search index text must stay bounded for long technical archives.");
+}
 if (!buildScript.includes('value.startsWith("#")') || !checkOutputScript.includes("fragment-only heading links")) {
   failures.push("RSS and JSON Feed content must absolutize article heading fragment links.");
 }
@@ -541,8 +551,8 @@ if (
   !buildScript.includes('class="archive-status"') ||
   !css.includes(".archive-status") ||
   !testBuildScript.includes("archive-status") ||
-  !testBuildScript.includes("5 篇") ||
-  !testBuildScript.includes("第 1\\/5 页") ||
+  !testBuildScript.includes("6 篇") ||
+  !testBuildScript.includes("第 1\\/6 页") ||
   !buildScript.includes("archiveFilterRow") ||
   !buildScript.includes("archiveSelectionPath({ category: activeCategory, year })") ||
   !buildScript.includes("archiveSelectionPath({ category, year: activeYear })")

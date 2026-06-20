@@ -1028,6 +1028,9 @@ async function checkSearchIndex(searchIndex) {
     if (!/^\d{4}$/.test(String(item.year))) failures.push(`dist/search-index.json contains invalid post year: ${item.slug}`);
     if (!Array.isArray(item.tags)) failures.push(`dist/search-index.json item tags must be an array: ${item.slug}`);
     if (typeof item.text !== "string") failures.push(`dist/search-index.json item text must be a string: ${item.slug}`);
+    if (typeof item.text === "string" && item.text.length > 5000) {
+      failures.push(`dist/search-index.json item text is too large: ${item.slug}`);
+    }
     if (!item.readingTime) failures.push(`dist/search-index.json item must include readingTime: ${item.slug}`);
     if (seen.has(item.slug)) failures.push(`dist/search-index.json contains duplicate slug: ${item.slug}`);
     seen.add(item.slug);

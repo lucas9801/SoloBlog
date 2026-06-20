@@ -147,6 +147,10 @@ function stripMarkdown(markdown) {
     .trim();
 }
 
+function searchText(markdown, maxLength = 5000) {
+  return Array.from(stripMarkdown(markdown)).slice(0, maxLength).join("");
+}
+
 function hashColor(seed, palette) {
   const hash = crypto.createHash("sha1").update(String(seed)).digest();
   return palette[hash[0] % palette.length];
@@ -1338,7 +1342,7 @@ async function loadPosts() {
     const series = data.series || "";
     const seriesOrder = Number.parseInt(data.seriesOrder || "0", 10) || 0;
     const rendered = markdownToHtml(body);
-    const text = stripMarkdown(body);
+    const text = searchText(body);
 
     const post = {
       title,
