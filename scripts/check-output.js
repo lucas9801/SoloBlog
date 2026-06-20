@@ -1038,8 +1038,8 @@ async function checkSearchIndex(searchIndex) {
       failures.push(`dist/search-index.json must be sorted newest first: ${item.slug}`);
     }
     previousDate = item.date;
-    if (typeof item.url !== "string" || !item.url.startsWith("/posts/") || /^javascript:|^data:/i.test(item.url)) {
-      failures.push(`dist/search-index.json item URL must be a local post path: ${item.url}`);
+    if (typeof item.url !== "string" || !/^\/posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(item.url)) {
+      failures.push(`dist/search-index.json item URL must be a canonical local post path: ${item.url}`);
     }
     if (!(await localTargetExists(item.url))) {
       failures.push(`dist/search-index.json references missing post URL: ${item.url}`);

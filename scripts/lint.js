@@ -899,7 +899,7 @@ if (
   !searchScript.includes("sanitizePosts(await response.json())") ||
   !searchScript.includes('href="${escapeHtml(postHref)}"') ||
   !searchScript.includes('href="${escapeHtml(tagHref(tag))}"') ||
-  !checkOutputScript.includes("dist/search-index.json item URL must be a local post path") ||
+  !checkOutputScript.includes("dist/search-index.json item URL must be a canonical local post path") ||
   !checkLayoutScript.includes("search result card article link must stay on local post paths") ||
   !checkLayoutScript.includes("search result tag links must stay on local tag paths")
 ) {
