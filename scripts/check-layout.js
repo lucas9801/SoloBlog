@@ -633,6 +633,19 @@ async function checkViewport(viewport, page) {
               const facetButtons = document.querySelectorAll("[data-facet-type]").length;
               if (initialCards === 0) failures.push("search page did not render initial all-post results");
               if (!(status.textContent || "").includes("全部文章")) failures.push("search page initial status must describe all posts");
+              if (innerWidth <= 720) {
+                const visibleFacetLabels = Array.from(facets.querySelectorAll(".facet-group > span"))
+                  .filter((label) => {
+                    const rect = label.getBoundingClientRect();
+                    return rect.width > 0 && rect.height > 0 && getComputedStyle(label).display !== "none";
+                  })
+                  .map((label) => (label.textContent || "").trim());
+                for (const requiredLabel of ["年份", "分类", "专题", "标签"]) {
+                  if (!visibleFacetLabels.includes(requiredLabel)) {
+                    failures.push("mobile search filters should show the " + requiredLabel + " facet without horizontal paging");
+                  }
+                }
+              }
               if (initialCards > 0 && results.getAttribute("role") !== "list") {
                 failures.push("search result cards must be inside a list container");
               }
@@ -685,9 +698,9 @@ async function checkViewport(viewport, page) {
                 const filterPanel = document.querySelector(".search-filter-panel");
                 const filterHeight = filterPanel instanceof HTMLElement ? Math.round(filterPanel.getBoundingClientRect().height) : 0;
                 const facetsStyle = facets instanceof HTMLElement ? getComputedStyle(facets) : null;
-                if (filterHeight > 92) failures.push("mobile search filter panel is too tall");
-                if (facetsStyle?.display !== "flex" || !["auto", "scroll"].includes(facetsStyle?.overflowX || "")) {
-                  failures.push("mobile search facets must use a horizontal scroller");
+                if (filterHeight > 320) failures.push("mobile search filter panel is too tall for visible stacked facets");
+                if (facetsStyle?.display !== "grid") {
+                  failures.push("mobile search facets must use visible stacked groups");
                 }
               }
               if (invalidFacetUrl && new URL(location.href).search !== "") {

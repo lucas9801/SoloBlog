@@ -2952,8 +2952,6 @@ pre {
     width: 100%;
     min-width: 0;
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(90deg, #000 0 calc(100% - 28px), transparent);
   }
 
   .search-controls {
@@ -2965,25 +2963,14 @@ pre {
   }
 
   .search-facets {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-  }
-
-  .search-facets::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    gap: 12px;
   }
 
   .facet-group {
-    flex: 0 0 100%;
-    min-width: 100%;
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: 44px minmax(0, 1fr);
     gap: 8px;
-    align-items: center;
-    scroll-snap-align: start;
+    align-items: start;
   }
 
   .facet-group > span {
@@ -2992,14 +2979,9 @@ pre {
 
   .facet-list {
     min-width: 0;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-
-  .facet-list::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
+    flex-wrap: wrap;
+    padding-bottom: 0;
   }
 
   .facet-button {
