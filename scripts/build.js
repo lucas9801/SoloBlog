@@ -1006,13 +1006,26 @@ function archivePostCard(post) {
 
 function featuredPostGrid(posts) {
   if (!posts.length) return "";
+  const [primary, ...secondary] = posts;
   return `<div class="featured-post-grid count-${posts.length}">
-    ${posts
-      .map((post, index) => {
-        const primaryClass = index === 0 ? " is-primary" : "";
-        return archivePostCard(post).replace('<article class="archive-card">', `<article class="archive-card featured-card${primaryClass}">`);
-      })
-      .join("")}
+    ${archivePostCard(primary).replace('<article class="archive-card">', '<article class="archive-card featured-card is-primary">')}
+    ${
+      secondary.length
+        ? `<div class="featured-note-list">${secondary
+            .map(
+              (post) => `<article class="featured-note-card">
+                ${postMeta(post)}
+                <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
+                <p>${escapeHtml(post.summary)}</p>
+                <div class="tag-row">${post.tags
+                  .slice(0, 3)
+                  .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+                  .join("")}</div>
+              </article>`
+            )
+            .join("")}</div>`
+        : ""
+    }
   </div>`;
 }
 

@@ -987,17 +987,22 @@ if (
   !buildScript.includes("recommendedSlugs") ||
   !buildScript.includes("function featuredPostGrid") ||
   !buildScript.includes('class="featured-post-grid count-${posts.length}"') ||
+  !buildScript.includes("const [primary, ...secondary] = posts") ||
+  !buildScript.includes('class="featured-note-list"') ||
+  !buildScript.includes('class="featured-note-card"') ||
   !buildScript.includes("function homePostsPerPage") ||
   !buildScript.includes("posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage())") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
   !css.includes(".featured-post-grid") ||
-  !css.includes(".featured-post-grid.count-3 .featured-card.is-primary") ||
+  !css.includes(".featured-note-list") ||
+  !css.includes(".featured-note-card") ||
   !css.includes("min-height: 220px;") ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||
   !testBuildScript.includes("homePostsPerPage: 1") ||
   !testBuildScript.includes("Archive Overflow") ||
   !testBuildScript.includes("featured-post-grid count-3") ||
+  !testBuildScript.includes("featured-note-card") ||
   !testBuildScript.includes('href="#latest-posts"') ||
   !checkLayoutScript.includes("home hero latest-posts link points to a missing section")
 ) {

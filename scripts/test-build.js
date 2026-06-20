@@ -202,6 +202,8 @@ try {
   assert.match(home, /推荐阅读/);
   assert.match(home, /<div class="featured-post-grid count-3">/);
   assert.match(home, /<article class="archive-card featured-card is-primary">/);
+  assert.match(home, /<div class="featured-note-list">/);
+  assert.match(home, /<article class="featured-note-card">/);
   const latestSectionStart = home.indexOf('<section id="latest-posts"');
   const latestSectionEnd = home.indexOf("</section>", latestSectionStart);
   const latestSection = home.slice(latestSectionStart, latestSectionEnd);

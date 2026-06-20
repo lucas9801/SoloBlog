@@ -545,11 +545,11 @@ pre {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(240px, 0.92fr);
   gap: 16px;
+  align-items: start;
 }
 
-.featured-post-grid.count-1,
-.featured-post-grid.count-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.featured-post-grid.count-1 {
+  grid-template-columns: 1fr;
 }
 
 .home-post-grid .archive-card {
@@ -560,10 +560,6 @@ pre {
   height: 100%;
 }
 
-.featured-post-grid.count-3 .featured-card.is-primary {
-  grid-row: span 2;
-}
-
 .featured-card.is-primary .archive-card-thumb {
   aspect-ratio: 16 / 9;
 }
@@ -572,30 +568,51 @@ pre {
   font-size: 22px;
 }
 
-.featured-post-grid.count-3 .featured-card:not(.is-primary) {
+.featured-note-list {
   display: grid;
-  grid-template-columns: 154px minmax(0, 1fr);
+  gap: 12px;
 }
 
-.featured-post-grid.count-3 .featured-card:not(.is-primary) .archive-card-thumb {
-  height: 100%;
-  min-height: 160px;
-  aspect-ratio: auto;
+.featured-note-card {
+  min-width: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
 }
 
-.featured-post-grid.count-3 .featured-card:not(.is-primary) .archive-card-body {
-  padding: 13px;
+.featured-note-card:hover,
+.featured-note-card:focus-within {
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
 }
 
-.featured-post-grid.count-3 .featured-card:not(.is-primary) h2 {
-  margin-top: 7px;
-  font-size: 17px;
+.featured-note-card h3 {
+  margin: 8px 0;
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.38;
+  font-weight: 700;
 }
 
-.featured-post-grid.count-3 .featured-card:not(.is-primary) p {
-  min-height: 0;
-  margin-bottom: 10px;
+.featured-note-card h3 a:hover {
+  color: var(--brand);
+}
+
+.featured-note-card p {
+  margin: 0 0 14px;
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.featured-note-card .tag-row {
+  margin-top: auto;
 }
 
 .article-index-page,
@@ -2785,20 +2802,8 @@ pre {
   .series-detail-layout,
   .series-grid,
   .featured-post-grid,
-  .featured-post-grid.count-1,
-  .featured-post-grid.count-2,
   .home-post-grid {
     grid-template-columns: 1fr;
-  }
-
-  .featured-post-grid.count-3 .featured-card:not(.is-primary) {
-    display: flex;
-  }
-
-  .featured-post-grid.count-3 .featured-card:not(.is-primary) .archive-card-thumb {
-    height: auto;
-    min-height: 0;
-    aspect-ratio: 16 / 10;
   }
 
   .archive-filter-stack {
