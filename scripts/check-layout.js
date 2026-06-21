@@ -1163,6 +1163,7 @@ async function checkViewport(viewport, page) {
               const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
               const articleHero = document.querySelector(".article-hero");
               const articleContent = document.querySelector(".article-content");
+              const readModeButton = document.querySelector("[data-read-mode]");
               const sidebarSeries = document.querySelector(".article-related-aside .series-panel");
               const footerSeries = document.querySelector(".article-footer .series-panel");
               const anySeries = document.querySelector(".series-panel");
@@ -1210,7 +1211,29 @@ async function checkViewport(viewport, page) {
                   }
                 }
               }
+              if (!(readModeButton instanceof HTMLButtonElement)) {
+                failures.push("article read mode button is missing");
+              }
               if (failures.length > 0) return failures;
+
+              if (readModeButton instanceof HTMLButtonElement) {
+                readModeButton.click();
+                await wait(120);
+                if (!document.body.classList.contains("is-reading-mode")) {
+                  failures.push("read mode button did not toggle reading mode");
+                }
+                if (readModeButton.getAttribute("aria-pressed") !== "true") {
+                  failures.push("read mode button aria-pressed is not set when enabled");
+                }
+                if (document.querySelector(".article-aside") && getComputedStyle(document.querySelector(".article-aside")).display !== "none") {
+                  failures.push("read mode should hide article sidebars");
+                }
+                readModeButton.click();
+                await wait(80);
+                if (document.body.classList.contains("is-reading-mode")) {
+                  failures.push("read mode button did not disable reading mode");
+                }
+              }
 
               const commentsSection = document.querySelector("[data-giscus-comments]");
               const commentsButton = commentsSection?.querySelector("[data-load-comments]");

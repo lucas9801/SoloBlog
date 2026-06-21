@@ -843,6 +843,16 @@ if (
   failures.push("Article scroll metrics must be coalesced into a single requestAnimationFrame update.");
 }
 if (
+  !buildScript.includes("data-read-mode") ||
+  !siteScript.includes("is-reading-mode") ||
+  !siteScript.includes('aria-pressed", String(enabled)') ||
+  !css.includes("body.is-reading-mode .article-shell") ||
+  !css.includes("body.is-reading-mode .article-aside") ||
+  !checkLayoutScript.includes("read mode button did not toggle reading mode")
+) {
+  failures.push("Article pages must keep a restrained focus-reading mode that hides sidebars and exposes button state.");
+}
+if (
   !buildScript.includes("data-copy-code-status") ||
   !buildScript.includes("data-code-language") ||
   !buildScript.includes("copyLabel") ||

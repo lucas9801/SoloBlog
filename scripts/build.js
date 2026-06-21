@@ -850,6 +850,9 @@ function pageLayout({
   const quickComments = body.includes('id="comments"')
     ? `<a class="quick-action quick-action-comments" href="#comments" aria-label="跳到评论"><span class="sr-only">跳到评论</span></a>`
     : "";
+  const quickReadMode = body.includes('class="article-page"')
+    ? `<button class="quick-action quick-action-read" type="button" data-read-mode aria-label="切换专注阅读"><span class="sr-only">切换专注阅读</span></button>`
+    : "";
 
   return `<!doctype html>
 <html lang="${escapeAttr(site.language || "zh-CN")}">
@@ -912,6 +915,7 @@ function pageLayout({
     </header>
     ${bodyWithContentTarget}
     <div class="quick-actions" aria-label="快捷操作">
+      ${quickReadMode}
       ${quickComments}
       <button class="quick-action quick-action-top" type="button" data-scroll-top aria-label="返回顶部"><span class="sr-only">返回顶部</span></button>
     </div>

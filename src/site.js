@@ -1,6 +1,7 @@
 const header = document.querySelector(".site-header");
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const scrollTopButton = document.querySelector("[data-scroll-top]");
+const readModeButton = document.querySelector("[data-read-mode]");
 const rssCopyStates = new WeakMap();
 let lastScrollY = window.scrollY;
 let ticking = false;
@@ -128,6 +129,14 @@ header?.addEventListener("focusin", revealHeader);
 scrollTopButton?.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
+readModeButton?.addEventListener("click", () => {
+  const enabled = document.body.classList.toggle("is-reading-mode");
+  readModeButton.setAttribute("aria-pressed", String(enabled));
+  readModeButton.setAttribute("aria-label", enabled ? "退出专注阅读" : "切换专注阅读");
+});
+if (readModeButton) {
+  readModeButton.setAttribute("aria-pressed", "false");
+}
 
 window.addEventListener(
   "scroll",
