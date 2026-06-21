@@ -823,17 +823,19 @@ if (
 if (
   !buildScript.includes("function coverVisualSeed") ||
   !buildScript.includes("function coverChannelLabel") ||
+  !buildScript.includes("function coverTextLines") ||
+  !buildScript.includes("function svgTextBlock") ||
   !buildScript.includes("coverMotif(post, colors, seed)") ||
   !buildScript.includes("channelLabel") ||
   !buildScript.includes("issueLabel") ||
   !buildScript.includes("NO. ${escapeHtml(issueLabel)}") ||
-  buildScript.includes("const titleLines =") ||
+  !buildScript.includes("const titleLines = coverTextLines(post.title") ||
+  !buildScript.includes("svgTextBlock(titleLines") ||
   buildScript.includes("const summaryLines =") ||
   buildScript.includes('rect x="64" y="348" width="860"') ||
   buildScript.includes("existingGeneratedCover") ||
-  buildScript.includes("<radialGradient") ||
   buildScript.includes("<feDropShadow") ||
-  postCoverSvgs.some((source) => /<(?:radialGradient|feDropShadow)\b|url\(#sphere\)/.test(source))
+  postCoverSvgs.some((source) => /<(?:feDropShadow)\b|url\(#sphere\)/.test(source))
 ) {
   failures.push("Generated post covers must keep the restrained technical archive card system without stale decorative gradients or shadows.");
 }
@@ -1169,7 +1171,7 @@ if (
   !css.includes(".hero-visual") ||
   !css.includes("min-height: 198px;") ||
   !css.includes(".content-shell .archive-card") ||
-  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*minmax\(220px,\s*0\.4fr\)\s+minmax\(0,\s*1fr\);/.test(css) ||
+  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*minmax\(290px,\s*0\.44fr\)\s+minmax\(0,\s*1fr\);/.test(css) ||
   !/\.content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*100%;[\s\S]*?object-position:\s*center;/.test(css) ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   !checkLayoutScript.includes("mobile recommended card covers should not repeat the visible card title") ||

@@ -433,8 +433,9 @@ try {
   const generatedCover = await readFile(path.join(tempRoot, "assets", "posts", "markdown-same-day.svg"), "utf8");
   assert.match(generatedCover, /SOLUS DEV NOTES/);
   assert.match(generatedCover, /NO\. [A-F0-9]{4}/);
-  assert.doesNotMatch(generatedCover.replace(/aria-label="[^"]*"/g, ""), /Markdown Same Day|同日文章用于验证构建输出的稳定排序。/);
-  assert.doesNotMatch(generatedCover, /<radialGradient|<feDropShadow|url\(#sphere\)/);
+  assert.match(generatedCover, /Markdown Same Day/);
+  assert.doesNotMatch(generatedCover, /同日文章用于验证构建输出的稳定排序。/);
+  assert.doesNotMatch(generatedCover, /<feDropShadow|url\(#sphere\)/);
 
   const notFound = await readFile(path.join(tempRoot, "dist", "404.html"), "utf8");
   assert.match(notFound, /<meta name="robots" content="noindex,follow" \/>/);

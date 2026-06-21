@@ -1,44 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="小团队游戏项目的工具链原则 封面">
   <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1d27"/>
+      <stop offset=".52" stop-color="#07131a"/>
+      <stop offset="1" stop-color="#05080d"/>
+    </linearGradient>
+    <linearGradient id="wash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#14b8a6" stop-opacity=".38"/>
+      <stop offset=".54" stop-color="#38bdf8" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#07131a" stop-opacity=".12"/>
+    </linearGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="#e7fbff" stroke-opacity=".055"/>
+      <path d="M54 0H0v54" fill="none" stroke="#e7fbff" stroke-opacity=".045"/>
     </pattern>
   </defs>
-  <rect width="1200" height="675" fill="#07131a"/>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <path d="M0 116C218 48 356 174 536 116s330-136 664-44v603H0z" fill="url(#wash)" opacity=".72"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <path d="M64 102H1136M64 574H1136" stroke="#e7fbff" stroke-opacity=".09"/>
-  <path d="M922 96v480" stroke="#e7fbff" stroke-opacity=".08"/>
-  <path d="M64 217H1136" stroke="#14b8a6" stroke-opacity=".14"/>
-  <path d="M598 96v480" stroke="#38bdf8" stroke-opacity=".12"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#14b8a6" stroke-opacity=".1" stroke-width="2"/>
-  <g opacity=".94"><path d="M146 346h908" stroke="#14b8a6" stroke-width="3" opacity=".62"/>
+  <path d="M64 102H1136M64 574H1136" stroke="#e7fbff" stroke-opacity=".08"/>
+  <path d="M930 96v480" stroke="#e7fbff" stroke-opacity=".08"/>
+  <path d="M64 217H1136" stroke="#14b8a6" stroke-opacity=".13"/>
+  <path d="M598 96v480" stroke="#38bdf8" stroke-opacity=".11"/>
+  <g opacity=".82"><path d="M116 432C252 314 392 520 536 374s304-116 472-6" fill="none" stroke="#14b8a6" stroke-opacity=".2" stroke-width="3"/>
+      <path d="M154 346h892" stroke="#14b8a6" stroke-width="4" opacity=".72"/>
       <g opacity=".96">
-            <rect x="168" y="292" width="96" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
-            <path d="M190 330h52M190 358h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="186" y="306" width="16" height="16" rx="3" fill="#14b8a6" opacity=".9"/>
+            <rect x="164" y="274" width="112" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
+            <path d="M188 310h58M188 340h42" stroke="#e7fbff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="182" y="290" width="16" height="16" rx="3" fill="#14b8a6" opacity=".92"/>
           </g><g opacity=".96">
-            <rect x="330" y="238" width="96" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
-            <path d="M352 276h52M352 304h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="348" y="252" width="16" height="16" rx="3" fill="#38bdf8" opacity=".9"/>
+            <rect x="326" y="210" width="112" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
+            <path d="M350 246h58M350 276h42" stroke="#e7fbff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="344" y="226" width="16" height="16" rx="3" fill="#38bdf8" opacity=".92"/>
           </g><g opacity=".96">
-            <rect x="492" y="292" width="96" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
-            <path d="M514 330h52M514 358h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="510" y="306" width="16" height="16" rx="3" fill="#14b8a6" opacity=".9"/>
+            <rect x="488" y="274" width="112" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
+            <path d="M512 310h58M512 340h42" stroke="#e7fbff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="506" y="290" width="16" height="16" rx="3" fill="#14b8a6" opacity=".92"/>
           </g><g opacity=".96">
-            <rect x="654" y="238" width="96" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
-            <path d="M676 276h52M676 304h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="672" y="252" width="16" height="16" rx="3" fill="#38bdf8" opacity=".9"/>
+            <rect x="650" y="210" width="112" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
+            <path d="M674 246h58M674 276h42" stroke="#e7fbff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="668" y="226" width="16" height="16" rx="3" fill="#38bdf8" opacity=".92"/>
           </g><g opacity=".96">
-            <rect x="816" y="292" width="96" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
-            <path d="M838 330h52M838 358h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="834" y="306" width="16" height="16" rx="3" fill="#14b8a6" opacity=".9"/>
+            <rect x="812" y="274" width="112" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
+            <path d="M836 310h58M836 340h42" stroke="#e7fbff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="830" y="290" width="16" height="16" rx="3" fill="#14b8a6" opacity=".92"/>
           </g><g opacity=".96">
-            <rect x="978" y="238" width="96" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
-            <path d="M1000 276h52M1000 304h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="996" y="252" width="16" height="16" rx="3" fill="#38bdf8" opacity=".9"/>
+            <rect x="974" y="210" width="112" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
+            <path d="M998 246h58M998 276h42" stroke="#e7fbff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="992" y="226" width="16" height="16" rx="3" fill="#38bdf8" opacity=".92"/>
           </g>
-      <rect x="266" y="476" width="668" height="58" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".32"/>
-      <path d="M306 506h96M448 506h142M638 506h110M794 506h92" stroke="#e7fbff" stroke-width="6" stroke-linecap="round" opacity=".22"/></g>
+      <rect x="248" y="486" width="704" height="54" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".34"/>
+      <path d="M292 513h104M442 513h150M646 513h124M818 513h94" stroke="#e7fbff" stroke-width="6" stroke-linecap="round" opacity=".24"/></g>
+  <g>
+    <rect x="82" y="154" width="612" height="164" rx="6" fill="#04070d" opacity=".74"/>
+    <rect x="82" y="154" width="612" height="164" rx="6" fill="#07131a" opacity=".16" stroke="#14b8a6" stroke-opacity=".34"/>
+    <text fill="#e7fbff" font-size="42" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="118" y="252">小团队游戏项目的工具链原则</tspan></text>
+    <text x="118" y="302" fill="#e7fbff" font-size="15" font-weight="700" opacity=".72" font-family="Inter, Microsoft YaHei, Arial">工具链 / TOOLCHAIN / 2026.06.04</text>
+  </g>
   <g>
     <rect x="64" y="54" width="118" height="38" rx="4" fill="#0f172a" stroke="#14b8a6" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#e7fbff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">工具链</text>

@@ -205,49 +205,51 @@ function coverPalette(post) {
 function coverMotif(post, colors, seed) {
   const text = normalizeForSearch([post.title, post.summary, post.category, post.tags.join(" "), post.text].join(" "));
   const hasSpecificCoverCategory = ["工具链", "Unity", "图形渲染", "性能优化", "架构设计", "游戏开发", "随笔"].includes(post.category);
-  const jitter = Number.parseInt(seed.slice(4, 6), 16) % 24;
+  const jitter = Number.parseInt(seed.slice(4, 6), 16) % 36;
   if (post.category === "工具链" || (!hasSpecificCoverCategory && /工具链|自动化|工程效率|pipeline|构建|脚本/.test(text))) {
-    return `<path d="M146 346h908" stroke="${colors[1]}" stroke-width="3" opacity=".62"/>
-      ${[168, 330, 492, 654, 816, 978]
+    return `<path d="M116 432C252 314 392 520 536 374s304-116 472-6" fill="none" stroke="${colors[1]}" stroke-opacity=".2" stroke-width="3"/>
+      <path d="M154 346h892" stroke="${colors[1]}" stroke-width="4" opacity=".72"/>
+      ${[164, 326, 488, 650, 812, 974]
         .map(
           (x, index) => `<g opacity=".96">
-            <rect x="${x}" y="${index % 2 ? 238 : 292}" width="96" height="96" rx="6" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".72"/>
-            <path d="M${x + 22} ${index % 2 ? 276 : 330}h52M${x + 22} ${index % 2 ? 304 : 358}h36" stroke="${colors[4]}" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
-            <rect x="${x + 18}" y="${index % 2 ? 252 : 306}" width="16" height="16" rx="3" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".9"/>
+            <rect x="${x}" y="${index % 2 ? 210 : 274}" width="112" height="96" rx="6" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".72"/>
+            <path d="M${x + 24} ${index % 2 ? 246 : 310}h58M${x + 24} ${index % 2 ? 276 : 340}h42" stroke="${colors[4]}" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+            <rect x="${x + 18}" y="${index % 2 ? 226 : 290}" width="16" height="16" rx="3" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".92"/>
           </g>`
         )
         .join("")}
-      <rect x="266" y="476" width="668" height="58" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
-      <path d="M306 506h96M448 506h142M638 506h110M794 506h92" stroke="${colors[4]}" stroke-width="6" stroke-linecap="round" opacity=".22"/>`;
+      <rect x="248" y="486" width="704" height="54" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
+      <path d="M292 513h104M442 513h150M646 513h124M818 513h94" stroke="${colors[4]}" stroke-width="6" stroke-linecap="round" opacity=".24"/>`;
   }
   if (post.category === "Unity" || (!hasSpecificCoverCategory && /unity|profiler|组件|scene|game view|inspector/.test(text))) {
-    return `<rect x="150" y="122" width="386" height="424" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".48"/>
-      <rect x="150" y="122" width="386" height="42" rx="6" fill="#05080d" opacity=".48"/>
-      <path d="M190 212h280M190 258h236M190 304h280M190 350h180M190 396h250" stroke="${colors[4]}" stroke-opacity=".18" stroke-width="8" stroke-linecap="round"/>
-      <rect x="604" y="132" width="432" height="204" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
-      <path d="M646 288c44-82 94 20 142-34 38-44 74-112 116-34 24 42 50 44 76 22" fill="none" stroke="${colors[1]}" stroke-width="5" stroke-linecap="round"/>
-      <path d="M646 258h330M646 214h330M646 170h330" stroke="${colors[4]}" stroke-opacity=".12"/>
-      <rect x="604" y="382" width="196" height="116" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
-      <rect x="840" y="382" width="196" height="116" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".34"/>
-      <path d="M650 440h104M886 440h104" stroke="${colors[4]}" stroke-opacity=".22" stroke-width="7" stroke-linecap="round"/>`;
+    return `<rect x="118" y="106" width="418" height="456" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".5"/>
+      <rect x="118" y="106" width="418" height="44" rx="6" fill="#05080d" opacity=".52"/>
+      <path d="M162 206h298M162 254h242M162 302h298M162 350h190M162 398h258" stroke="${colors[4]}" stroke-opacity=".18" stroke-width="8" stroke-linecap="round"/>
+      <rect x="596" y="126" width="458" height="218" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
+      <path d="M640 292c46-84 96 22 146-34 40-46 78-114 122-34 26 44 52 46 80 22" fill="none" stroke="${colors[1]}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M640 260h346M640 214h346M640 170h346" stroke="${colors[4]}" stroke-opacity=".12"/>
+      <rect x="596" y="392" width="214" height="118" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
+      <rect x="846" y="392" width="208" height="118" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".34"/>
+      <path d="M642 450h116M892 450h108" stroke="${colors[4]}" stroke-opacity=".23" stroke-width="7" stroke-linecap="round"/>`;
   }
   if (post.category === "图形渲染" || (!hasSpecificCoverCategory && /shader|渲染|draw call|overdraw|纹理|图形/.test(text))) {
-    return `<rect x="142" y="126" width="596" height="394" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".54"/>
-      <path d="M184 456h512M184 386h512M184 316h512M184 246h512M272 164v320M400 164v320M528 164v320M656 164v320" stroke="${colors[4]}" stroke-opacity=".14"/>
-      <path d="M192 424L310 292l124 82 144-168 96 126" fill="none" stroke="${colors[1]}" stroke-width="5" opacity=".86"/>
-      <path d="M196 468l118-132 124 82 144-168 96 126" fill="none" stroke="${colors[2]}" stroke-width="2" opacity=".56"/>
-      <rect x="798" y="150" width="254" height="58" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
-      <rect x="798" y="246" width="254" height="58" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".46"/>
-      <rect x="798" y="342" width="254" height="58" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
-      <path d="M925 208v38M925 304v38M798 371h-60M798 275h-60M798 179h-60" stroke="${colors[1]}" stroke-opacity=".44" stroke-width="4"/>`;
+    return `<path d="M80 536L248 246l128 152 154-226 154 210 92-126 306 280z" fill="${colors[3]}" opacity=".56"/>
+      <rect x="112" y="128" width="646" height="410" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".48"/>
+      <path d="M162 468h548M162 394h548M162 320h548M162 246h548M252 168v336M390 168v336M528 168v336M666 168v336" stroke="${colors[4]}" stroke-opacity=".14"/>
+      <path d="M178 430L306 294l126 88 154-172 104 134" fill="none" stroke="${colors[1]}" stroke-width="6" opacity=".9"/>
+      <path d="M178 470l128-136 126 88 154-172 104 134" fill="none" stroke="${colors[2]}" stroke-width="3" opacity=".62"/>
+      <rect x="808" y="146" width="258" height="58" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
+      <rect x="808" y="242" width="258" height="58" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".46"/>
+      <rect x="808" y="338" width="258" height="58" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
+      <path d="M936 204v38M936 300v38M808 367h-50M808 271h-50M808 175h-50" stroke="${colors[1]}" stroke-opacity=".45" stroke-width="4"/>`;
   }
   if (post.category === "性能优化" || (!hasSpecificCoverCategory && /性能|profiler|cpu|gpu|内存|io|优化/.test(text))) {
-    return `<rect x="134" y="132" width="408" height="288" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
-      <path d="M178 342c42-110 86 42 132-12 38-46 56-146 104-40 30 66 66 44 88 20" fill="none" stroke="${colors[1]}" stroke-width="5" stroke-linecap="round"/>
-      <path d="M178 376h312M178 298h312M178 220h312" stroke="${colors[4]}" stroke-opacity=".14"/>
-      <rect x="602" y="132" width="444" height="288" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
-      ${[656, 730, 804, 878, 952].map((x, index) => `<rect x="${x}" y="${354 - index * 35}" width="36" height="${62 + index * 35}" rx="5" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".78"/>`).join("")}
-      ${[270, 442, 614, 786].map((x, index) => `<rect x="${x}" y="476" width="112" height="68" rx="6" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".34"/>`).join("")}`;
+    return `<rect x="112" y="128" width="440" height="302" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
+      <path d="M160 350c46-116 90 44 138-12 40-48 58-152 108-42 32 68 70 46 94 20" fill="none" stroke="${colors[1]}" stroke-width="6" stroke-linecap="round"/>
+      <path d="M160 386h334M160 304h334M160 222h334" stroke="${colors[4]}" stroke-opacity=".14"/>
+      <rect x="612" y="128" width="466" height="302" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
+      ${[676, 754, 832, 910, 988].map((x, index) => `<rect x="${x}" y="${370 - index * 38}" width="38" height="${68 + index * 38}" rx="5" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".78"/>`).join("")}
+      ${[254, 430, 606, 782].map((x, index) => `<rect x="${x}" y="488" width="118" height="62" rx="6" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".34"/>`).join("")}`;
   }
   if (post.category === "架构设计" || (!hasSpecificCoverCategory && /架构|模块|系统|解耦|边界|接口/.test(text))) {
     return `${[178, 426, 674].map((x, index) => `<rect x="${x}" y="${index === 1 ? 146 : 206}" width="190" height="118" rx="6" fill="${colors[3]}" stroke="${index === 1 ? colors[2] : colors[1]}" stroke-opacity=".48"/>`).join("")}
@@ -277,6 +279,72 @@ function coverMotif(post, colors, seed) {
     <rect x="782" y="352" width="236" height="126" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".36"/>
     <path d="M824 238h142M824 414h112" stroke="${colors[4]}" stroke-width="8" stroke-linecap="round" opacity=".22"/>
     <path d="M250 468l84-84 84 84-84 84z" fill="${colors[1]}" opacity=".42"/>`;
+}
+
+function coverTextWidth(value) {
+  return Array.from(String(value || "")).reduce((width, char) => {
+    if (/\s/u.test(char)) return width + 0.32;
+    if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(char)) return width + 1;
+    if (/[A-Z0-9]/.test(char)) return width + 0.68;
+    if (/[.,:;!?/\\()[\]{}'"`|_-]/.test(char)) return width + 0.36;
+    return width + 0.56;
+  }, 0);
+}
+
+function cleanCoverLine(value) {
+  return String(value || "")
+    .replace(/\s+([。，、；：！？,.!?;:])/gu, "$1")
+    .replace(/([（([{])\s+/gu, "$1")
+    .replace(/\s+([）)\]}])/gu, "$1")
+    .trim();
+}
+
+function coverTextLines(value, maxWidth, maxLines) {
+  const lines = [];
+  let current = "";
+
+  for (const char of Array.from(String(value || "").replace(/\s+/g, " ").trim())) {
+    const candidate = `${current}${char}`;
+    if (current && coverTextWidth(candidate) > maxWidth) {
+      const breakAt = current.lastIndexOf(" ");
+      if (breakAt > 0) {
+        lines.push(cleanCoverLine(current.slice(0, breakAt)));
+        current = `${current.slice(breakAt + 1)}${char}`.trimStart();
+      } else {
+        lines.push(cleanCoverLine(current));
+        current = char.trim() ? char : "";
+      }
+    } else {
+      current = candidate;
+    }
+
+    while (coverTextWidth(current) > maxWidth) {
+      const chars = Array.from(current);
+      let slice = "";
+      while (chars.length && coverTextWidth(`${slice}${chars[0]}`) <= maxWidth) {
+        slice += chars.shift();
+      }
+      lines.push(cleanCoverLine(slice));
+      current = chars.join("");
+    }
+
+    if (lines.length === maxLines) break;
+  }
+
+  if (current && lines.length < maxLines) lines.push(cleanCoverLine(current));
+  if (lines.length === maxLines && coverTextWidth(lines.at(-1)) > maxWidth - 1.2) {
+    const chars = Array.from(lines.at(-1));
+    while (chars.length && coverTextWidth(`${chars.join("")}...`) > maxWidth) chars.pop();
+    lines[lines.length - 1] = `${chars.join("")}...`;
+  }
+
+  return lines.length ? lines.map(cleanCoverLine) : [""];
+}
+
+function svgTextBlock(lines, { x, y, lineHeight }) {
+  return lines
+    .map((line, index) => `<tspan x="${x}" y="${y + index * lineHeight}">${escapeHtml(line)}</tspan>`)
+    .join("");
 }
 
 function coverChannelLabel(category) {
@@ -324,21 +392,41 @@ async function generatedPostCover(post) {
   const channelLabel = coverChannelLabel(post.category);
   const categoryPillWidth = Math.max(118, Array.from(post.category).length * 18 + 52);
   const channelLineX = Math.round(72 + Number.parseInt(seed.slice(6, 8), 16) * 0.42);
+  const titleLines = coverTextLines(post.title, 18.5, 2);
+  const panelHeight = 164 + (titleLines.length - 1) * 48;
+  const titleY = titleLines.length === 1 ? 252 : 230;
+  const metaY = 174 + panelHeight - 36;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(`${post.title} 封面`)}">
   <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${colors[3]}"/>
+      <stop offset=".52" stop-color="${colors[0]}"/>
+      <stop offset="1" stop-color="#05080d"/>
+    </linearGradient>
+    <linearGradient id="wash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${colors[1]}" stop-opacity=".38"/>
+      <stop offset=".54" stop-color="${colors[2]}" stop-opacity=".18"/>
+      <stop offset="1" stop-color="${colors[0]}" stop-opacity=".12"/>
+    </linearGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="${colors[4]}" stroke-opacity=".055"/>
+      <path d="M54 0H0v54" fill="none" stroke="${colors[4]}" stroke-opacity=".045"/>
     </pattern>
   </defs>
-  <rect width="1200" height="675" fill="${colors[0]}"/>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <path d="M0 116C218 48 356 174 536 116s330-136 664-44v603H0z" fill="url(#wash)" opacity=".72"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <path d="M64 102H1136M64 574H1136" stroke="${colors[4]}" stroke-opacity=".09"/>
-  <path d="M922 96v480" stroke="${colors[4]}" stroke-opacity=".08"/>
-  <path d="M64 ${horizontalRuleY}H1136" stroke="${colors[1]}" stroke-opacity=".14"/>
-  <path d="M${verticalRuleX} 96v480" stroke="${colors[2]}" stroke-opacity=".12"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".1" stroke-width="2"/>
-  <g opacity=".94">${motif}</g>
+  <path d="M64 102H1136M64 574H1136" stroke="${colors[4]}" stroke-opacity=".08"/>
+  <path d="M930 96v480" stroke="${colors[4]}" stroke-opacity=".08"/>
+  <path d="M64 ${horizontalRuleY}H1136" stroke="${colors[1]}" stroke-opacity=".13"/>
+  <path d="M${verticalRuleX} 96v480" stroke="${colors[2]}" stroke-opacity=".11"/>
+  <g opacity=".82">${motif}</g>
+  <g>
+    <rect x="82" y="154" width="612" height="${panelHeight}" rx="6" fill="#04070d" opacity=".74"/>
+    <rect x="82" y="154" width="612" height="${panelHeight}" rx="6" fill="${colors[0]}" opacity=".16" stroke="${colors[1]}" stroke-opacity=".34"/>
+    <text fill="${colors[4]}" font-size="42" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(titleLines, { x: 118, y: titleY, lineHeight: 48 })}</text>
+    <text x="118" y="${metaY}" fill="${colors[4]}" font-size="15" font-weight="700" opacity=".72" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)} / ${escapeHtml(channelLabel)} / ${escapeHtml(dateLabel)}</text>
+  </g>
   <g>
     <rect x="64" y="54" width="${categoryPillWidth}" height="38" rx="4" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
     <text x="84" y="79" fill="${colors[4]}" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)}</text>

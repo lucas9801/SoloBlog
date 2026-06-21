@@ -1,24 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="渲染优化排查清单 封面">
   <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101d2d"/>
+      <stop offset=".52" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#05080d"/>
+    </linearGradient>
+    <linearGradient id="wash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#60a5fa" stop-opacity=".38"/>
+      <stop offset=".54" stop-color="#22d3ee" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#07111f" stop-opacity=".12"/>
+    </linearGradient>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="#eef6ff" stroke-opacity=".055"/>
+      <path d="M54 0H0v54" fill="none" stroke="#eef6ff" stroke-opacity=".045"/>
     </pattern>
   </defs>
-  <rect width="1200" height="675" fill="#07111f"/>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <path d="M0 116C218 48 356 174 536 116s330-136 664-44v603H0z" fill="url(#wash)" opacity=".72"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <path d="M64 102H1136M64 574H1136" stroke="#eef6ff" stroke-opacity=".09"/>
-  <path d="M922 96v480" stroke="#eef6ff" stroke-opacity=".08"/>
-  <path d="M64 143H1136" stroke="#60a5fa" stroke-opacity=".14"/>
-  <path d="M628 96v480" stroke="#22d3ee" stroke-opacity=".12"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#60a5fa" stroke-opacity=".1" stroke-width="2"/>
-  <g opacity=".94"><rect x="142" y="126" width="596" height="394" rx="6" fill="#101d2d" stroke="#60a5fa" stroke-opacity=".54"/>
-      <path d="M184 456h512M184 386h512M184 316h512M184 246h512M272 164v320M400 164v320M528 164v320M656 164v320" stroke="#eef6ff" stroke-opacity=".14"/>
-      <path d="M192 424L310 292l124 82 144-168 96 126" fill="none" stroke="#60a5fa" stroke-width="5" opacity=".86"/>
-      <path d="M196 468l118-132 124 82 144-168 96 126" fill="none" stroke="#22d3ee" stroke-width="2" opacity=".56"/>
-      <rect x="798" y="150" width="254" height="58" rx="6" fill="#101d2d" stroke="#22d3ee" stroke-opacity=".46"/>
-      <rect x="798" y="246" width="254" height="58" rx="6" fill="#101d2d" stroke="#60a5fa" stroke-opacity=".46"/>
-      <rect x="798" y="342" width="254" height="58" rx="6" fill="#101d2d" stroke="#22d3ee" stroke-opacity=".46"/>
-      <path d="M925 208v38M925 304v38M798 371h-60M798 275h-60M798 179h-60" stroke="#60a5fa" stroke-opacity=".44" stroke-width="4"/></g>
+  <path d="M64 102H1136M64 574H1136" stroke="#eef6ff" stroke-opacity=".08"/>
+  <path d="M930 96v480" stroke="#eef6ff" stroke-opacity=".08"/>
+  <path d="M64 143H1136" stroke="#60a5fa" stroke-opacity=".13"/>
+  <path d="M628 96v480" stroke="#22d3ee" stroke-opacity=".11"/>
+  <g opacity=".82"><path d="M80 536L248 246l128 152 154-226 154 210 92-126 306 280z" fill="#101d2d" opacity=".56"/>
+      <rect x="112" y="128" width="646" height="410" rx="6" fill="#101d2d" stroke="#60a5fa" stroke-opacity=".48"/>
+      <path d="M162 468h548M162 394h548M162 320h548M162 246h548M252 168v336M390 168v336M528 168v336M666 168v336" stroke="#eef6ff" stroke-opacity=".14"/>
+      <path d="M178 430L306 294l126 88 154-172 104 134" fill="none" stroke="#60a5fa" stroke-width="6" opacity=".9"/>
+      <path d="M178 470l128-136 126 88 154-172 104 134" fill="none" stroke="#22d3ee" stroke-width="3" opacity=".62"/>
+      <rect x="808" y="146" width="258" height="58" rx="6" fill="#101d2d" stroke="#22d3ee" stroke-opacity=".46"/>
+      <rect x="808" y="242" width="258" height="58" rx="6" fill="#101d2d" stroke="#60a5fa" stroke-opacity=".46"/>
+      <rect x="808" y="338" width="258" height="58" rx="6" fill="#101d2d" stroke="#22d3ee" stroke-opacity=".46"/>
+      <path d="M936 204v38M936 300v38M808 367h-50M808 271h-50M808 175h-50" stroke="#60a5fa" stroke-opacity=".45" stroke-width="4"/></g>
+  <g>
+    <rect x="82" y="154" width="612" height="164" rx="6" fill="#04070d" opacity=".74"/>
+    <rect x="82" y="154" width="612" height="164" rx="6" fill="#07111f" opacity=".16" stroke="#60a5fa" stroke-opacity=".34"/>
+    <text fill="#eef6ff" font-size="42" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="118" y="252">渲染优化排查清单</tspan></text>
+    <text x="118" y="302" fill="#eef6ff" font-size="15" font-weight="700" opacity=".72" font-family="Inter, Microsoft YaHei, Arial">图形渲染 / RENDERING / 2026.06.04</text>
+  </g>
   <g>
     <rect x="64" y="54" width="124" height="38" rx="4" fill="#0f172a" stroke="#60a5fa" stroke-opacity=".52"/>
     <text x="84" y="79" fill="#eef6ff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">图形渲染</text>
