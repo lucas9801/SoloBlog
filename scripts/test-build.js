@@ -6,11 +6,16 @@ import path from "node:path";
 
 const root = process.cwd();
 const node = process.execPath;
+const fixtureBuildDate = "2026-07-20";
 
 function runBuild(cwd) {
   return new Promise((resolve, reject) => {
     const child = spawn(node, [path.join(root, "scripts", "build.js")], {
       cwd,
+      env: {
+        ...process.env,
+        SOLUS_BUILD_DATE: fixtureBuildDate
+      },
       stdio: ["ignore", "pipe", "pipe"]
     });
     let stdout = "";
@@ -96,7 +101,7 @@ async function writeFixtureProject(target) {
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-13-markdown-edge.md"),
-    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\nupdated: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nfeatured: true\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), [bad](javascript:alert(1)), and [relative](relative-page).\n\n### Nested Repeat\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
+    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\nupdated: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nreviewAfterDays: 30\nfeatured: true\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), [bad](javascript:alert(1)), and [relative](relative-page).\n\n### Nested Repeat\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
     "utf8"
   );
   await writeFile(
@@ -151,6 +156,9 @@ try {
   assert.match(article, /<img src="\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
   assert.match(article, /<pre data-language="js" tabindex="0" aria-label="js 代码块，可横向滚动"><button class="code-copy-button" type="button" data-copy-code data-code-language="js" aria-label="复制 js 代码">复制<\/button><span class="sr-only" aria-live="polite" data-copy-code-status><\/span><code>console\.log\(&quot;ok&quot;\);<\/code><\/pre>/);
   assert.match(article, /<time class="updated-date" datetime="2026-06-14">更新 2026\/06\/14<\/time>/);
+  assert.match(article, /<aside class="article-maintenance" aria-label="文章维护状态">/);
+  assert.match(article, /本文最后更新于 <time datetime="2026-06-14">2026\/06\/14<\/time>，距今约 36 天/);
+  assert.match(article, /<span><span>维护<\/span><strong>建议复查<\/strong><\/span>/);
   assert.match(article, /<meta property="og:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<meta name="twitter:image:alt" content="Markdown Edge Cases \| SOLUS Dev Notes" \/>/);
   assert.match(article, /<a class="active" href="\/archive\/" aria-current="page">文章<\/a>/);
@@ -173,6 +181,10 @@ try {
   assert.match(article, /aria-label="js 代码块，可横向滚动"/);
   assert.match(article, /<blockquote>quoted text<\/blockquote>/);
   await assert.rejects(access(path.join(tempRoot, "dist", "posts", "draft-only", "index.html")));
+
+  const currentArticle = await readFile(path.join(tempRoot, "dist", "posts", "markdown-followup", "index.html"), "utf8");
+  assert.doesNotMatch(currentArticle, /class="article-maintenance"/);
+  assert.match(currentArticle, /<span><span>维护<\/span><strong>有效<\/strong><\/span>/);
 
   const archive = await readFile(path.join(tempRoot, "dist", "archive", "index.html"), "utf8");
   assert.doesNotMatch(archive, /class="page-context"/);

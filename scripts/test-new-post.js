@@ -124,6 +124,8 @@ try {
     "2026-01-03",
     "--cover",
     "/assets/posts/custom-cover.svg",
+    "--review-after-days",
+    "180",
     "--series",
     "性能与渲染排查",
     "--series-order",
@@ -145,6 +147,7 @@ try {
   assert.deepEqual(JSON.parse(frontMatterValue(optionPost, "tags")), ["Unity", "性能", "Profiler"]);
   assert.equal(parseJsonString(frontMatterValue(optionPost, "summary")), "建立 Unity 性能分析入口。");
   assert.equal(parseJsonString(frontMatterValue(optionPost, "cover")), "/assets/posts/custom-cover.svg");
+  assert.equal(frontMatterValue(optionPost, "reviewAfterDays"), "180");
   assert.equal(parseJsonString(frontMatterValue(optionPost, "series")), "性能与渲染排查");
   assert.equal(frontMatterValue(optionPost, "seriesOrder"), "3");
   assert.equal(frontMatterValue(optionPost, "featured"), "true");
@@ -177,6 +180,10 @@ try {
   result = await runNewPost(tempRoot, ["Bad Updated", "--date", "2026-02-02", "--updated", "2026-02-01"]);
   assert.equal(result.code, 1);
   assert.match(result.stderr, /cannot be earlier/);
+
+  result = await runNewPost(tempRoot, ["Bad Review", "--review-after-days", "0"]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /positive integer/);
 
   result = await runNewPost(tempRoot, ["Remote Cover", "--cover", "https://example.com/cover.png"]);
   assert.equal(result.code, 1);

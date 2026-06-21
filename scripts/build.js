@@ -20,6 +20,14 @@ const site = {
   ...siteConfig,
   baseUrl: normalizeBaseUrl(process.env.SITE_URL || siteConfig.baseUrl)
 };
+const dayMs = 24 * 60 * 60 * 1000;
+
+function localDateString(date = new Date()) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+const buildDate = process.env.SOLUS_BUILD_DATE || localDateString();
 
 async function hashDirectory(dir) {
   const hash = crypto.createHash("sha1");
@@ -118,6 +126,25 @@ function formatDate(date) {
     month: "2-digit",
     day: "2-digit"
   }).format(new Date(date));
+}
+
+function dateOnlyTime(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return 0;
+  return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+}
+
+function daysSinceDate(value) {
+  const date = dateOnlyTime(value);
+  const today = dateOnlyTime(buildDate);
+  if (!date || !today || today <= date) return 0;
+  return Math.floor((today - date) / dayMs);
+}
+
+function reviewAfterDays(value, fallback = 365) {
+  if (value === false || value === "false") return 0;
+  const parsed = Number.parseInt(value ?? fallback, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 function readingTime(text) {
@@ -1386,6 +1413,7 @@ async function loadPosts() {
       seriesOrder,
       summary,
       featured: Boolean(data.featured),
+      reviewAfterDays: reviewAfterDays(data.reviewAfterDays, site.reviewAfterDays ?? 365),
       readingTime: readingTime(body),
       html: rendered.html,
       headings: rendered.headings,
@@ -1902,6 +1930,8 @@ function postNavigation(post, posts) {
 
 function articleDossier(post) {
   const updated = post.updated || post.date;
+  const reviewAge = daysSinceDate(updated);
+  const reviewDue = post.reviewAfterDays > 0 && reviewAge >= post.reviewAfterDays;
   const items = [
     `<a href="/categories/${post.categorySlug}/"><span>分类</span><strong>${escapeHtml(post.category)}</strong></a>`,
     post.series
@@ -1909,6 +1939,7 @@ function articleDossier(post) {
       : "",
     `<span><span>发布</span><strong>${formatDate(post.date)}</strong></span>`,
     `<span><span>更新</span><strong>${formatDate(updated)}</strong></span>`,
+    `<span><span>维护</span><strong>${reviewDue ? "建议复查" : "有效"}</strong></span>`,
     `<span><span>阅读</span><strong>${escapeHtml(post.readingTime)}</strong></span>`,
     `<a href="${post.url}"><span>链接</span><strong>永久地址</strong></a>`
   ].filter(Boolean);
@@ -1916,6 +1947,18 @@ function articleDossier(post) {
   return `<section class="article-dossier" aria-label="文章档案">
     ${items.join("")}
   </section>`;
+}
+
+function articleMaintenanceNotice(post) {
+  if (!post.reviewAfterDays) return "";
+  const updated = post.updated || post.date;
+  const age = daysSinceDate(updated);
+  if (age < post.reviewAfterDays) return "";
+
+  return `<aside class="article-maintenance" aria-label="文章维护状态">
+    <span>维护提示</span>
+    <p>本文最后更新于 <time datetime="${escapeAttr(updated)}">${formatDate(updated)}</time>，距今约 ${age} 天。技术环境可能已经变化，建议结合当前引擎版本、平台限制和项目上下文复查结论。</p>
+  </aside>`;
 }
 
 function postPage(post, posts) {
@@ -1959,6 +2002,7 @@ function postPage(post, posts) {
         <p>${escapeHtml(post.summary)}</p>
         ${postMeta(post)}
       </header>
+      ${articleMaintenanceNotice(post)}
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
         ${articleDossier(post)}

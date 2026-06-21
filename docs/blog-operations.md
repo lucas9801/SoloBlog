@@ -204,6 +204,7 @@ series: 性能与渲染排查
 seriesOrder: 1
 summary: 一份用于定位渲染性能问题的实践清单。
 cover: /assets/posts/render-optimization-checklist.svg
+reviewAfterDays: 365
 featured: true
 status: published
 ---
@@ -223,8 +224,11 @@ status: published
 | `seriesOrder` | 否 | 专题内排序，正整数，数字越小越靠前 |
 | `summary` | 推荐 | 摘要，会显示在首页、列表页、订阅源和搜索结果 |
 | `cover` | 推荐 | 文章列表页封面图路径，例如 `/assets/posts/my-cover.png`；本地路径必须存在 |
+| `reviewAfterDays` | 否 | 文章最后更新超过多少天后显示维护提示；默认 365，设为 `false` 可关闭 |
 | `featured` | 否 | 是否作为首页精选文章 |
 | `status` | 是 | `draft` 草稿，`published` 发布 |
+
+`reviewAfterDays` 适合图形 API、引擎版本、工具链流程这类会随时间变化的文章。长期稳定的随笔或索引页可以不写，或者设为 `false`。
 
 ## 设置分类
 

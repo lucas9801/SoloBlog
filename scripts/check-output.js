@@ -1155,6 +1155,13 @@ async function main() {
     if (relative.startsWith("dist/posts/") && !html.includes('<a class="active" href="/archive/" aria-current="page">文章</a>')) {
       failures.push(`${relative} must mark the article archive navigation item as active.`);
     }
+    if (
+      relative.startsWith("dist/posts/") &&
+      html.includes('class="article-maintenance"') &&
+      !/<aside class="article-maintenance" aria-label="文章维护状态">[\s\S]*<time datetime="\d{4}-\d{2}-\d{2}">/m.test(html)
+    ) {
+      failures.push(`${relative} article maintenance notice must include a dated review reference.`);
+    }
     const collectionIndex = /^dist\/(?:archive|categories|years|tags|series)\//.test(relative);
     if (collectionIndex && html.includes('class="page-context"')) {
       failures.push(`${relative} must not render the page context title block.`);

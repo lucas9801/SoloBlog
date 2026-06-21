@@ -12,6 +12,7 @@ const options = {
   date: "",
   updated: "",
   cover: "",
+  reviewAfterDays: "",
   featured: false
 };
 const titleParts = [];
@@ -27,6 +28,7 @@ Options:
   --date <YYYY-MM-DD>     设置发布日期
   --updated <YYYY-MM-DD>  设置更新日期
   --cover <path>          设置封面路径，例如 /assets/posts/unity-budget.svg
+  --review-after-days <n> 设置多少天后提示复查，默认使用站点配置
   --series <name>         设置专题名称
   --series-order <number> 设置专题内排序
   --featured             标记为推荐阅读`;
@@ -103,6 +105,11 @@ for (let index = 0; index < args.length; index += 1) {
   }
   if (arg === "--cover") {
     options.cover = readOptionValue(arg, index).trim();
+    index += 1;
+    continue;
+  }
+  if (arg === "--review-after-days") {
+    options.reviewAfterDays = readOptionValue(arg, index).trim();
     index += 1;
     continue;
   }
@@ -245,6 +252,13 @@ if (options.cover && !(await localAssetExists(options.cover))) {
   console.error(`Cover file does not exist: ${options.cover}`);
   process.exit(1);
 }
+if (
+  options.reviewAfterDays &&
+  (!/^\d+$/.test(options.reviewAfterDays) || Number.parseInt(options.reviewAfterDays, 10) <= 0)
+) {
+  console.error("--review-after-days must be a positive integer.");
+  process.exit(1);
+}
 const postsDir = path.join(process.cwd(), "content", "posts");
 const siteConfigPath = path.join(process.cwd(), "content", "site.json");
 const siteConfig = await readFile(siteConfigPath, "utf8")
@@ -320,6 +334,7 @@ const frontMatter = [
   options.seriesOrder ? `seriesOrder: ${Number.parseInt(options.seriesOrder, 10)}` : "# seriesOrder: 1",
   `summary: ${yamlString(options.summary)}`,
   options.cover ? `cover: ${yamlString(options.cover)}` : "# cover: /assets/posts/example.svg",
+  options.reviewAfterDays ? `reviewAfterDays: ${Number.parseInt(options.reviewAfterDays, 10)}` : "",
   options.featured ? "featured: true" : "",
   "status: draft",
   "---"

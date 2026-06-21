@@ -773,6 +773,20 @@ if (!/function postPage[\s\S]*current:\s*"\/archive\/"/.test(buildScript)) {
 if (!buildScript.includes('class="updated-date" datetime=') || !checkOutputScript.includes("checkTimeElements")) {
   failures.push("Published and updated dates must be rendered as valid time elements.");
 }
+if (
+  !buildScript.includes("function articleMaintenanceNotice") ||
+  !buildScript.includes("reviewAfterDays") ||
+  !buildScript.includes("daysSinceDate(updated)") ||
+  !buildScript.includes('class="article-maintenance" aria-label="文章维护状态"') ||
+  !buildScript.includes("建议结合当前引擎版本、平台限制和项目上下文复查结论") ||
+  !css.includes(".article-maintenance") ||
+  !testBuildScript.includes("SOLUS_BUILD_DATE") ||
+  !testBuildScript.includes("距今约 36 天") ||
+  !checkOutputScript.includes("article maintenance notice must include a dated review reference") ||
+  !checkLayoutScript.includes("article maintenance notice is too tall for a restrained technical page")
+) {
+  failures.push("Article pages must expose a restrained maintenance notice for stale technical notes.");
+}
 if (!buildScript.includes("coverImage") || !buildScript.includes('fetchpriority="${escapeAttr(fetchPriority)}"')) {
   failures.push("Build must render cover images with stable dimensions and explicit hero priority.");
 }
@@ -1375,6 +1389,7 @@ if (
   !newPostScript.includes("--date <YYYY-MM-DD>") ||
   !newPostScript.includes("--updated <YYYY-MM-DD>") ||
   !newPostScript.includes("--cover <path>") ||
+  !newPostScript.includes("--review-after-days <n>") ||
   !newPostScript.includes("isCanonicalSlug") ||
   !newPostScript.includes('Cannot derive a URL slug from the title') ||
   !newPostScript.includes("function needsExplicitSlug") ||
@@ -1388,7 +1403,10 @@ if (
   !testNewPostScript.includes('defaultPostCategory: "工具链"') ||
   !testNewPostScript.includes("manual-chinese-title") ||
   !testNewPostScript.includes("Unity 性能预算") ||
+  !testNewPostScript.includes("reviewAfterDays") ||
+  !testNewPostScript.includes("Bad Review") ||
   !blogOperationsDocs.includes("`defaultPostCategory`") ||
+  !blogOperationsDocs.includes("`reviewAfterDays`") ||
   !blogOperationsDocs.includes("--slug unity-performance") ||
   !blogOperationsDocs.includes("标题包含中文时必须手动提供英文 `--slug`") ||
   !readme.includes('npm run new:post -- "文章标题" --slug article-slug')
@@ -1505,6 +1523,13 @@ for (const post of posts) {
 
   if (data.seriesOrder && (!/^\d+$/.test(String(data.seriesOrder)) || Number.parseInt(data.seriesOrder, 10) <= 0)) {
     failures.push(`${file} seriesOrder must be a positive integer when set.`);
+  }
+  if (
+    data.reviewAfterDays &&
+    data.reviewAfterDays !== false &&
+    (!/^\d+$/.test(String(data.reviewAfterDays)) || Number.parseInt(data.reviewAfterDays, 10) <= 0)
+  ) {
+    failures.push(`${file} reviewAfterDays must be a positive integer or false when set.`);
   }
   if (data.seriesOrder && !data.series) {
     failures.push(`${file} seriesOrder requires series.`);

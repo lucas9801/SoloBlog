@@ -1197,6 +1197,7 @@ async function checkViewport(viewport, page) {
               const readingPill = document.querySelector(".reading-pill");
               const tocLinks = Array.from(document.querySelectorAll("[data-toc-target]"));
               const articleHero = document.querySelector(".article-hero");
+              const articleMaintenance = document.querySelector(".article-maintenance");
               const articleContent = document.querySelector(".article-content");
               const readModeButton = document.querySelector("[data-read-mode]");
               const sidebarSeries = document.querySelector(".article-related-aside .series-panel");
@@ -1217,6 +1218,14 @@ async function checkViewport(viewport, page) {
                 }
               }
               if (!articleContent) failures.push("article content is missing");
+              if (articleMaintenance instanceof HTMLElement && articleContent instanceof HTMLElement) {
+                if (articleMaintenance.compareDocumentPosition(articleContent) & Node.DOCUMENT_POSITION_PRECEDING) {
+                  failures.push("article maintenance notice should render before article content");
+                }
+                if (Math.round(articleMaintenance.getBoundingClientRect().height) > 130) {
+                  failures.push("article maintenance notice is too tall for a restrained technical page");
+                }
+              }
               if (innerWidth > 1180 && articleContent instanceof HTMLElement) {
                 const contentStyle = getComputedStyle(articleContent);
                 const contentWidth =
