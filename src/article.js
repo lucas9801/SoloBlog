@@ -170,7 +170,7 @@ function scheduleArticleMetricsUpdate() {
 }
 
 function viewedTodayKey() {
-  return `soloblog:viewed:${postSlug}:${new Date().toISOString().slice(0, 10)}`;
+  return `solus:viewed:${postSlug}:${new Date().toISOString().slice(0, 10)}`;
 }
 
 function hasViewedToday() {

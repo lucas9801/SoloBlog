@@ -26,9 +26,10 @@ function syncGiscusTheme(theme) {
 }
 
 function applyTheme(theme) {
+  const label = theme === "dark" ? "切换浅色模式" : "切换深色模式";
   document.documentElement.dataset.theme = theme;
   themeToggle?.setAttribute("aria-pressed", String(theme === "dark"));
-  themeToggle?.setAttribute("aria-label", theme === "dark" ? "切换浅色模式" : "切换深色模式");
+  themeToggle?.setAttribute("aria-label", label);
   syncGiscusTheme(theme);
 }
 
@@ -127,9 +128,12 @@ function updateScrollTopButton() {
 
 function setReadMode(enabled) {
   if (!readModeButton) return;
+  const label = enabled ? "退出专注阅读" : "进入专注阅读";
+  const tooltip = readModeButton.querySelector(".quick-action-tooltip");
   document.body.classList.toggle("is-reading-mode", enabled);
   readModeButton.setAttribute("aria-pressed", String(enabled));
-  readModeButton.setAttribute("aria-label", enabled ? "Exit focused reading" : "Enter focused reading");
+  readModeButton.setAttribute("aria-label", label);
+  if (tooltip) tooltip.textContent = label;
 }
 
 function storedReadMode() {

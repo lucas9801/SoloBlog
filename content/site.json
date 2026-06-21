@@ -42,8 +42,8 @@
   },
   "hero": {
     "eyebrow": "技术档案",
-    "title": "Game Engine, Rendering, Tools",
-    "subtitle": "SOLUS 是面向游戏开发、图形渲染与工程实践的技术档案站，记录可复查、可沉淀、可长期维护的工程笔记。",
+    "title": "SOLUS Dev Notes",
+    "subtitle": "Game Engine / Rendering / Tools：面向游戏开发、图形渲染与工程实践的长期技术档案，记录可复查、可沉淀、可维护的工程笔记。",
     "primaryAction": "最新文章",
     "secondaryAction": "全部文章"
   },

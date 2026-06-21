@@ -632,9 +632,10 @@ if (
 }
 if (
   /content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?width:\s*210%;/.test(css) ||
-  !/content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*200%;[\s\S]*?object-fit:\s*cover;[\s\S]*?object-position:\s*top center;/.test(css)
+  !/content-shell\s+\.archive-card-thumb\s*\{[\s\S]*?aspect-ratio:\s*16\s*\/\s*9;/.test(css) ||
+  !/content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*100%;[\s\S]*?object-fit:\s*cover;[\s\S]*?object-position:\s*center;/.test(css)
 ) {
-  failures.push("Home article thumbnails must use restrained top-cropped technical previews instead of oversized poster crops.");
+  failures.push("Home article thumbnails must use complete 16:9 technical cover previews instead of cropped poster fragments.");
 }
 if (
   /post-index-list(?:\.wide)?\s*\{[\s\S]*?max-width:\s*(?:920|1040)px/.test(css) ||
@@ -1152,6 +1153,8 @@ if (
   !buildScript.includes("posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage())") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
   !css.includes(".featured-post-grid") ||
+  !/\.featured-post-grid\.simple\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/.test(css) ||
+  !/\.featured-post-grid\.simple\.count-1\s*\{[\s\S]*?grid-template-columns:\s*1fr;/.test(css) ||
   !css.includes(".featured-lead-card") ||
   !css.includes(".featured-side-item") ||
   css.includes(".featured-note-list") ||
@@ -1159,8 +1162,8 @@ if (
   !css.includes(".hero-visual") ||
   !css.includes("min-height: 198px;") ||
   !css.includes(".content-shell .archive-card") ||
-  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*(?:2[2-8]\d|300)px minmax\(0,\s*1fr\);/.test(css) ||
-  !/\.content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*200%;[\s\S]*?object-position:\s*top center;/.test(css) ||
+  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*minmax\(260px,\s*0\.42fr\)\s+minmax\(0,\s*1fr\);/.test(css) ||
+  !/\.content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*100%;[\s\S]*?object-position:\s*center;/.test(css) ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   !checkLayoutScript.includes("mobile recommended card covers should not repeat the visible card title") ||
   buildScript.includes("posts.filter((post) => !post.featured).slice") ||

@@ -916,10 +916,10 @@ function pageLayout({
     })
     .join("");
   const quickComments = body.includes('id="comments"')
-    ? `<a class="quick-action quick-action-comments" href="#comments" aria-label="跳到评论"><span class="sr-only">跳到评论</span></a>`
+    ? `<a class="quick-action quick-action-comments" href="#comments" aria-label="跳到评论"><span class="sr-only">跳到评论</span><span class="quick-action-tooltip" aria-hidden="true">评论</span></a>`
     : "";
   const quickReadMode = body.includes('class="article-page"')
-    ? `<button class="quick-action quick-action-read" type="button" data-read-mode aria-label="切换专注阅读"><span class="sr-only">切换专注阅读</span></button>`
+    ? `<button class="quick-action quick-action-read" type="button" data-read-mode aria-label="切换专注阅读"><span class="sr-only">切换专注阅读</span><span class="quick-action-tooltip" aria-hidden="true">专注阅读</span></button>`
     : "";
 
   return `<!doctype html>
@@ -985,7 +985,7 @@ function pageLayout({
     <div class="quick-actions" aria-label="快捷操作">
       ${quickReadMode}
       ${quickComments}
-      <button class="quick-action quick-action-top" type="button" data-scroll-top aria-label="返回顶部"><span class="sr-only">返回顶部</span></button>
+      <button class="quick-action quick-action-top" type="button" data-scroll-top aria-label="返回顶部"><span class="sr-only">返回顶部</span><span class="quick-action-tooltip" aria-hidden="true">返回顶部</span></button>
     </div>
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${escapeHtml(site.title)} · <a href="/rss.xml">RSS</a> · <a href="/sitemap.xml">站点地图</a></p>
@@ -1087,8 +1087,32 @@ function archivePostCard(post) {
   </article>`;
 }
 
+function featuredCard(post) {
+  return `<article class="featured-card">
+    <a class="featured-card-thumb ${post.categorySlug}" href="${post.url}" aria-label="阅读文章：${escapeAttr(post.title)}">
+      ${coverImage(post.cover, { alt: `${post.title} 封面` })}
+      <span>${escapeHtml(post.category)}</span>
+    </a>
+    <div class="featured-card-body">
+      ${postMeta(post)}
+      <h3><a href="${post.url}">${escapeHtml(post.title)}</a></h3>
+      <p>${escapeHtml(post.summary)}</p>
+      <div class="tag-row">${post.tags
+        .slice(0, 4)
+        .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+        .join("")}</div>
+    </div>
+  </article>`;
+}
+
 function featuredPostGrid(posts) {
   if (!posts.length) return "";
+  if (posts.length < 3) {
+    return `<div class="featured-post-grid simple count-${posts.length}">
+      ${posts.map((post) => featuredCard(post)).join("")}
+    </div>`;
+  }
+
   const [primary, ...secondary] = posts;
   return `<div class="featured-post-grid count-${posts.length}">
     <article class="featured-lead-card">
@@ -1698,7 +1722,7 @@ function postIndexList(posts, currentPage, perPage, className = "") {
       .map(
         (post, index) => `<article class="post-index-item">
           <span>${String((currentPage - 1) * perPage + index + 1).padStart(2, "0")}</span>
-          <div>
+          <div class="post-index-body">
             <div class="post-meta">
               <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
               <span>${escapeHtml(post.category)}</span>
@@ -1712,6 +1736,9 @@ function postIndexList(posts, currentPage, perPage, className = "") {
               .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
               .join("")}</div>
           </div>
+          <a class="post-index-thumb ${post.categorySlug}" href="${post.url}" aria-label="阅读文章：${escapeAttr(post.title)}">
+            ${coverImage(post.cover, { alt: `${post.title} 封面` })}
+          </a>
         </article>`
       )
       .join("")}
@@ -1870,7 +1897,7 @@ function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
             .map(
               (post, index) => `<article class="series-timeline-item">
                 <span>${String((currentPage - 1) * perPage + index + 1).padStart(2, "0")}</span>
-                <div>
+                <div class="series-timeline-body">
                   <div class="post-meta">
                     <time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time>
                     <span>${escapeHtml(post.category)}</span>
@@ -1884,6 +1911,9 @@ function seriesPage({ name, posts, seriesEntries, page = 1, basePath }) {
                     .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
                     .join("")}</div>
                 </div>
+                <a class="series-timeline-thumb ${post.categorySlug}" href="${post.url}" aria-label="阅读文章：${escapeAttr(post.title)}">
+                  ${coverImage(post.cover, { alt: `${post.title} 封面` })}
+                </a>
               </article>`
             )
             .join("")}
