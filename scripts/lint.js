@@ -279,8 +279,8 @@ for (const href of ["/", "/archive/", "/tags/", "/about/"]) {
     failures.push(`site primary navigation must include ${href}.`);
   }
 }
-if (navigationHrefs.has("/series/")) {
-  failures.push("Series pages should stay available through sidebars, article series panels, search facets, and sitemap, not the primary navigation.");
+if (!navigationHrefs.has("/series/")) {
+  failures.push("site primary navigation must include /series/.");
 }
 if (!site.baseUrl || !/^https:\/\/.+\/$/.test(site.baseUrl)) {
   failures.push("site baseUrl must be an https URL ending with /.");

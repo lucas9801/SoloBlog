@@ -57,11 +57,7 @@ try {
     JSON.stringify(
       {
         ...siteConfig,
-        navigation: [
-          ...siteConfig.navigation.slice(0, 2),
-          { label: "专题", href: "/series/" },
-          ...siteConfig.navigation.slice(2)
-        ]
+        navigation: siteConfig.navigation.filter((item) => item.href !== "/series/")
       },
       null,
       2
@@ -70,7 +66,7 @@ try {
   );
   result = await runLint(tempRoot);
   assert.equal(result.code, 1);
-  assert.match(result.stderr, /Series pages should stay available through sidebars/);
+  assert.match(result.stderr, /site primary navigation must include \/series\//);
   await writeFile(siteConfigPath, JSON.stringify(siteConfig, null, 2), "utf8");
 
   const rootIndexPath = path.join(tempRoot, "index.html");
