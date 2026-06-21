@@ -3077,6 +3077,7 @@ body.is-reading-mode .quick-action-read {
     height: 34px;
     grid-template-columns: 34px;
     justify-self: end;
+    transition: width 160ms ease;
   }
 
   .site-search label {
@@ -3091,6 +3092,28 @@ body.is-reading-mode .quick-action-read {
   .theme-toggle {
     grid-area: theme;
     justify-self: end;
+  }
+
+  .site-header.is-search-open {
+    grid-template-areas:
+      "brand . theme"
+      "search search search"
+      "nav nav nav";
+  }
+
+  .site-header.is-search-open .site-search {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) 36px;
+    justify-self: stretch;
+  }
+
+  .site-header.is-search-open .site-search label {
+    display: block;
+  }
+
+  .site-header.is-search-open .site-search button {
+    border-left: 1px solid var(--line);
+    border-radius: 0 6px 6px 0;
   }
 
   .hero-section {

@@ -179,13 +179,68 @@ function siteSearchTarget(form) {
   return `${target.pathname}${target.search}${target.hash}`;
 }
 
+function isMobileSearchViewport() {
+  return window.matchMedia?.("(max-width: 720px)").matches ?? window.innerWidth <= 720;
+}
+
+function setMobileSearchExpanded(form, expanded) {
+  const button = form.querySelector('button[type="submit"]');
+  const headerRoot = form.closest(".site-header");
+  form.classList.toggle("is-expanded", expanded);
+  headerRoot?.classList.toggle("is-search-open", expanded);
+  button?.setAttribute("aria-expanded", String(expanded));
+}
+
 for (const form of document.querySelectorAll(".site-search")) {
+  const input = form.querySelector('input[name="q"]');
+  const button = form.querySelector('button[type="submit"]');
+  button?.setAttribute("aria-expanded", "false");
+
   form.addEventListener("submit", (event) => {
     if (!(form instanceof HTMLFormElement)) return;
     event.preventDefault();
+    if (
+      isMobileSearchViewport() &&
+      !form.classList.contains("is-expanded") &&
+      input instanceof HTMLInputElement &&
+      !input.value.trim()
+    ) {
+      setMobileSearchExpanded(form, true);
+      input.focus();
+      return;
+    }
     window.location.href = siteSearchTarget(form);
   });
+
+  form.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !form.classList.contains("is-expanded")) return;
+    if (input instanceof HTMLInputElement && input.value.trim()) {
+      input.value = "";
+      event.preventDefault();
+      return;
+    }
+    setMobileSearchExpanded(form, false);
+    if (button instanceof HTMLElement) button.focus();
+    event.preventDefault();
+  });
 }
+
+document.addEventListener("click", (event) => {
+  const target = event.target instanceof Element ? event.target : null;
+  for (const form of document.querySelectorAll(".site-search.is-expanded")) {
+    const input = form.querySelector('input[name="q"]');
+    if (target && form.contains(target)) continue;
+    if (input instanceof HTMLInputElement && input.value.trim()) continue;
+    setMobileSearchExpanded(form, false);
+  }
+});
+
+window.addEventListener("resize", () => {
+  if (isMobileSearchViewport()) return;
+  for (const form of document.querySelectorAll(".site-search.is-expanded")) {
+    setMobileSearchExpanded(form, false);
+  }
+});
 
 function setRssCopyState(button, visibleText, statusMessage = visibleText, restoreDelay = 1600) {
   const status = button.parentElement?.querySelector("[data-copy-rss-status]");

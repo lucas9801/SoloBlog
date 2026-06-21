@@ -482,12 +482,47 @@ async function checkViewport(viewport, page) {
               if (headerSearchButton.getAttribute("aria-label") !== "搜索文章") {
                 failures.push("header search icon button is missing its accessible label");
               }
+              if (headerSearchButton.getAttribute("aria-controls") !== "siteSearchInput") {
+                failures.push("header search button should control the search input");
+              }
               if (headerSearchButton.childNodes.length !== 1 || headerSearchButton.textContent.trim() !== "搜索文章") {
                 failures.push("header search icon button should expose text only through sr-only content");
               }
               const hiddenSearchLabel = headerSearchButton.querySelector(".sr-only");
               if (!hiddenSearchLabel || getComputedStyle(hiddenSearchLabel).position !== "absolute") {
                 failures.push("header search icon button hidden label is not visually hidden");
+              }
+              if (innerWidth <= 720) {
+                const searchForm = document.querySelector(".site-search");
+                const searchInput = document.querySelector("#siteSearchInput");
+                if (!(searchForm instanceof HTMLFormElement) || !(searchInput instanceof HTMLInputElement)) {
+                  failures.push("mobile header search form is missing its input");
+                } else {
+                  const collapsedWidth = Math.round(searchForm.getBoundingClientRect().width);
+                  headerSearchButton.click();
+                  await wait(140);
+                  const expandedWidth = Math.round(searchForm.getBoundingClientRect().width);
+                  if (!searchForm.classList.contains("is-expanded") || !header.classList.contains("is-search-open")) {
+                    failures.push("mobile header search did not expand before navigation");
+                  }
+                  if (headerSearchButton.getAttribute("aria-expanded") !== "true") {
+                    failures.push("mobile header search button aria-expanded was not set after expanding");
+                  }
+                  if (document.activeElement !== searchInput) {
+                    failures.push("mobile header search did not focus the expanded input");
+                  }
+                  if (expandedWidth <= collapsedWidth + 80) {
+                    failures.push("mobile header search expanded width is too small");
+                  }
+                  searchInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+                  await wait(120);
+                  if (searchForm.classList.contains("is-expanded") || header.classList.contains("is-search-open")) {
+                    failures.push("mobile header search did not collapse on Escape");
+                  }
+                  if (headerSearchButton.getAttribute("aria-expanded") !== "false") {
+                    failures.push("mobile header search button aria-expanded was not reset");
+                  }
+                }
               }
 
               const originalTheme = document.documentElement.dataset.theme || "light";

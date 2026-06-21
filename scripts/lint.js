@@ -1027,10 +1027,15 @@ if (
   !siteScript.includes("function siteSearchTarget") ||
   !siteScript.includes("input[name=\"q\"]") ||
   !siteScript.includes("target.searchParams.set(\"q\", query)") ||
+  !siteScript.includes("setMobileSearchExpanded") ||
+  !siteScript.includes("is-search-open") ||
+  !buildScript.includes('aria-controls="siteSearchInput"') ||
+  !css.includes(".site-header.is-search-open") ||
   !checkLayoutScript.includes("blank header search") ||
-  !checkLayoutScript.includes("header search did not trim the submitted query")
+  !checkLayoutScript.includes("header search did not trim the submitted query") ||
+  !checkLayoutScript.includes("mobile header search did not expand before navigation")
 ) {
-  failures.push("Header search must normalize blank and whitespace-padded submissions.");
+  failures.push("Header search must normalize submissions and provide an expandable mobile input.");
 }
 if (!viewsFunction.includes("isSameOriginRequest") || !viewsFunction.includes("isJsonRequest")) {
   failures.push("Views API must reject cross-origin and non-JSON write requests.");
@@ -1156,7 +1161,7 @@ if (
 }
 if (
   buildScript.includes('aria-label="搜索文章">搜索</button>') ||
-  !buildScript.includes('aria-label="搜索文章"><span class="sr-only">搜索文章</span></button>') ||
+  !buildScript.includes('aria-label="搜索文章" aria-expanded="false" aria-controls="siteSearchInput"><span class="sr-only">搜索文章</span></button>') ||
   !css.includes(".site-search button::before") ||
   !css.includes(".site-search button::after")
 ) {
