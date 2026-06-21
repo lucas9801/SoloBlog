@@ -2148,7 +2148,7 @@ body.is-reading-mode .article-page {
 
 .article-hero {
   position: relative;
-  padding: 26px 42px 20px;
+  padding: 22px 42px 16px;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--brand) 5%, transparent) 1px, transparent 1px),
@@ -2170,7 +2170,7 @@ body.is-reading-mode .article-page {
 
 .article-hero h1 {
   max-width: 840px;
-  margin: 13px 0 10px;
+  margin: 11px 0 8px;
   color: var(--text);
   font-size: clamp(31px, 3vw, 42px);
   line-height: 1.1;
@@ -2197,6 +2197,73 @@ body.is-reading-mode .article-page {
   color: var(--brand);
   font-size: 12px;
   font-weight: 700;
+}
+
+.article-hero-dossier {
+  max-width: 840px;
+  margin-top: 10px;
+  padding-top: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+}
+
+.article-hero-dossier > a,
+.article-hero-dossier > span {
+  min-width: 0;
+  min-height: 28px;
+  padding: 0 2px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.article-hero-dossier > a:hover,
+.article-hero-dossier > a:focus-visible {
+  color: var(--brand);
+}
+
+.article-hero-dossier span span,
+.article-hero-dossier a span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-hero-dossier span span::after,
+.article-hero-dossier a span::after {
+  content: ":";
+}
+
+.article-hero-dossier strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-hero-dossier > a + span,
+.article-hero-dossier > span + span,
+.article-hero-dossier > span + a {
+  padding-left: 8px;
+  border-left-color: color-mix(in srgb, var(--line) 86%, transparent);
+}
+
+.article-hero-dossier a:hover strong {
+  color: var(--brand);
 }
 
 .article-content {
@@ -2686,6 +2753,14 @@ body.is-reading-mode .article-page {
   gap: 10px;
 }
 
+.article-hero .post-navigation {
+  max-width: 840px;
+  margin-top: 7px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .post-navigation a,
 .post-nav-empty {
   min-height: 86px;
@@ -2700,6 +2775,18 @@ body.is-reading-mode .article-page {
 
 .post-navigation a:hover {
   border-color: var(--brand);
+}
+
+.article-hero .post-navigation a,
+.article-hero .post-nav-empty {
+  flex: 0 1 auto;
+  min-height: 30px;
+  padding: 0 8px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  background: color-mix(in srgb, var(--brand) 5%, transparent);
 }
 
 .post-navigation span {
@@ -2717,11 +2804,26 @@ body.is-reading-mode .article-page {
   font-weight: 700;
 }
 
+.article-hero .post-navigation strong {
+  margin-top: 0;
+  display: block;
+  max-width: 280px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .post-navigation small {
   margin-top: 10px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 500;
+}
+
+.article-hero .post-navigation small {
+  display: none;
 }
 
 .comments-section {
@@ -3845,6 +3947,22 @@ body.is-reading-mode .quick-action-read {
   .article-hero p {
     font-size: 14px;
     line-height: 1.7;
+  }
+
+  .article-hero-dossier {
+    gap: 6px;
+  }
+
+  .article-hero-dossier > a,
+  .article-hero-dossier > span {
+    min-height: 28px;
+    padding: 0 7px;
+  }
+
+  .article-hero .post-navigation a,
+  .article-hero .post-nav-empty {
+    flex-basis: 100%;
+    min-height: 42px;
   }
 
   .article-content {

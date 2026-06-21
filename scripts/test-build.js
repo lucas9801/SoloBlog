@@ -155,7 +155,8 @@ try {
   assert.doesNotMatch(article, /href="relative-page"/);
   assert.match(article, /<img src="\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}" alt="Inline Asset" loading="lazy" decoding="async" \/>/);
   assert.match(article, /<pre data-language="js" tabindex="0" aria-label="js 代码块，可横向滚动"><button class="code-copy-button" type="button" data-copy-code data-code-language="js" aria-label="复制 js 代码">复制<\/button><span class="sr-only" aria-live="polite" data-copy-code-status><\/span><code>console\.log\(&quot;ok&quot;\);<\/code><\/pre>/);
-  assert.match(article, /<time class="updated-date" datetime="2026-06-14">更新 2026\/06\/14<\/time>/);
+  assert.match(article, /<section class="article-hero-dossier" aria-label="文章档案">/);
+  assert.match(article, /<time class="updated-date" datetime="2026-06-14">2026\/06\/14<\/time>/);
   assert.match(article, /<aside class="article-maintenance" aria-label="文章维护状态">/);
   assert.match(article, /本文最后更新于 <time datetime="2026-06-14">2026\/06\/14<\/time>，距今约 36 天/);
   assert.match(article, /<span><span>维护<\/span><strong>建议复查<\/strong><\/span>/);
@@ -168,8 +169,11 @@ try {
   assert.match(article, /<span>专题 · 1\/2<\/span>/);
   assert.match(article, /<span><span>进度<\/span><strong>1 \/ 2<\/strong><\/span>/);
   assert.match(article, /<nav class="sidebar-card toc" aria-labelledby="article-toc-title"><h2 id="article-toc-title">目录<\/h2>/);
-  assert.match(article, /<nav id="post-navigation" class="post-navigation" aria-label="Markdown Lab 专题文章前后导航">[\s\S]*<a href="\/posts\/markdown-followup\/">[\s\S]*下一篇/);
+  assert.match(article, /<nav id="post-navigation" class="post-navigation compact" aria-label="Markdown Lab 专题文章前后导航">[\s\S]*<a href="\/posts\/markdown-followup\/">[\s\S]*下一篇/);
   assert.doesNotMatch(article, /<nav id="post-navigation" class="post-navigation"[\s\S]*href="\/posts\/markdown-same-day\/"/);
+  assert.match(article, /<header class="article-hero">[\s\S]*<nav id="post-navigation" class="post-navigation compact" aria-label="Markdown Lab 专题文章前后导航">/);
+  assert.doesNotMatch(article, /<footer class="article-footer">[\s\S]*id="post-navigation"/);
+  assert.doesNotMatch(article, /<footer class="article-footer">[\s\S]*class="article-dossier"/);
   assert.doesNotMatch(article, /<footer class="article-footer">[\s\S]*class="series-panel"/);
   const articleJsonLd = jsonLdObjects(article);
   const techArticle = articleJsonLd.find((item) => item["@type"] === "TechArticle");

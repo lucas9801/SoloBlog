@@ -2011,7 +2011,7 @@ function seriesContext(post, posts) {
   };
 }
 
-function postNavigation(post, posts) {
+function postNavigation(post, posts, { compact = false } = {}) {
   const navigationPosts = post.series
     ? sortSeriesPosts(posts.filter((item) => item.series === post.series))
     : posts;
@@ -2032,31 +2032,32 @@ function postNavigation(post, posts) {
       </a>`
       : `<span class="post-nav-empty" aria-hidden="true"></span>`;
 
-  return `<nav id="post-navigation" class="post-navigation" aria-label="${escapeAttr(context)}文章前后导航">
-    ${link(previous, "上一篇")}
-    ${link(next, "下一篇")}
+  const links = compact ? [link(previous, "上一篇"), link(next, "下一篇")].filter((item) => !item.includes("post-nav-empty")) : [link(previous, "上一篇"), link(next, "下一篇")];
+  return `<nav id="post-navigation" class="post-navigation${compact ? " compact" : ""}" aria-label="${escapeAttr(context)}文章前后导航">
+    ${links.join("")}
   </nav>`;
 }
 
-function articleDossier(post, posts) {
+function articleHeroDossier(post, posts) {
   const updated = post.updated || post.date;
   const reviewAge = daysSinceDate(updated);
   const reviewDue = post.reviewAfterDays > 0 && reviewAge >= post.reviewAfterDays;
   const series = seriesContext(post, posts);
   const items = [
-    `<a href="/categories/${post.categorySlug}/"><span>分类</span><strong>${escapeHtml(post.category)}</strong></a>`,
     post.series
       ? `<a href="/series/${post.seriesSlug}/"><span>专题</span><strong>${escapeHtml(post.series)}</strong></a>`
       : "",
     series ? `<span><span>进度</span><strong>${series.position} / ${series.total}</strong></span>` : "",
-    `<span><span>发布</span><strong>${formatDate(post.date)}</strong></span>`,
-    `<span><span>更新</span><strong>${formatDate(updated)}</strong></span>`,
+    `<span><span>发布</span><strong><time datetime="${escapeAttr(post.date)}">${formatDate(post.date)}</time></strong></span>`,
+    `<span><span>更新</span><strong><time class="updated-date" datetime="${escapeAttr(updated)}">${formatDate(updated)}</time></strong></span>`,
     `<span><span>维护</span><strong>${reviewDue ? "建议复查" : "有效"}</strong></span>`,
     `<span><span>阅读</span><strong>${escapeHtml(post.readingTime)}</strong></span>`,
-    `<a href="${post.url}"><span>链接</span><strong>永久地址</strong></a>`
+    site.views?.enabled === false
+      ? ""
+      : `<span class="article-view-item" hidden><span>阅读量</span><strong class="view-count" data-view-slug="${escapeAttr(post.slug)}">阅读 --</strong></span>`,
   ].filter(Boolean);
 
-  return `<section class="article-dossier" aria-label="文章档案">
+  return `<section class="article-hero-dossier" aria-label="文章档案">
     ${items.join("")}
   </section>`;
 }
@@ -2112,18 +2113,18 @@ function postPage(post, posts) {
         <a class="category-pill" href="/categories/${post.categorySlug}/">${escapeHtml(post.category)}</a>
         <h1>${escapeHtml(post.title)}</h1>
         <p>${escapeHtml(post.summary)}</p>
-        ${postMeta(post)}
+        ${articleHeroDossier(post, posts)}
+        ${post.series ? postNavigation(post, posts, { compact: true }) : ""}
       </header>
       ${articleMaintenanceNotice(post)}
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
-        ${articleDossier(post, posts)}
         <div class="article-footer-tools">
           <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
           <button class="secondary-button article-copy-link" type="button" data-copy-article-url="${escapeAttr(absoluteUrl(post.url))}" aria-label="复制本文链接">复制链接</button>
           <span class="sr-only" aria-live="polite" data-copy-article-status></span>
         </div>
-        ${postNavigation(post, posts)}
+        ${post.series ? "" : postNavigation(post, posts)}
       </footer>
       ${giscusComments()}
     </article>
