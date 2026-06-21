@@ -1091,13 +1091,15 @@ if (
 }
 if (
   !buildScript.includes("function sidebar(posts, categories, tags, seriesEntries = [])") ||
-  !buildScript.includes('<section class="sidebar-card sidebar-index-card">') ||
-  !buildScript.includes('<h2>专题</h2>') ||
-  !buildScript.includes('href="/series/${slugify(name)}/"') ||
+  !buildScript.includes("function sidebarSection(title, items") ||
+  !buildScript.includes('sidebarSection("分类", categoryItems)') ||
+  !buildScript.includes('sidebarSection("专题", seriesItems, { className: "series-sidebar-card" })') ||
+  !buildScript.includes('`/series/${slugify(name)}/`') ||
   !buildScript.includes("sidebar(posts, categories, tags, seriesEntries)") ||
   !buildScript.includes('class="sidebar-card subscribe-card"') ||
   !buildScript.includes('class="sidebar-card ranking-card"') ||
   !css.includes(".sidebar-index-card") ||
+  !css.includes(".series-sidebar-card") ||
   buildScript.indexOf('class="sidebar-card subscribe-card"') > buildScript.indexOf('class="sidebar-card ranking-card"') ||
   !testBuildScript.includes('href="\\/series\\/markdown-lab\\/"')
 ) {
@@ -1134,14 +1136,18 @@ if (
   !buildScript.includes("recommendedSlugs") ||
   !buildScript.includes("function featuredPostGrid") ||
   !buildScript.includes('class="featured-post-grid count-${posts.length}"') ||
-  buildScript.includes("const [primary, ...secondary] = posts") ||
+  !buildScript.includes("const [primary, ...secondary] = posts") ||
   buildScript.includes('class="featured-note-list"') ||
   buildScript.includes('class="featured-note-card"') ||
-  !buildScript.includes('class="archive-card featured-card"') ||
+  !buildScript.includes('class="featured-lead-card"') ||
+  !buildScript.includes('class="featured-side-list"') ||
+  !buildScript.includes('class="featured-side-item"') ||
   !buildScript.includes("function homePostsPerPage") ||
   !buildScript.includes("posts.filter((post) => !recommendedSlugs.has(post.slug)).slice(0, homePostsPerPage())") ||
   !buildScript.includes('const primaryActionHref = latest.length ? "#latest-posts" : "/archive/"') ||
   !css.includes(".featured-post-grid") ||
+  !css.includes(".featured-lead-card") ||
+  !css.includes(".featured-side-item") ||
   css.includes(".featured-note-list") ||
   css.includes(".featured-note-card") ||
   !css.includes(".hero-visual") ||
@@ -1156,7 +1162,8 @@ if (
   !testBuildScript.includes("Archive Overflow") ||
   !testBuildScript.includes("featured-post-grid count-3") ||
   !testBuildScript.includes("assert.doesNotMatch(home, /featured-note-card|featured-note-list|featured-card is-primary/)") ||
-  !testBuildScript.includes('<article class="archive-card featured-card">') ||
+  !testBuildScript.includes('<article class="featured-lead-card">') ||
+  !testBuildScript.includes('class="featured-side-item"') ||
   !testBuildScript.includes('href="#latest-posts"') ||
   !checkLayoutScript.includes("home hero latest-posts link points to a missing section")
 ) {

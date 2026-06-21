@@ -220,7 +220,9 @@ try {
   assert.match(home, /<section id="latest-posts" class="section-block">/);
   assert.match(home, /推荐阅读/);
   assert.match(home, /<div class="featured-post-grid count-3">/);
-  assert.match(home, /<article class="archive-card featured-card">/);
+  assert.match(home, /<article class="featured-lead-card">/);
+  assert.match(home, /class="featured-side-list"/);
+  assert.match(home, /class="featured-side-item"/);
   assert.doesNotMatch(home, /featured-note-card|featured-note-list|featured-card is-primary/);
   const latestSectionStart = home.indexOf('<section id="latest-posts"');
   const latestSectionEnd = home.indexOf("</section>", latestSectionStart);

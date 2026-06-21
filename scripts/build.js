@@ -1089,12 +1089,39 @@ function archivePostCard(post) {
 
 function featuredPostGrid(posts) {
   if (!posts.length) return "";
+  const [primary, ...secondary] = posts;
   return `<div class="featured-post-grid count-${posts.length}">
-    ${posts
-      .map((post) =>
-        archivePostCard(post).replace('<article class="archive-card">', '<article class="archive-card featured-card">')
-      )
-      .join("")}
+    <article class="featured-lead-card">
+      <a class="featured-lead-thumb ${primary.categorySlug}" href="${primary.url}" aria-label="阅读文章：${escapeAttr(primary.title)}">
+        ${coverImage(primary.cover, { alt: `${primary.title} 封面` })}
+        <span>${escapeHtml(primary.category)}</span>
+      </a>
+      <div class="featured-lead-body">
+        ${postMeta(primary)}
+        <h3><a href="${primary.url}">${escapeHtml(primary.title)}</a></h3>
+        <p>${escapeHtml(primary.summary)}</p>
+        <div class="tag-row">${primary.tags
+          .slice(0, 4)
+          .map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`)
+          .join("")}</div>
+      </div>
+    </article>
+    ${
+      secondary.length
+        ? `<div class="featured-side-list">
+      ${secondary
+        .map(
+          (post, index) => `<a class="featured-side-item" href="${post.url}">
+            <span>${String(index + 2).padStart(2, "0")}</span>
+            <small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small>
+            <strong>${escapeHtml(post.title)}</strong>
+            <em>${escapeHtml(post.summary)}</em>
+          </a>`
+        )
+        .join("")}
+    </div>`
+        : ""
+    }
   </div>`;
 }
 
@@ -1145,6 +1172,21 @@ function siteOverviewCard(posts, categories, tags, seriesEntries = []) {
   </section>`;
 }
 
+function sidebarSection(title, items, { className = "", limit = 6 } = {}) {
+  if (!items.length) return "";
+  const extraClass = className ? ` ${className}` : "";
+  return `<section class="sidebar-card sidebar-index-card${extraClass}">
+    <h2>${escapeHtml(title)}</h2>
+    <div class="category-list">${items
+      .slice(0, limit)
+      .map(
+        ([name, list, href]) =>
+          `<a href="${escapeAttr(href || "#")}"><span>${escapeHtml(name)}</span><b>${Array.isArray(list) ? list.length : list}</b></a>`
+      )
+      .join("")}</div>
+  </section>`;
+}
+
 function yearArchiveCard(posts) {
   const years = groupByYear(posts).slice(0, 6);
   if (!years.length) return "";
@@ -1175,28 +1217,12 @@ function rankingPayload(posts) {
 
 function sidebar(posts, categories, tags, seriesEntries = []) {
   const fallbackRanking = posts.slice(0, 5);
+  const categoryItems = categories.map(([category, list]) => [category, list, `/categories/${slugify(category)}/`]);
+  const seriesItems = seriesEntries.map(([name, list]) => [name, list, `/series/${slugify(name)}/`]);
   return `<aside class="blog-sidebar">
     ${siteOverviewCard(posts, categories, tags, seriesEntries)}
-    <section class="sidebar-card sidebar-index-card">
-      <h2>分类</h2>
-      <div class="category-list">${categories
-        .map(
-          ([category, list]) =>
-            `<a href="/categories/${slugify(category)}/"><span>${escapeHtml(category)}</span><b>${list.length}</b></a>`
-        )
-        .join("")}</div>
-    </section>
-    ${
-      seriesEntries.length
-        ? `<section class="sidebar-card sidebar-index-card">
-          <h2>专题</h2>
-          <div class="category-list series-link-list">${seriesEntries
-            .slice(0, 6)
-            .map(([name, list]) => `<a href="/series/${slugify(name)}/"><span>${escapeHtml(name)}</span><b>${list.length}</b></a>`)
-            .join("")}</div>
-        </section>`
-        : ""
-    }
+    ${sidebarSection("分类", categoryItems)}
+    ${sidebarSection("专题", seriesItems, { className: "series-sidebar-card" })}
     <section class="sidebar-card sidebar-index-card">
       <h2>标签索引</h2>
       <div class="tag-cloud">${tags
