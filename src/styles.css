@@ -1236,7 +1236,7 @@ pre {
 }
 
 .page-shell.narrow {
-  max-width: 900px;
+  max-width: 940px;
 }
 
 .search-page {
@@ -1244,7 +1244,7 @@ pre {
 }
 
 .not-found-panel {
-  padding: 24px 30px;
+  padding: 24px 30px 22px;
   border-radius: 6px;
 }
 
@@ -1260,7 +1260,7 @@ pre {
 .not-found-panel h1 {
   margin: 0;
   color: var(--text);
-  font-size: clamp(30px, 3.6vw, 42px);
+  font-size: clamp(30px, 3.4vw, 40px);
   line-height: 1.12;
   font-weight: 800;
 }
@@ -1274,7 +1274,7 @@ pre {
 }
 
 .about-page {
-  max-width: 960px;
+  max-width: 940px;
 }
 
 .about-profile {
@@ -1284,7 +1284,7 @@ pre {
 }
 
 .about-profile-head {
-  padding: 26px 38px 22px;
+  padding: 24px 38px 20px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -1296,9 +1296,9 @@ pre {
 }
 
 .about-profile-head h1 {
-  margin: 8px 0 10px;
+  margin: 8px 0 8px;
   color: var(--text);
-  font-size: clamp(30px, 3.4vw, 40px);
+  font-size: clamp(30px, 3.3vw, 39px);
   line-height: 1.12;
   font-weight: 800;
 }
@@ -1313,7 +1313,7 @@ pre {
 
 .about-content {
   max-width: 820px;
-  padding-top: 30px;
+  padding-top: 28px;
 }
 
 .about-content > p:first-child {
@@ -1324,8 +1324,8 @@ pre {
 }
 
 .about-content h2 {
-  margin-top: 2em;
-  padding-top: 18px;
+  margin-top: 1.9em;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
   font-size: 21px;
 }
@@ -1333,16 +1333,16 @@ pre {
 .about-content ul {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-  gap: 8px;
+  gap: 6px;
   padding-left: 0;
   list-style: none;
 }
 
 .about-content li {
-  min-height: 42px;
-  padding: 10px 12px;
+  min-height: 40px;
+  padding: 9px 11px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--surface-soft);
   color: var(--text);
   font-size: 14px;
@@ -1583,7 +1583,7 @@ pre {
 .series-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .series-card,
@@ -1598,9 +1598,9 @@ pre {
 
 .series-card {
   min-height: 0;
-  padding: 16px 18px;
+  padding: 14px 18px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .series-card:hover,
@@ -1620,7 +1620,7 @@ pre {
   min-width: 0;
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr) max-content;
-  gap: 10px;
+  gap: 8px 10px;
   align-items: center;
   color: var(--text);
 }
@@ -1642,7 +1642,7 @@ pre {
   min-width: 0;
   overflow: hidden;
   color: var(--text);
-  font-size: 20px;
+  font-size: 19px;
   line-height: 1.3;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -1657,7 +1657,7 @@ pre {
 }
 
 .series-card-meta span {
-  min-height: 26px;
+  min-height: 24px;
   padding: 0 8px;
   display: inline-flex;
   align-items: center;
@@ -1680,7 +1680,7 @@ pre {
   margin: 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 .series-card-list {
@@ -1688,13 +1688,13 @@ pre {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-  gap: 8px;
+  gap: 6px;
   list-style: none;
 }
 
 .series-card-list a {
-  min-height: 36px;
-  padding: 0 11px;
+  min-height: 34px;
+  padding: 0 10px;
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
   gap: 8px;
@@ -1795,13 +1795,13 @@ pre {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: 14px;
-  padding: 16px 18px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--line);
   background: transparent;
 }
 
 .series-timeline-item:first-child {
-  padding-top: 16px;
+  padding-top: 14px;
 }
 
 .series-timeline-item:last-child {
@@ -1827,9 +1827,9 @@ pre {
 }
 
 .series-timeline-item h2 {
-  margin: 6px 0 7px;
+  margin: 4px 0 6px;
   color: var(--text);
-  font-size: 20px;
+  font-size: 19px;
   line-height: 1.32;
   font-weight: 750;
 }
@@ -1839,14 +1839,14 @@ pre {
 }
 
 .series-timeline-item p {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: var(--muted);
   font-size: 14px;
   line-height: 1.65;
 }
 
 .series-related {
-  padding: 16px;
+  padding: 14px;
   border-radius: 6px;
 }
 
@@ -1856,9 +1856,9 @@ pre {
 }
 
 .series-related h2 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: var(--text);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
 }
 
@@ -3407,6 +3407,14 @@ body.is-reading-mode .quick-action-read {
     font-size: 30px;
   }
 
+  .about-profile-head {
+    padding: 22px 20px 18px;
+  }
+
+  .about-content {
+    padding-top: 24px;
+  }
+
   .blog-sidebar,
   .compact-post-list,
   .series-index-layout,
@@ -3521,6 +3529,14 @@ body.is-reading-mode .quick-action-read {
   .series-card-head {
     grid-template-columns: 38px minmax(0, 1fr);
     gap: 6px 10px;
+  }
+
+  .series-card {
+    padding: 14px;
+  }
+
+  .series-card-title {
+    font-size: 18px;
   }
 
   .series-card-meta {
