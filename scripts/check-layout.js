@@ -1225,6 +1225,13 @@ async function checkViewport(viewport, page) {
                 if (readModeButton.getAttribute("aria-pressed") !== "true") {
                   failures.push("read mode button aria-pressed is not set when enabled");
                 }
+                try {
+                  if (localStorage.getItem("solus-read-mode") !== "true") {
+                    failures.push("read mode preference was not persisted");
+                  }
+                } catch {
+                  // Storage can be unavailable; the visible toggle still matters.
+                }
                 if (document.querySelector(".article-aside") && getComputedStyle(document.querySelector(".article-aside")).display !== "none") {
                   failures.push("read mode should hide article sidebars");
                 }
@@ -1232,6 +1239,9 @@ async function checkViewport(viewport, page) {
                 await wait(80);
                 if (document.body.classList.contains("is-reading-mode")) {
                   failures.push("read mode button did not disable reading mode");
+                }
+                if (readModeButton.getAttribute("aria-pressed") !== "false") {
+                  failures.push("read mode button aria-pressed is not reset when disabled");
                 }
               }
 

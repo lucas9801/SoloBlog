@@ -125,17 +125,36 @@ function updateScrollTopButton() {
   scrollTopButton.classList.toggle("is-visible", window.scrollY > 420);
 }
 
+function setReadMode(enabled) {
+  if (!readModeButton) return;
+  document.body.classList.toggle("is-reading-mode", enabled);
+  readModeButton.setAttribute("aria-pressed", String(enabled));
+  readModeButton.setAttribute("aria-label", enabled ? "Exit focused reading" : "Enter focused reading");
+}
+
+function storedReadMode() {
+  try {
+    return localStorage.getItem("solus-read-mode") === "true";
+  } catch {
+    return false;
+  }
+}
+
 header?.addEventListener("focusin", revealHeader);
 scrollTopButton?.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 readModeButton?.addEventListener("click", () => {
-  const enabled = document.body.classList.toggle("is-reading-mode");
-  readModeButton.setAttribute("aria-pressed", String(enabled));
-  readModeButton.setAttribute("aria-label", enabled ? "退出专注阅读" : "切换专注阅读");
+  const enabled = !document.body.classList.contains("is-reading-mode");
+  setReadMode(enabled);
+  try {
+    localStorage.setItem("solus-read-mode", String(enabled));
+  } catch {
+    // Ignore storage failures in restrictive browsing modes.
+  }
 });
 if (readModeButton) {
-  readModeButton.setAttribute("aria-pressed", "false");
+  setReadMode(storedReadMode());
 }
 
 window.addEventListener(

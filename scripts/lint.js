@@ -845,6 +845,7 @@ if (
 if (
   !buildScript.includes("data-read-mode") ||
   !siteScript.includes("is-reading-mode") ||
+  !siteScript.includes("solus-read-mode") ||
   !siteScript.includes('aria-pressed", String(enabled)') ||
   !css.includes("body.is-reading-mode .article-shell") ||
   !css.includes("body.is-reading-mode .article-aside") ||
