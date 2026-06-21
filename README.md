@@ -55,6 +55,7 @@ GitHub Actions 会在 `main` 分支 push 和 Pull Request 上运行 `npm run che
 
 ## 文档
 
+- [完整使用手册](docs/user-guide.md)
 - [博客操作手册](docs/blog-operations.md)
 - [Cloudflare Pages 部署说明](docs/cloudflare-pages.md)
 - [阅读量和评论配置](docs/dynamic-features.md)
