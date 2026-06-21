@@ -534,6 +534,32 @@ function renderTable(headers, separators, rows) {
   return `<div class="table-scroll" tabindex="0" aria-label="可横向滚动的数据表"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
+const calloutTypes = new Map([
+  ["note", "说明"],
+  ["tip", "建议"],
+  ["important", "重点"],
+  ["warning", "注意"],
+  ["caution", "风险"]
+]);
+
+function parseCalloutLine(value) {
+  const match = String(value || "").match(/^>\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)]\s*(.*)$/i);
+  if (!match) return null;
+  const type = match[1].toLowerCase();
+  return {
+    type,
+    title: match[2].trim() || calloutTypes.get(type) || "提示"
+  };
+}
+
+function renderCallout(type, title, lines) {
+  const body = lines
+    .join(" ")
+    .trim();
+  const content = body ? `<p>${inlineMarkdown(body)}</p>` : "";
+  return `<aside class="callout callout-${escapeAttr(type)}" aria-label="${escapeAttr(title)}"><strong>${escapeHtml(title)}</strong>${content}</aside>`;
+}
+
 function markdownToHtml(markdown) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const html = [];
@@ -629,6 +655,21 @@ function markdownToHtml(markdown) {
       html.push(
         `<h${level} id="${escapeAttr(id)}">${inlineMarkdown(text)} <a class="heading-anchor" href="#${escapeAttr(id)}" aria-label="${escapeAttr(anchorLabel)}">#</a></h${level}>`
       );
+      continue;
+    }
+
+    const callout = parseCalloutLine(trimmed);
+    if (callout) {
+      flushParagraph();
+      closeList();
+      const calloutLines = [];
+      while (index + 1 < lines.length) {
+        const nextLine = lines[index + 1].trim();
+        if (!nextLine.startsWith(">")) break;
+        index += 1;
+        calloutLines.push(nextLine.replace(/^>\s?/, ""));
+      }
+      html.push(renderCallout(callout.type, callout.title, calloutLines));
       continue;
     }
 

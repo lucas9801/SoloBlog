@@ -101,7 +101,7 @@ async function writeFixtureProject(target) {
   );
   await writeFile(
     path.join(target, "content", "posts", "2026-06-13-markdown-edge.md"),
-    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\nupdated: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nreviewAfterDays: 30\nfeatured: true\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), [bad](javascript:alert(1)), and [relative](relative-page).\n\n### Nested Repeat\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
+    `---\ntitle: "Markdown Edge Cases"\nslug: "markdown-edge-cases"\ndate: 2026-06-13\nupdated: 2026-06-14\ncategory: 图形渲染\ntags: [Markdown, 渲染]\nsummary: 覆盖 Markdown 表格、链接、图片和代码块的构建测试。\ncover: /assets/posts/inline.svg\nseries: Markdown Lab\nseriesOrder: 1\nreviewAfterDays: 30\nfeatured: true\nstatus: published\n---\n\n## Repeat\n\nParagraph with **strong text**, *emphasis*, \`inline code\`, [external](https://example.com/path), [bad](javascript:alert(1)), and [relative](relative-page).\n\n### Nested Repeat\n\n![Inline Asset](/assets/posts/inline.svg)\n\n| Name | Value |\n| --- | --- |\n| Pipe | A \\| B |\n\n> [!NOTE] Assumption\n> Frame debugger output should be checked on target hardware.\n\n> [!WARNING]\n> Do not trust editor-only profiling data.\n\n## Repeat\n\n> quoted text\n\n\`\`\`js\nconsole.log("ok");\n\`\`\`\n`,
     "utf8"
   );
   await writeFile(
@@ -179,6 +179,8 @@ try {
   assert.equal(breadcrumb.itemListElement.at(-1).item, "https://blog.solus.games/posts/markdown-edge-cases/");
   assert.match(article, /<td data-align="left">A \| B<\/td>/);
   assert.match(article, /aria-label="js 代码块，可横向滚动"/);
+  assert.match(article, /<aside class="callout callout-note" aria-label="Assumption"><strong>Assumption<\/strong><p>Frame debugger output should be checked on target hardware\.<\/p><\/aside>/);
+  assert.match(article, /<aside class="callout callout-warning" aria-label="注意"><strong>注意<\/strong><p>Do not trust editor-only profiling data\.<\/p><\/aside>/);
   assert.match(article, /<blockquote>quoted text<\/blockquote>/);
   await assert.rejects(access(path.join(tempRoot, "dist", "posts", "draft-only", "index.html")));
 

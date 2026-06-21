@@ -2052,6 +2052,41 @@ body.is-reading-mode .article-page {
   margin-bottom: 0;
 }
 
+.callout {
+  margin: 1.4em 0;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--surface-soft) 58%, var(--surface));
+  color: var(--muted);
+}
+
+.callout strong {
+  display: block;
+  margin: 0 0 5px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.callout p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.callout-tip,
+.callout-important {
+  border-left-color: var(--accent);
+}
+
+.callout-warning,
+.callout-caution {
+  border-left-color: color-mix(in srgb, #f59e0b 76%, var(--brand));
+}
+
 .article-content .table-scroll {
   position: relative;
   overflow-x: auto;

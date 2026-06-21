@@ -738,6 +738,20 @@ if (
   failures.push("Article tables must keep accessible horizontal scrolling with a subtle mobile scroll hint.");
 }
 if (
+  !buildScript.includes("function parseCalloutLine") ||
+  !buildScript.includes("function renderCallout") ||
+  !buildScript.includes('class="callout callout-${escapeAttr(type)}"') ||
+  !css.includes(".callout") ||
+  !css.includes(".callout-warning") ||
+  !testBuildScript.includes("[!NOTE] Assumption") ||
+  !testBuildScript.includes("callout callout-warning") ||
+  !checkOutputScript.includes("article callout must include an aria-label") ||
+  !checkLayoutScript.includes("article callout is too tall for a restrained technical note") ||
+  !blogOperationsDocs.includes("`NOTE`、`TIP`、`IMPORTANT`、`WARNING`、`CAUTION`")
+) {
+  failures.push("Markdown technical callouts must render as restrained accessible article notes.");
+}
+if (
   !buildScript.includes("data-external-link") ||
   !buildScript.includes("在新标签页打开") ||
   !css.includes(".article-content a[data-external-link]::after")

@@ -1162,6 +1162,15 @@ async function main() {
     ) {
       failures.push(`${relative} article maintenance notice must include a dated review reference.`);
     }
+    for (const match of html.matchAll(/<aside\b[^>]*class="[^"]*\bcallout\b[^"]*"[^>]*>/g)) {
+      const attrs = tagAttributes(match[0]);
+      if (!attrs.get("aria-label")?.trim()) {
+        failures.push(`${relative} article callout must include an aria-label.`);
+      }
+      if (!match[0].includes("callout-")) {
+        failures.push(`${relative} article callout must include a typed callout class.`);
+      }
+    }
     const collectionIndex = /^dist\/(?:archive|categories|years|tags|series)\//.test(relative);
     if (collectionIndex && html.includes('class="page-context"')) {
       failures.push(`${relative} must not render the page context title block.`);

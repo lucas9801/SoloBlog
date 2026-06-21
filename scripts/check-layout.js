@@ -1255,6 +1255,17 @@ async function checkViewport(viewport, page) {
                   }
                 }
               }
+              for (const callout of document.querySelectorAll(".article-content .callout")) {
+                const rect = callout.getBoundingClientRect();
+                if (rect.width > innerWidth - 24) {
+                  failures.push("article callout overflows the mobile viewport");
+                  break;
+                }
+                if (Math.round(rect.height) > 180) {
+                  failures.push("article callout is too tall for a restrained technical note");
+                  break;
+                }
+              }
               if (!(readModeButton instanceof HTMLButtonElement)) {
                 failures.push("article read mode button is missing");
               }
