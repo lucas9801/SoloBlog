@@ -1896,6 +1896,24 @@ function postNavigation(post, posts) {
   </nav>`;
 }
 
+function articleDossier(post) {
+  const updated = post.updated || post.date;
+  const items = [
+    `<a href="/categories/${post.categorySlug}/"><span>分类</span><strong>${escapeHtml(post.category)}</strong></a>`,
+    post.series
+      ? `<a href="/series/${post.seriesSlug}/"><span>专题</span><strong>${escapeHtml(post.series)}</strong></a>`
+      : "",
+    `<span><span>发布</span><strong>${formatDate(post.date)}</strong></span>`,
+    `<span><span>更新</span><strong>${formatDate(updated)}</strong></span>`,
+    `<span><span>阅读</span><strong>${escapeHtml(post.readingTime)}</strong></span>`,
+    `<a href="${post.url}"><span>链接</span><strong>永久地址</strong></a>`
+  ].filter(Boolean);
+
+  return `<section class="article-dossier" aria-label="文章档案">
+    ${items.join("")}
+  </section>`;
+}
+
 function postPage(post, posts) {
   const related = posts
     .filter((item) => item.slug !== post.slug)
@@ -1939,6 +1957,7 @@ function postPage(post, posts) {
       </header>
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
+        ${articleDossier(post)}
         <div class="article-footer-tools">
           <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
           <button class="secondary-button article-copy-link" type="button" data-copy-article-url="${escapeAttr(absoluteUrl(post.url))}" aria-label="复制本文链接">复制链接</button>

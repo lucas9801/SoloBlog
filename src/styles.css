@@ -1879,6 +1879,25 @@ pre {
   margin: 0 0 1.1em;
 }
 
+.article-content ul,
+.article-content ol {
+  padding-left: 1.35em;
+}
+
+.article-content li {
+  margin: 0.28em 0;
+  padding-left: 0.1em;
+}
+
+.article-content li::marker {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.article-content li > p {
+  margin-bottom: 0.45em;
+}
+
 .article-content a {
   color: var(--brand);
   font-weight: 600;
@@ -1974,10 +1993,15 @@ pre {
 }
 
 .article-content blockquote {
+  margin: 1.4em 0;
   padding: 14px 16px;
   border-left: 3px solid var(--brand);
   background: var(--surface-soft);
   color: var(--muted);
+}
+
+.article-content blockquote > :last-child {
+  margin-bottom: 0;
 }
 
 .article-content .table-scroll {
@@ -2039,6 +2063,62 @@ pre {
   max-width: 860px;
   margin: 0 auto;
   padding: 0 42px 42px;
+}
+
+.article-dossier {
+  margin-bottom: 18px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
+.article-dossier > a,
+.article-dossier > span {
+  min-width: 0;
+  min-height: 48px;
+  padding: 9px 10px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.article-dossier > a:hover,
+.article-dossier > a:focus-visible {
+  border-color: var(--brand);
+}
+
+.article-dossier span span,
+.article-dossier a span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.article-dossier strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-dossier a:hover strong {
+  color: var(--brand);
 }
 
 .article-footer-tools {
@@ -2138,16 +2218,16 @@ pre {
 }
 
 .post-navigation {
-  margin-top: 24px;
+  margin-top: 18px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .post-navigation a,
 .post-nav-empty {
-  min-height: 104px;
-  padding: 14px;
+  min-height: 86px;
+  padding: 12px 13px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -2164,10 +2244,11 @@ pre {
   color: var(--brand);
   font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .post-navigation strong {
-  margin-top: 8px;
+  margin-top: 6px;
   color: var(--text);
   font-size: 15px;
   line-height: 1.45;
