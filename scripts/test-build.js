@@ -165,6 +165,8 @@ try {
   assert.match(article, /data-copy-article-url="https:\/\/blog\.solus\.games\/posts\/markdown-edge-cases\/"/);
   assert.match(article, /data-copy-article-status/);
   assert.match(article, /<aside class="article-aside article-related-aside">[\s\S]*<section class="series-panel compact" aria-labelledby="series-sidebar-title">/);
+  assert.match(article, /<span>专题 · 1\/2<\/span>/);
+  assert.match(article, /<span><span>进度<\/span><strong>1 \/ 2<\/strong><\/span>/);
   assert.match(article, /<nav class="sidebar-card toc" aria-labelledby="article-toc-title"><h2 id="article-toc-title">目录<\/h2>/);
   assert.match(article, /<nav id="post-navigation" class="post-navigation" aria-label="Markdown Lab 专题文章前后导航">[\s\S]*<a href="\/posts\/markdown-followup\/">[\s\S]*下一篇/);
   assert.doesNotMatch(article, /<nav id="post-navigation" class="post-navigation"[\s\S]*href="\/posts\/markdown-same-day\/"/);

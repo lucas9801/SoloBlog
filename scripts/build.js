@@ -1940,15 +1940,16 @@ async function writeSeriesPages({ name, posts, seriesEntries }) {
 }
 
 function seriesPanel(post, posts, { compact = false } = {}) {
-  if (!post.series) return "";
-  const items = sortSeriesPosts(posts.filter((item) => item.series === post.series));
+  const context = seriesContext(post, posts);
+  if (!context) return "";
+  const { items, position, total } = context;
   if (items.length < 2) return "";
   const titleId = compact ? "series-sidebar-title" : "series-panel-title";
   const compactClass = compact ? " compact" : "";
 
   return `<section class="series-panel${compactClass}" aria-labelledby="${titleId}">
     <div class="series-panel-head">
-      <span>专题</span>
+      <span>专题 · ${position}/${total}</span>
       <h2 id="${titleId}">${escapeHtml(post.series)}</h2>
       <a href="/series/${post.seriesSlug}/">查看专题</a>
     </div>
@@ -1966,6 +1967,18 @@ function seriesPanel(post, posts, { compact = false } = {}) {
         .join("")}
     </ol>
   </section>`;
+}
+
+function seriesContext(post, posts) {
+  if (!post.series) return null;
+  const items = sortSeriesPosts(posts.filter((item) => item.series === post.series));
+  const index = items.findIndex((item) => item.slug === post.slug);
+  if (index === -1) return null;
+  return {
+    items,
+    position: index + 1,
+    total: items.length
+  };
 }
 
 function postNavigation(post, posts) {
@@ -1995,15 +2008,17 @@ function postNavigation(post, posts) {
   </nav>`;
 }
 
-function articleDossier(post) {
+function articleDossier(post, posts) {
   const updated = post.updated || post.date;
   const reviewAge = daysSinceDate(updated);
   const reviewDue = post.reviewAfterDays > 0 && reviewAge >= post.reviewAfterDays;
+  const series = seriesContext(post, posts);
   const items = [
     `<a href="/categories/${post.categorySlug}/"><span>分类</span><strong>${escapeHtml(post.category)}</strong></a>`,
     post.series
       ? `<a href="/series/${post.seriesSlug}/"><span>专题</span><strong>${escapeHtml(post.series)}</strong></a>`
       : "",
+    series ? `<span><span>进度</span><strong>${series.position} / ${series.total}</strong></span>` : "",
     `<span><span>发布</span><strong>${formatDate(post.date)}</strong></span>`,
     `<span><span>更新</span><strong>${formatDate(updated)}</strong></span>`,
     `<span><span>维护</span><strong>${reviewDue ? "建议复查" : "有效"}</strong></span>`,
@@ -2072,7 +2087,7 @@ function postPage(post, posts) {
       ${articleMaintenanceNotice(post)}
       <div class="article-content">${post.html}</div>
       <footer class="article-footer">
-        ${articleDossier(post)}
+        ${articleDossier(post, posts)}
         <div class="article-footer-tools">
           <div class="tag-row">${post.tags.map((tag) => `<a href="/tags/${slugify(tag)}/">${escapeHtml(tag)}</a>`).join("")}</div>
           <button class="secondary-button article-copy-link" type="button" data-copy-article-url="${escapeAttr(absoluteUrl(post.url))}" aria-label="复制本文链接">复制链接</button>

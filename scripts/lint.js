@@ -694,8 +694,14 @@ if (
 }
 if (
   !buildScript.includes("seriesPanel(post, posts, { compact: true })") ||
+  !buildScript.includes("function seriesContext(post, posts)") ||
+  !buildScript.includes("const { items, position, total } = context") ||
+  !buildScript.includes("<span>专题 · ${position}/${total}</span>") ||
+  !buildScript.includes("series ? `<span><span>进度</span><strong>${series.position} / ${series.total}</strong></span>` : \"\"") ||
   !buildScript.includes("article-related-aside") ||
   !testBuildScript.includes("series-panel compact") ||
+  !testBuildScript.includes("<span>专题 · 1\\/2<\\/span>") ||
+  !testBuildScript.includes("<span><span>进度<\\/span><strong>1 \\/ 2<\\/strong><\\/span>") ||
   !checkLayoutScript.includes("article series panel is not in the side column") ||
   !checkLayoutScript.includes("article hero is too tall for a focused technical reading page") ||
   !checkLayoutScript.includes("desktop article text column is too narrow for technical reading") ||
