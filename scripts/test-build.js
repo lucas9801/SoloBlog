@@ -244,7 +244,8 @@ try {
   assert.match(home, /<a class="button-link" href="\/rss\.xml">RSS<\/a>/);
   assert.match(home, /<a class="ghost-link" href="\/feed\.json">JSON Feed<\/a>/);
   assert.match(home, />复制 RSS<\/button>/);
-  assert.ok(home.indexOf('class="sidebar-card subscribe-card"') < home.indexOf('class="sidebar-card ranking-card"'));
+  assert.ok(home.indexOf('class="sidebar-card ranking-card"') < home.indexOf('class="sidebar-card sidebar-index-card archive-years-card"'));
+  assert.ok(home.indexOf('class="sidebar-card sidebar-index-card archive-years-card"') < home.indexOf('class="sidebar-card subscribe-card"'));
   assert.match(home, /data-copy-rss-status/);
   assert.match(home, /站点地图/);
   assert.match(home, /<input id="siteSearchInput" name="q" type="search" placeholder="搜索文章、年份、分类、专题、标签" \/>/);
@@ -430,10 +431,9 @@ try {
   const markdownSameDay = searchIndex.find((item) => item.slug === "markdown-same-day");
   assert.equal(markdownSameDay.cover, "/assets/posts/markdown-same-day.svg");
   const generatedCover = await readFile(path.join(tempRoot, "assets", "posts", "markdown-same-day.svg"), "utf8");
-  assert.match(generatedCover, /Markdown Same Day/);
-  assert.match(generatedCover, /同日文章用于验证构建输出的稳定排序。/);
   assert.match(generatedCover, /SOLUS DEV NOTES/);
   assert.match(generatedCover, /NO\. [A-F0-9]{4}/);
+  assert.doesNotMatch(generatedCover.replace(/aria-label="[^"]*"/g, ""), /Markdown Same Day|同日文章用于验证构建输出的稳定排序。/);
   assert.doesNotMatch(generatedCover, /<radialGradient|<feDropShadow|url\(#sphere\)/);
 
   const notFound = await readFile(path.join(tempRoot, "dist", "404.html"), "utf8");

@@ -821,12 +821,15 @@ if (
   failures.push("Rendered local markdown images must carry the shared asset version query.");
 }
 if (
-  !buildScript.includes("function coverTextLines") ||
-  !buildScript.includes("function svgTextBlock") ||
-  !buildScript.includes("svgTextBlock(titleLines") ||
-  !buildScript.includes("svgTextBlock(summaryLines") ||
+  !buildScript.includes("function coverVisualSeed") ||
+  !buildScript.includes("function coverChannelLabel") ||
+  !buildScript.includes("coverMotif(post, colors, seed)") ||
+  !buildScript.includes("channelLabel") ||
   !buildScript.includes("issueLabel") ||
   !buildScript.includes("NO. ${escapeHtml(issueLabel)}") ||
+  buildScript.includes("const titleLines =") ||
+  buildScript.includes("const summaryLines =") ||
+  buildScript.includes('rect x="64" y="348" width="860"') ||
   buildScript.includes("existingGeneratedCover") ||
   buildScript.includes("<radialGradient") ||
   buildScript.includes("<feDropShadow") ||
@@ -1105,9 +1108,13 @@ if (
   !buildScript.includes("sidebar(posts, categories, tags, seriesEntries)") ||
   !buildScript.includes('class="sidebar-card subscribe-card"') ||
   !buildScript.includes('class="sidebar-card ranking-card"') ||
+  !buildScript.includes('class="sidebar-card sidebar-index-card archive-years-card"') ||
   !css.includes(".sidebar-index-card") ||
   !css.includes(".series-sidebar-card") ||
-  buildScript.indexOf('class="sidebar-card subscribe-card"') > buildScript.indexOf('class="sidebar-card ranking-card"') ||
+  buildScript.indexOf('class="sidebar-card ranking-card"', buildScript.indexOf("function sidebar(posts, categories, tags, seriesEntries = [])")) >
+    buildScript.indexOf("${yearArchiveCard(posts)}", buildScript.indexOf("function sidebar(posts, categories, tags, seriesEntries = [])")) ||
+  buildScript.indexOf("${yearArchiveCard(posts)}", buildScript.indexOf("function sidebar(posts, categories, tags, seriesEntries = [])")) >
+    buildScript.indexOf('class="sidebar-card subscribe-card"', buildScript.indexOf("function sidebar(posts, categories, tags, seriesEntries = [])")) ||
   !testBuildScript.includes('href="\\/series\\/markdown-lab\\/"')
 ) {
   failures.push("Home sidebar must expose compact category, series, and tag index panels.");
@@ -1162,7 +1169,7 @@ if (
   !css.includes(".hero-visual") ||
   !css.includes("min-height: 198px;") ||
   !css.includes(".content-shell .archive-card") ||
-  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*minmax\(260px,\s*0\.42fr\)\s+minmax\(0,\s*1fr\);/.test(css) ||
+  !/\.content-shell\s+\.archive-card\s*\{[\s\S]*?grid-template-columns:\s*minmax\(220px,\s*0\.4fr\)\s+minmax\(0,\s*1fr\);/.test(css) ||
   !/\.content-shell\s+\.archive-card-thumb\s+img\s*\{[\s\S]*?height:\s*100%;[\s\S]*?object-position:\s*center;/.test(css) ||
   !checkLayoutScript.includes("desktop hero is too tall for an index-first home page") ||
   !checkLayoutScript.includes("mobile recommended card covers should not repeat the visible card title") ||

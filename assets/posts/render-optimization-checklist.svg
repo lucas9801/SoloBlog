@@ -1,35 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="渲染优化排查清单">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="渲染优化排查清单 封面">
   <defs>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="#f8fafc" stroke-opacity=".06"/>
+      <path d="M54 0H0v54" fill="none" stroke="#eef6ff" stroke-opacity=".055"/>
     </pattern>
   </defs>
   <rect width="1200" height="675" fill="#07111f"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <path d="M64 102H1136M64 574H1136" stroke="#f8fafc" stroke-opacity=".08"/>
-  <path d="M924 96v480" stroke="#f8fafc" stroke-opacity=".08"/>
-  <path d="M64 142.5H1136" stroke="#22d3ee" stroke-opacity=".16"/>
-  <path d="M627.5 96v480" stroke="#60a5fa" stroke-opacity=".13"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#22d3ee" stroke-opacity=".12" stroke-width="2"/>
-  <g opacity=".94"><rect x="146" y="120" width="568" height="394" rx="16" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".52"/>
-      <path d="M188 426L306 292l126 82 142-168 98 126" fill="none" stroke="#22d3ee" stroke-width="5" opacity=".86"/>
-      <path d="M188 456h484M188 386h484M188 316h484M188 246h484M266 164v320M392 164v320M518 164v320M644 164v320" stroke="#8fb8d7" stroke-opacity=".16"/>
-      <rect x="778" y="144" width="256" height="62" rx="10" fill="#111d2d" stroke="#60a5fa" stroke-opacity=".4"/>
-      <rect x="778" y="242" width="256" height="62" rx="10" fill="#111d2d" stroke="#22d3ee" stroke-opacity=".4"/>
-      <rect x="778" y="340" width="256" height="62" rx="10" fill="#111d2d" stroke="#60a5fa" stroke-opacity=".4"/>
-      <path d="M906 206v36M906 304v36M778 371h-64M778 273h-64M778 175h-64" stroke="#22d3ee" stroke-opacity=".38" stroke-width="4"/>
-      <circle cx="864" cy="522" r="34" fill="#22d3ee" opacity=".72"/>
-      <circle cx="974" cy="522" r="34" fill="#60a5fa" opacity=".58"/></g>
+  <path d="M64 102H1136M64 574H1136" stroke="#eef6ff" stroke-opacity=".09"/>
+  <path d="M922 96v480" stroke="#eef6ff" stroke-opacity=".08"/>
+  <path d="M64 143H1136" stroke="#60a5fa" stroke-opacity=".14"/>
+  <path d="M628 96v480" stroke="#22d3ee" stroke-opacity=".12"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#60a5fa" stroke-opacity=".1" stroke-width="2"/>
+  <g opacity=".94"><rect x="142" y="126" width="596" height="394" rx="6" fill="#101d2d" stroke="#60a5fa" stroke-opacity=".54"/>
+      <path d="M184 456h512M184 386h512M184 316h512M184 246h512M272 164v320M400 164v320M528 164v320M656 164v320" stroke="#eef6ff" stroke-opacity=".14"/>
+      <path d="M192 424L310 292l124 82 144-168 96 126" fill="none" stroke="#60a5fa" stroke-width="5" opacity=".86"/>
+      <path d="M196 468l118-132 124 82 144-168 96 126" fill="none" stroke="#22d3ee" stroke-width="2" opacity=".56"/>
+      <rect x="798" y="150" width="254" height="58" rx="6" fill="#101d2d" stroke="#22d3ee" stroke-opacity=".46"/>
+      <rect x="798" y="246" width="254" height="58" rx="6" fill="#101d2d" stroke="#60a5fa" stroke-opacity=".46"/>
+      <rect x="798" y="342" width="254" height="58" rx="6" fill="#101d2d" stroke="#22d3ee" stroke-opacity=".46"/>
+      <path d="M925 208v38M925 304v38M798 371h-60M798 275h-60M798 179h-60" stroke="#60a5fa" stroke-opacity=".44" stroke-width="4"/></g>
   <g>
-    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".86" stroke="#22d3ee" stroke-opacity=".34"/>
-    <text fill="#f8fafc" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">渲染优化排查清单</tspan></text>
-    <text fill="#f8fafc" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">一份用于定位渲染性能问题的实践清单，覆盖帧调试、Draw Call、Overdraw、纹理和</tspan><tspan x="96" y="534">Shader 分支。</tspan></text>
-  </g>
-  <g>
-    <rect x="64" y="54" width="124" height="38" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-opacity=".52"/>
-    <text x="84" y="79" fill="#f8fafc" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">图形渲染</text>
-    <text x="1012" y="79" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. B31E</text>
-    <text x="64" y="618" fill="#f8fafc" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
-    <text x="1136" y="618" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
+    <rect x="64" y="54" width="124" height="38" rx="4" fill="#0f172a" stroke="#60a5fa" stroke-opacity=".52"/>
+    <text x="84" y="79" fill="#eef6ff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">图形渲染</text>
+    <text x="1136" y="79" text-anchor="end" fill="#eef6ff" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. B31E</text>
+    <path d="M143 604h142" stroke="#60a5fa" stroke-width="3" opacity=".72"/>
+    <text x="64" y="618" fill="#eef6ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
+    <text x="1136" y="618" text-anchor="end" fill="#eef6ff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
+    <text x="1136" y="540" text-anchor="end" fill="#eef6ff" font-size="34" font-weight="800" opacity=".18" font-family="Inter, Arial" letter-spacing="0">RENDERING</text>
   </g>
 </svg>

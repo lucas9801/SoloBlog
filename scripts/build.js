@@ -185,93 +185,111 @@ function hashColor(seed, palette) {
 
 function coverPalette(post) {
   const palettes = {
-    Unity: ["#0b1020", "#60a5fa", "#8b5cf6", "#151827", "#eef4ff"],
-    工具链: ["#09131a", "#2dd4bf", "#38bdf8", "#13202b", "#eefcff"],
-    图形渲染: ["#07111f", "#22d3ee", "#60a5fa", "#111d2d", "#f8fafc"],
-    性能优化: ["#0d1020", "#f59e0b", "#38bdf8", "#171b2a", "#fff7ed"],
-    架构设计: ["#0b1220", "#93c5fd", "#14b8a6", "#172033", "#f1f5f9"],
-    随笔: ["#10151d", "#94a3b8", "#14b8a6", "#1a2430", "#f8fafc"]
+    Unity: ["#0b111a", "#60a5fa", "#14b8a6", "#111a26", "#e8f1fb"],
+    工具链: ["#07131a", "#14b8a6", "#38bdf8", "#0f1d27", "#e7fbff"],
+    图形渲染: ["#07111f", "#60a5fa", "#22d3ee", "#101d2d", "#eef6ff"],
+    性能优化: ["#11120f", "#f59e0b", "#38bdf8", "#1c1b16", "#fff7ed"],
+    架构设计: ["#0a1220", "#93c5fd", "#14b8a6", "#131e2d", "#f1f5f9"],
+    游戏开发: ["#0b1218", "#2563eb", "#14b8a6", "#111a24", "#edf5ff"],
+    随笔: ["#111827", "#94a3b8", "#14b8a6", "#18212c", "#f8fafc"]
   };
   return palettes[post.category] || [
-    hashColor(post.slug, ["#0b1020", "#0f172a", "#111827", "#10151d"]),
-    hashColor(`${post.slug}-a`, ["#38bdf8", "#5eead4", "#60a5fa", "#22d3ee"]),
-    hashColor(`${post.slug}-b`, ["#8b5cf6", "#93c5fd", "#14b8a6", "#64748b"]),
+    hashColor(post.slug, ["#0b1218", "#0f172a", "#111827", "#10151d"]),
+    hashColor(`${post.slug}-a`, ["#38bdf8", "#5eead4", "#60a5fa", "#2563eb"]),
+    hashColor(`${post.slug}-b`, ["#93c5fd", "#14b8a6", "#64748b", "#2dd4bf"]),
     "#151f2d",
     "#edf2f8"
   ];
 }
 
-function coverMotif(post, colors) {
+function coverMotif(post, colors, seed) {
   const text = normalizeForSearch([post.title, post.summary, post.category, post.tags.join(" "), post.text].join(" "));
-  const hasSpecificCoverCategory = ["工具链", "Unity", "图形渲染", "性能优化", "随笔"].includes(post.category);
+  const hasSpecificCoverCategory = ["工具链", "Unity", "图形渲染", "性能优化", "架构设计", "游戏开发", "随笔"].includes(post.category);
+  const jitter = Number.parseInt(seed.slice(4, 6), 16) % 24;
   if (post.category === "工具链" || (!hasSpecificCoverCategory && /工具链|自动化|工程效率|pipeline|构建|脚本/.test(text))) {
-    return `<path d="M170 338h860" stroke="${colors[1]}" stroke-width="8" stroke-linecap="round" opacity=".5"/>
-      <path d="M278 338c74-74 146-74 220 0s148 74 224 0 150-74 226 0" fill="none" stroke="${colors[2]}" stroke-width="4" opacity=".68"/>
-      ${[178, 360, 542, 724, 906]
+    return `<path d="M146 346h908" stroke="${colors[1]}" stroke-width="3" opacity=".62"/>
+      ${[168, 330, 492, 654, 816, 978]
         .map(
-          (x, index) => `<g>
-            <rect x="${x}" y="${index % 2 ? 208 : 248}" width="126" height="126" rx="16" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".56"/>
-            <rect x="${x + 36}" y="${index % 2 ? 248 : 288}" width="54" height="44" rx="8" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".82"/>
-            <path d="M${x + 32} ${index % 2 ? 318 : 358}h62" stroke="#fff" stroke-opacity=".32" stroke-width="5" stroke-linecap="round"/>
+          (x, index) => `<g opacity=".96">
+            <rect x="${x}" y="${index % 2 ? 238 : 292}" width="96" height="96" rx="6" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".72"/>
+            <path d="M${x + 22} ${index % 2 ? 276 : 330}h52M${x + 22} ${index % 2 ? 304 : 358}h36" stroke="${colors[4]}" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="${x + 18}" y="${index % 2 ? 252 : 306}" width="16" height="16" rx="3" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".9"/>
           </g>`
         )
         .join("")}
-      <rect x="348" y="486" width="504" height="48" rx="8" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".3"/>
-      <path d="M390 510h84M528 510h130M706 510h104" stroke="${colors[1]}" stroke-width="6" stroke-linecap="round" opacity=".55"/>`;
+      <rect x="266" y="476" width="668" height="58" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
+      <path d="M306 506h96M448 506h142M638 506h110M794 506h92" stroke="${colors[4]}" stroke-width="6" stroke-linecap="round" opacity=".22"/>`;
   }
   if (post.category === "Unity" || (!hasSpecificCoverCategory && /unity|profiler|组件|scene|game view|inspector/.test(text))) {
-    return `<rect x="146" y="116" width="410" height="438" rx="14" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".38"/>
-      <rect x="146" y="116" width="410" height="48" rx="14" fill="#020617" opacity=".38"/>
-      <circle cx="184" cy="140" r="8" fill="${colors[1]}" opacity=".8"/>
-      <circle cx="212" cy="140" r="8" fill="${colors[2]}" opacity=".72"/>
-      <path d="M190 210h286M190 260h232M190 310h286M190 360h174M190 410h262" stroke="#9fb7d1" stroke-opacity=".18" stroke-width="10" stroke-linecap="round"/>
-      <rect x="610" y="132" width="402" height="206" rx="14" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".38"/>
-      <path d="M652 292c44-82 96 18 142-36 38-46 70-110 112-36 24 42 48 46 72 22" fill="none" stroke="${colors[1]}" stroke-width="6" stroke-linecap="round"/>
-      <path d="M652 258h318M652 214h318M652 170h318" stroke="#9fb7d1" stroke-opacity=".12"/>
-      <rect x="610" y="380" width="178" height="118" rx="14" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
-      <rect x="830" y="380" width="182" height="118" rx="14" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".32"/>
-      <path d="M654 440h90M874 440h94" stroke="${colors[4]}" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/>`;
+    return `<rect x="150" y="122" width="386" height="424" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".48"/>
+      <rect x="150" y="122" width="386" height="42" rx="6" fill="#05080d" opacity=".48"/>
+      <path d="M190 212h280M190 258h236M190 304h280M190 350h180M190 396h250" stroke="${colors[4]}" stroke-opacity=".18" stroke-width="8" stroke-linecap="round"/>
+      <rect x="604" y="132" width="432" height="204" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
+      <path d="M646 288c44-82 94 20 142-34 38-44 74-112 116-34 24 42 50 44 76 22" fill="none" stroke="${colors[1]}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M646 258h330M646 214h330M646 170h330" stroke="${colors[4]}" stroke-opacity=".12"/>
+      <rect x="604" y="382" width="196" height="116" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
+      <rect x="840" y="382" width="196" height="116" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".34"/>
+      <path d="M650 440h104M886 440h104" stroke="${colors[4]}" stroke-opacity=".22" stroke-width="7" stroke-linecap="round"/>`;
   }
   if (post.category === "图形渲染" || (!hasSpecificCoverCategory && /shader|渲染|draw call|overdraw|纹理|图形/.test(text))) {
-    return `<rect x="146" y="120" width="568" height="394" rx="16" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".52"/>
-      <path d="M188 426L306 292l126 82 142-168 98 126" fill="none" stroke="${colors[1]}" stroke-width="5" opacity=".86"/>
-      <path d="M188 456h484M188 386h484M188 316h484M188 246h484M266 164v320M392 164v320M518 164v320M644 164v320" stroke="#8fb8d7" stroke-opacity=".16"/>
-      <rect x="778" y="144" width="256" height="62" rx="10" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
-      <rect x="778" y="242" width="256" height="62" rx="10" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".4"/>
-      <rect x="778" y="340" width="256" height="62" rx="10" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
-      <path d="M906 206v36M906 304v36M778 371h-64M778 273h-64M778 175h-64" stroke="${colors[1]}" stroke-opacity=".38" stroke-width="4"/>
-      <circle cx="864" cy="522" r="34" fill="${colors[1]}" opacity=".72"/>
-      <circle cx="974" cy="522" r="34" fill="${colors[2]}" opacity=".58"/>`;
+    return `<rect x="142" y="126" width="596" height="394" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".54"/>
+      <path d="M184 456h512M184 386h512M184 316h512M184 246h512M272 164v320M400 164v320M528 164v320M656 164v320" stroke="${colors[4]}" stroke-opacity=".14"/>
+      <path d="M192 424L310 292l124 82 144-168 96 126" fill="none" stroke="${colors[1]}" stroke-width="5" opacity=".86"/>
+      <path d="M196 468l118-132 124 82 144-168 96 126" fill="none" stroke="${colors[2]}" stroke-width="2" opacity=".56"/>
+      <rect x="798" y="150" width="254" height="58" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
+      <rect x="798" y="246" width="254" height="58" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".46"/>
+      <rect x="798" y="342" width="254" height="58" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".46"/>
+      <path d="M925 208v38M925 304v38M798 371h-60M798 275h-60M798 179h-60" stroke="${colors[1]}" stroke-opacity=".44" stroke-width="4"/>`;
   }
   if (post.category === "性能优化" || (!hasSpecificCoverCategory && /性能|profiler|cpu|gpu|内存|io|优化/.test(text))) {
-    return `<rect x="132" y="130" width="392" height="286" rx="16" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
-      <path d="M174 340c42-110 84 42 130-12 38-46 54-146 102-40 30 66 66 44 84 20" fill="none" stroke="${colors[1]}" stroke-width="6" stroke-linecap="round"/>
-      <path d="M174 376h300M174 298h300M174 220h300" stroke="#8fb8d7" stroke-opacity=".14"/>
-      <rect x="584" y="130" width="442" height="286" rx="16" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".38"/>
-      ${[634, 704, 774, 844, 914].map((x, index) => `<rect x="${x}" y="${346 - index * 34}" width="34" height="${68 + index * 34}" rx="8" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".78"/>`).join("")}
-      <rect x="260" y="472" width="110" height="72" rx="12" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
-      <rect x="430" y="472" width="110" height="72" rx="12" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".32"/>
-      <rect x="600" y="472" width="110" height="72" rx="12" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
-      <rect x="770" y="472" width="110" height="72" rx="12" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".32"/>`;
+    return `<rect x="134" y="132" width="408" height="288" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
+      <path d="M178 342c42-110 86 42 132-12 38-46 56-146 104-40 30 66 66 44 88 20" fill="none" stroke="${colors[1]}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M178 376h312M178 298h312M178 220h312" stroke="${colors[4]}" stroke-opacity=".14"/>
+      <rect x="602" y="132" width="444" height="288" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
+      ${[656, 730, 804, 878, 952].map((x, index) => `<rect x="${x}" y="${354 - index * 35}" width="36" height="${62 + index * 35}" rx="5" fill="${index % 2 ? colors[2] : colors[1]}" opacity=".78"/>`).join("")}
+      ${[270, 442, 614, 786].map((x, index) => `<rect x="${x}" y="476" width="112" height="68" rx="6" fill="${colors[3]}" stroke="${index % 2 ? colors[2] : colors[1]}" stroke-opacity=".34"/>`).join("")}`;
+  }
+  if (post.category === "架构设计" || (!hasSpecificCoverCategory && /架构|模块|系统|解耦|边界|接口/.test(text))) {
+    return `${[178, 426, 674].map((x, index) => `<rect x="${x}" y="${index === 1 ? 146 : 206}" width="190" height="118" rx="6" fill="${colors[3]}" stroke="${index === 1 ? colors[2] : colors[1]}" stroke-opacity=".48"/>`).join("")}
+      ${[302, 550, 798].map((x, index) => `<rect x="${x}" y="${index === 1 ? 408 : 360}" width="190" height="118" rx="6" fill="${colors[3]}" stroke="${index === 1 ? colors[1] : colors[2]}" stroke-opacity=".44"/>`).join("")}
+      <path d="M368 264h58M616 264h58M520 360v48M768 324v36M426 360v48M864 324v36" stroke="${colors[1]}" stroke-width="4" opacity=".5"/>
+      <path d="M222 252h100M470 192h100M718 252h100M346 408h102M594 456h102M842 408h102" stroke="${colors[4]}" stroke-width="7" stroke-linecap="round" opacity=".2"/>`;
+  }
+  if (post.category === "游戏开发" || (!hasSpecificCoverCategory && /gameplay|关卡|游戏|战斗|交互|开发/.test(text))) {
+    return `<rect x="154" y="132" width="512" height="392" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".44"/>
+      <path d="M206 454l112-112 74 74 148-148 76 76" fill="none" stroke="${colors[1]}" stroke-width="5" opacity=".76"/>
+      <path d="M206 204h408M206 268h408M206 332h408M206 396h408M270 168v320M334 168v320M398 168v320M462 168v320M526 168v320M590 168v320" stroke="${colors[4]}" stroke-opacity=".12"/>
+      <rect x="750" y="154" width="272" height="88" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".42"/>
+      <rect x="750" y="286" width="272" height="88" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".42"/>
+      <rect x="750" y="418" width="272" height="88" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".42"/>
+      <path d="M790 198h154M790 330h120M790 462h142" stroke="${colors[4]}" stroke-width="7" stroke-linecap="round" opacity=".22"/>`;
   }
   if (post.category === "随笔" || (!hasSpecificCoverCategory && /随笔|复盘|知识库|博客|笔记/.test(text))) {
-    return `<path d="M286 130h390c42 0 76 34 76 76v350H362c-42 0-76-34-76-76z" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
-      <path d="M362 178h390v378H362c-42 0-76-34-76-76V254c0-42 34-76 76-76z" fill="#fff" opacity=".05"/>
-      <path d="M386 250h246M386 306h290M386 362h214M386 418h262" stroke="${colors[1]}" stroke-width="9" stroke-linecap="round" opacity=".28"/>
-      <path d="M824 170v372" stroke="${colors[2]}" stroke-width="4" stroke-linecap="round" opacity=".36"/>
-      <circle cx="824" cy="228" r="28" fill="${colors[2]}" opacity=".66"/>
-      <circle cx="824" cy="348" r="28" fill="${colors[1]}" opacity=".62"/>
-      <circle cx="824" cy="468" r="28" fill="${colors[2]}" opacity=".46"/>
-      <path d="M864 228h150M864 348h112M864 468h134" stroke="${colors[4]}" stroke-opacity=".2" stroke-width="8" stroke-linecap="round"/>
-      <path d="M196 470l82-82 82 82-82 82z" fill="${colors[1]}" opacity=".42"/>`;
+    return `<path d="M286 132h410c34 0 62 28 62 62v344H348c-34 0-62-28-62-62z" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
+      <path d="M358 180h400v358H358c-40 0-72-32-72-72V252c0-40 32-72 72-72z" fill="#fff" opacity=".04"/>
+      <path d="M386 252h244M386 306h292M386 360h214M386 414h262" stroke="${colors[1]}" stroke-width="8" stroke-linecap="round" opacity=".28"/>
+      <path d="M836 172v368" stroke="${colors[2]}" stroke-width="4" stroke-linecap="round" opacity=".38"/>
+      ${[230, 350, 470].map((y, index) => `<g><circle cx="836" cy="${y}" r="22" fill="${index % 2 ? colors[1] : colors[2]}" opacity=".62"/><path d="M878 ${y}h${index === 1 ? 116 : 148}" stroke="${colors[4]}" stroke-opacity=".2" stroke-width="8" stroke-linecap="round"/></g>`).join("")}`;
   }
-  return `<path d="M384 186h332c44 0 80 36 80 80v248H464c-44 0-80-36-80-80z" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".32"/>
-    <path d="M464 226h332v288H464c-44 0-80-36-80-80V306c0-44 36-80 80-80z" fill="#fff" opacity=".05"/>
-    <path d="M484 276h210M484 330h258M484 384h176" stroke="${colors[1]}" stroke-width="10" stroke-linecap="round" opacity=".34"/>
-    <rect x="810" y="194" width="154" height="112" rx="24" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".38"/>
-    <rect x="820" y="344" width="186" height="132" rx="26" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".34"/>
-    <path d="M216 470l88-88 88 88-88 88z" fill="${colors[1]}" opacity=".54"/>
-    <circle cx="274" cy="214" r="54" fill="${colors[2]}" opacity=".42"/>`;
+  return `<rect x="186" y="${150 + jitter}" width="520" height="360" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".36"/>
+    <path d="M232 ${276 + jitter}h420M232 ${340 + jitter}h350M232 ${404 + jitter}h392" stroke="${colors[4]}" stroke-width="8" stroke-linecap="round" opacity=".16"/>
+    <rect x="782" y="184" width="236" height="110" rx="6" fill="${colors[3]}" stroke="${colors[2]}" stroke-opacity=".4"/>
+    <rect x="782" y="352" width="236" height="126" rx="6" fill="${colors[3]}" stroke="${colors[1]}" stroke-opacity=".36"/>
+    <path d="M824 238h142M824 414h112" stroke="${colors[4]}" stroke-width="8" stroke-linecap="round" opacity=".22"/>
+    <path d="M250 468l84-84 84 84-84 84z" fill="${colors[1]}" opacity=".42"/>`;
+}
+
+function coverChannelLabel(category) {
+  const labels = {
+    Unity: "UNITY",
+    工具链: "TOOLCHAIN",
+    图形渲染: "RENDERING",
+    性能优化: "PERFORMANCE",
+    架构设计: "ARCHITECTURE",
+    游戏开发: "GAME DEV",
+    随笔: "NOTES"
+  };
+  return labels[category] || "DEV NOTES";
 }
 
 function normalizeForSearch(value) {
@@ -280,72 +298,6 @@ function normalizeForSearch(value) {
     .toLowerCase()
     .replace(/\s+/g, " ")
     .trim();
-}
-
-function coverTextWidth(value) {
-  return Array.from(String(value || "")).reduce((width, char) => {
-    if (/\s/u.test(char)) return width + 0.32;
-    if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(char)) return width + 1;
-    if (/[A-Z0-9]/.test(char)) return width + 0.68;
-    if (/[.,:;!?/\\()[\]{}'"`|_-]/.test(char)) return width + 0.36;
-    return width + 0.56;
-  }, 0);
-}
-
-function cleanCoverLine(value) {
-  return String(value || "")
-    .replace(/\s+([。，、；：！？,.!?;:])/gu, "$1")
-    .replace(/([（([{])\s+/gu, "$1")
-    .replace(/\s+([）)\]}])/gu, "$1")
-    .trim();
-}
-
-function coverTextLines(value, maxWidth, maxLines) {
-  const lines = [];
-  let current = "";
-
-  for (const char of Array.from(String(value || "").replace(/\s+/g, " ").trim())) {
-    const candidate = `${current}${char}`;
-    if (current && coverTextWidth(candidate) > maxWidth) {
-      const breakAt = current.lastIndexOf(" ");
-      if (breakAt > 0) {
-        lines.push(cleanCoverLine(current.slice(0, breakAt)));
-        current = `${current.slice(breakAt + 1)}${char}`.trimStart();
-      } else {
-        lines.push(cleanCoverLine(current));
-        current = char.trim() ? char : "";
-      }
-    } else {
-      current = candidate;
-    }
-
-    while (coverTextWidth(current) > maxWidth) {
-      const chars = Array.from(current);
-      let slice = "";
-      while (chars.length && coverTextWidth(`${slice}${chars[0]}`) <= maxWidth) {
-        slice += chars.shift();
-      }
-      lines.push(cleanCoverLine(slice));
-      current = chars.join("");
-    }
-
-    if (lines.length === maxLines) break;
-  }
-
-  if (current && lines.length < maxLines) lines.push(cleanCoverLine(current));
-  if (lines.length === maxLines && coverTextWidth(lines.at(-1)) > maxWidth - 1.2) {
-    const chars = Array.from(lines.at(-1));
-    while (chars.length && coverTextWidth(`${chars.join("")}…`) > maxWidth) chars.pop();
-    lines[lines.length - 1] = `${chars.join("")}…`;
-  }
-
-  return lines.length ? lines.map(cleanCoverLine) : [""];
-}
-
-function svgTextBlock(lines, { x, y, lineHeight }) {
-  return lines
-    .map((line, index) => `<tspan x="${x}" y="${y + index * lineHeight}">${escapeHtml(line)}</tspan>`)
-    .join("");
 }
 
 function coverVisualSeed(post) {
@@ -364,40 +316,37 @@ async function generatedPostCover(post) {
   const url = `/assets/posts/${post.slug}.svg`;
   const colors = coverPalette(post);
   const seed = coverVisualSeed(post);
-  const verticalRuleX = 180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5;
-  const horizontalRuleY = 108 + Number.parseInt(seed.slice(2, 4), 16) * 1.15;
-  const motif = coverMotif(post, colors);
+  const verticalRuleX = Math.round(180 + Number.parseInt(seed.slice(0, 2), 16) * 2.5);
+  const horizontalRuleY = Math.round(108 + Number.parseInt(seed.slice(2, 4), 16) * 1.15);
+  const motif = coverMotif(post, colors, seed);
   const dateLabel = post.date.replaceAll("-", ".");
   const issueLabel = seed.slice(0, 4).toUpperCase();
-  const titleLines = coverTextLines(post.title, 17.2, 2);
-  const summaryLines = coverTextLines(post.summary, 38, 2);
-  const summaryY = 420 + titleLines.length * 54 + 28;
+  const channelLabel = coverChannelLabel(post.category);
+  const categoryPillWidth = Math.max(118, Array.from(post.category).length * 18 + 52);
+  const channelLineX = Math.round(72 + Number.parseInt(seed.slice(6, 8), 16) * 0.42);
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(post.title)}">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="${escapeAttr(`${post.title} 封面`)}">
   <defs>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="${colors[4]}" stroke-opacity=".06"/>
+      <path d="M54 0H0v54" fill="none" stroke="${colors[4]}" stroke-opacity=".055"/>
     </pattern>
   </defs>
   <rect width="1200" height="675" fill="${colors[0]}"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <path d="M64 102H1136M64 574H1136" stroke="${colors[4]}" stroke-opacity=".08"/>
-  <path d="M924 96v480" stroke="${colors[4]}" stroke-opacity=".08"/>
-  <path d="M64 ${horizontalRuleY}H1136" stroke="${colors[1]}" stroke-opacity=".16"/>
-  <path d="M${verticalRuleX} 96v480" stroke="${colors[2]}" stroke-opacity=".13"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M64 102H1136M64 574H1136" stroke="${colors[4]}" stroke-opacity=".09"/>
+  <path d="M922 96v480" stroke="${colors[4]}" stroke-opacity=".08"/>
+  <path d="M64 ${horizontalRuleY}H1136" stroke="${colors[1]}" stroke-opacity=".14"/>
+  <path d="M${verticalRuleX} 96v480" stroke="${colors[2]}" stroke-opacity=".12"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="${colors[1]}" stroke-opacity=".1" stroke-width="2"/>
   <g opacity=".94">${motif}</g>
   <g>
-    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".86" stroke="${colors[1]}" stroke-opacity=".34"/>
-    <text fill="${colors[4]}" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(titleLines, { x: 96, y: 420, lineHeight: 54 })}</text>
-    <text fill="${colors[4]}" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0">${svgTextBlock(summaryLines, { x: 96, y: summaryY, lineHeight: 32 })}</text>
-  </g>
-  <g>
-    <rect x="64" y="54" width="${Math.max(118, Array.from(post.category).length * 18 + 52)}" height="38" rx="6" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
+    <rect x="64" y="54" width="${categoryPillWidth}" height="38" rx="4" fill="#0f172a" stroke="${colors[1]}" stroke-opacity=".52"/>
     <text x="84" y="79" fill="${colors[4]}" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">${escapeHtml(post.category)}</text>
-    <text x="1012" y="79" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. ${escapeHtml(issueLabel)}</text>
+    <text x="1136" y="79" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. ${escapeHtml(issueLabel)}</text>
+    <path d="M${channelLineX} 604h142" stroke="${colors[1]}" stroke-width="3" opacity=".72"/>
     <text x="64" y="618" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
     <text x="1136" y="618" text-anchor="end" fill="${colors[4]}" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">${escapeHtml(dateLabel)}</text>
+    <text x="1136" y="540" text-anchor="end" fill="${colors[4]}" font-size="34" font-weight="800" opacity=".18" font-family="Inter, Arial" letter-spacing="0">${escapeHtml(channelLabel)}</text>
   </g>
 </svg>`;
 
@@ -1254,6 +1203,15 @@ function sidebar(posts, categories, tags, seriesEntries = []) {
         .map(([tag, list]) => `<a href="/tags/${slugify(tag)}/"><span>${escapeHtml(tag)}</span><b>${list.length}</b></a>`)
         .join("")}</div>
     </section>
+    <section class="sidebar-card ranking-card">
+      <h2 data-ranking-title>阅读排行</h2>
+      <div class="ranking-list" data-ranking-posts="${rankingPayload(posts)}">${fallbackRanking
+        .map(
+          (post, index) =>
+            `<a class="ranking-link" href="${post.url}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small></a>`
+        )
+        .join("")}</div>
+    </section>
     ${yearArchiveCard(posts)}
     <section class="sidebar-card subscribe-card">
       <h2>${escapeHtml(site.subscribe.title)}</h2>
@@ -1264,15 +1222,6 @@ function sidebar(posts, categories, tags, seriesEntries = []) {
         <button class="secondary-button" type="button" data-copy-rss="${escapeAttr(absoluteUrl(site.subscribe.rss))}">复制 RSS</button>
         <span class="sr-only" aria-live="polite" data-copy-rss-status></span>
       </div>
-    </section>
-    <section class="sidebar-card ranking-card">
-      <h2 data-ranking-title>阅读排行</h2>
-      <div class="ranking-list" data-ranking-posts="${rankingPayload(posts)}">${fallbackRanking
-        .map(
-          (post, index) =>
-            `<a class="ranking-link" href="${post.url}"><b>${index + 1}</b><span>${escapeHtml(post.title)}</span><small>${formatDate(post.date)} · ${escapeHtml(post.category)}</small></a>`
-        )
-        .join("")}</div>
     </section>
   </aside>`;
 }

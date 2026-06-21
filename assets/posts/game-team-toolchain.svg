@@ -1,51 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="小团队游戏项目的工具链原则">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="小团队游戏项目的工具链原则 封面">
   <defs>
     <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse">
-      <path d="M54 0H0v54" fill="none" stroke="#eefcff" stroke-opacity=".06"/>
+      <path d="M54 0H0v54" fill="none" stroke="#e7fbff" stroke-opacity=".055"/>
     </pattern>
   </defs>
-  <rect width="1200" height="675" fill="#09131a"/>
+  <rect width="1200" height="675" fill="#07131a"/>
   <rect width="1200" height="675" fill="url(#grid)"/>
-  <path d="M64 102H1136M64 574H1136" stroke="#eefcff" stroke-opacity=".08"/>
-  <path d="M924 96v480" stroke="#eefcff" stroke-opacity=".08"/>
-  <path d="M64 217.25H1136" stroke="#2dd4bf" stroke-opacity=".16"/>
-  <path d="M597.5 96v480" stroke="#38bdf8" stroke-opacity=".13"/>
-  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#2dd4bf" stroke-opacity=".12" stroke-width="2"/>
-  <g opacity=".94"><path d="M170 338h860" stroke="#2dd4bf" stroke-width="8" stroke-linecap="round" opacity=".5"/>
-      <path d="M278 338c74-74 146-74 220 0s148 74 224 0 150-74 226 0" fill="none" stroke="#38bdf8" stroke-width="4" opacity=".68"/>
-      <g>
-            <rect x="178" y="248" width="126" height="126" rx="16" fill="#13202b" stroke="#2dd4bf" stroke-opacity=".56"/>
-            <rect x="214" y="288" width="54" height="44" rx="8" fill="#2dd4bf" opacity=".82"/>
-            <path d="M210 358h62" stroke="#fff" stroke-opacity=".32" stroke-width="5" stroke-linecap="round"/>
-          </g><g>
-            <rect x="360" y="208" width="126" height="126" rx="16" fill="#13202b" stroke="#38bdf8" stroke-opacity=".56"/>
-            <rect x="396" y="248" width="54" height="44" rx="8" fill="#38bdf8" opacity=".82"/>
-            <path d="M392 318h62" stroke="#fff" stroke-opacity=".32" stroke-width="5" stroke-linecap="round"/>
-          </g><g>
-            <rect x="542" y="248" width="126" height="126" rx="16" fill="#13202b" stroke="#2dd4bf" stroke-opacity=".56"/>
-            <rect x="578" y="288" width="54" height="44" rx="8" fill="#2dd4bf" opacity=".82"/>
-            <path d="M574 358h62" stroke="#fff" stroke-opacity=".32" stroke-width="5" stroke-linecap="round"/>
-          </g><g>
-            <rect x="724" y="208" width="126" height="126" rx="16" fill="#13202b" stroke="#38bdf8" stroke-opacity=".56"/>
-            <rect x="760" y="248" width="54" height="44" rx="8" fill="#38bdf8" opacity=".82"/>
-            <path d="M756 318h62" stroke="#fff" stroke-opacity=".32" stroke-width="5" stroke-linecap="round"/>
-          </g><g>
-            <rect x="906" y="248" width="126" height="126" rx="16" fill="#13202b" stroke="#2dd4bf" stroke-opacity=".56"/>
-            <rect x="942" y="288" width="54" height="44" rx="8" fill="#2dd4bf" opacity=".82"/>
-            <path d="M938 358h62" stroke="#fff" stroke-opacity=".32" stroke-width="5" stroke-linecap="round"/>
+  <path d="M64 102H1136M64 574H1136" stroke="#e7fbff" stroke-opacity=".09"/>
+  <path d="M922 96v480" stroke="#e7fbff" stroke-opacity=".08"/>
+  <path d="M64 217H1136" stroke="#14b8a6" stroke-opacity=".14"/>
+  <path d="M598 96v480" stroke="#38bdf8" stroke-opacity=".12"/>
+  <path d="M84 566C236 438 354 628 506 484s280-112 416-20 182 20 238-42" fill="none" stroke="#14b8a6" stroke-opacity=".1" stroke-width="2"/>
+  <g opacity=".94"><path d="M146 346h908" stroke="#14b8a6" stroke-width="3" opacity=".62"/>
+      <g opacity=".96">
+            <rect x="168" y="292" width="96" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
+            <path d="M190 330h52M190 358h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="186" y="306" width="16" height="16" rx="3" fill="#14b8a6" opacity=".9"/>
+          </g><g opacity=".96">
+            <rect x="330" y="238" width="96" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
+            <path d="M352 276h52M352 304h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="348" y="252" width="16" height="16" rx="3" fill="#38bdf8" opacity=".9"/>
+          </g><g opacity=".96">
+            <rect x="492" y="292" width="96" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
+            <path d="M514 330h52M514 358h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="510" y="306" width="16" height="16" rx="3" fill="#14b8a6" opacity=".9"/>
+          </g><g opacity=".96">
+            <rect x="654" y="238" width="96" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
+            <path d="M676 276h52M676 304h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="672" y="252" width="16" height="16" rx="3" fill="#38bdf8" opacity=".9"/>
+          </g><g opacity=".96">
+            <rect x="816" y="292" width="96" height="96" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".72"/>
+            <path d="M838 330h52M838 358h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="834" y="306" width="16" height="16" rx="3" fill="#14b8a6" opacity=".9"/>
+          </g><g opacity=".96">
+            <rect x="978" y="238" width="96" height="96" rx="6" fill="#0f1d27" stroke="#38bdf8" stroke-opacity=".72"/>
+            <path d="M1000 276h52M1000 304h36" stroke="#e7fbff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+            <rect x="996" y="252" width="16" height="16" rx="3" fill="#38bdf8" opacity=".9"/>
           </g>
-      <rect x="348" y="486" width="504" height="48" rx="8" fill="#13202b" stroke="#2dd4bf" stroke-opacity=".3"/>
-      <path d="M390 510h84M528 510h130M706 510h104" stroke="#2dd4bf" stroke-width="6" stroke-linecap="round" opacity=".55"/></g>
+      <rect x="266" y="476" width="668" height="58" rx="6" fill="#0f1d27" stroke="#14b8a6" stroke-opacity=".32"/>
+      <path d="M306 506h96M448 506h142M638 506h110M794 506h92" stroke="#e7fbff" stroke-width="6" stroke-linecap="round" opacity=".22"/></g>
   <g>
-    <rect x="64" y="348" width="860" height="226" rx="8" fill="#05070d" opacity=".86" stroke="#2dd4bf" stroke-opacity=".34"/>
-    <text fill="#eefcff" font-size="48" font-weight="800" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="420">小团队游戏项目的工具链原则</tspan></text>
-    <text fill="#eefcff" font-size="22" font-weight="500" opacity=".72" font-family="Inter, Microsoft YaHei, Arial" letter-spacing="0"><tspan x="96" y="502">工具链的价值不在复杂，而在减少重复劳动、降低人为错误，并让关键流程可以被复现。</tspan></text>
-  </g>
-  <g>
-    <rect x="64" y="54" width="118" height="38" rx="6" fill="#0f172a" stroke="#2dd4bf" stroke-opacity=".52"/>
-    <text x="84" y="79" fill="#eefcff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">工具链</text>
-    <text x="1012" y="79" text-anchor="end" fill="#eefcff" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. A75F</text>
-    <text x="64" y="618" fill="#eefcff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
-    <text x="1136" y="618" text-anchor="end" fill="#eefcff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
+    <rect x="64" y="54" width="118" height="38" rx="4" fill="#0f172a" stroke="#14b8a6" stroke-opacity=".52"/>
+    <text x="84" y="79" fill="#e7fbff" font-size="15" font-weight="700" font-family="Inter, Microsoft YaHei, Arial">工具链</text>
+    <text x="1136" y="79" text-anchor="end" fill="#e7fbff" font-size="12" font-weight="700" opacity=".56" font-family="Inter, Arial">NO. A75F</text>
+    <path d="M74 604h142" stroke="#14b8a6" stroke-width="3" opacity=".72"/>
+    <text x="64" y="618" fill="#e7fbff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">SOLUS DEV NOTES</text>
+    <text x="1136" y="618" text-anchor="end" fill="#e7fbff" font-size="12" font-weight="700" opacity=".58" font-family="Inter, Arial">2026.06.04</text>
+    <text x="1136" y="540" text-anchor="end" fill="#e7fbff" font-size="34" font-weight="800" opacity=".18" font-family="Inter, Arial" letter-spacing="0">TOOLCHAIN</text>
   </g>
 </svg>
