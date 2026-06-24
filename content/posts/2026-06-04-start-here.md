@@ -7,6 +7,7 @@ tags: [博客, 游戏开发, 知识库]
 summary: SOLUS 用于沉淀游戏开发、图形渲染、工程实践和项目复盘中的长期技术笔记。
 featured: true
 status: published
+cover: /assets/posts/start-here.webp
 ---
 
 这篇文章是 SOLUS 技术档案的起点。后续内容会按主题进入不同分类，并通过标签形成可检索的知识链路。

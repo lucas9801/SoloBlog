@@ -276,7 +276,111 @@ featured: false
 
 ## 10. 封面图片
 
-如果文章没有写 `cover`，构建脚本会自动生成 `/assets/posts/<slug>.svg` 封面。
+文章封面有两种来源：
+
+- 推荐：用生图工具生成真实图片封面，输出 `/assets/posts/<slug>.webp`。
+- 兜底：如果文章没有写 `cover`，构建脚本会自动生成 `/assets/posts/<slug>.svg` 封面。
+
+### 10.1 生图封面配置
+
+生图接口 key 只需要配置一次。新建项目根目录文件：
+
+```text
+D:\MyBlog\.env
+```
+
+写入：
+
+```env
+LUMIO_API_KEY=你的 API key
+```
+
+默认接口是：
+
+```text
+https://api.lumio.games
+```
+
+通常不需要写 URL。如果以后要覆盖接口地址，可以在 `.env` 里加：
+
+```env
+LUMIO_API_BASE_URL=https://api.lumio.games
+```
+
+`.env` 已加入 `.gitignore`，不要把 API key 提交到仓库。
+
+### 10.2 为文章生成封面
+
+先确认文章 front matter 至少有：
+
+```yaml
+title: 文章标题
+slug: article-slug
+date: 2026-06-24
+category: 图形渲染
+tags: [渲染, Shader, 性能]
+summary: 一句话摘要
+```
+
+按 slug 生成单篇封面：
+
+```powershell
+npm run cover -- --slug article-slug
+```
+
+按文件生成：
+
+```powershell
+npm run cover -- --file content/posts/2026-06-24-article-slug.md
+```
+
+工具会自动完成：
+
+- 根据文章标题、分类、标签和摘要生成 prompt
+- 调用 Lumio 生图接口
+- 用 `sharp` 叠加 SOLUS 风格标题暗条
+- 输出 `assets/posts/<slug>.webp`
+- 写回 front matter：
+
+```yaml
+cover: /assets/posts/article-slug.webp
+```
+
+### 10.3 常用封面命令
+
+只看 prompt，不调用接口、不花钱：
+
+```powershell
+npm run cover -- --slug article-slug --dry-run
+```
+
+给所有还没有 `cover` 的文章生成封面：
+
+```powershell
+npm run cover -- --all
+```
+
+强制重新生图：
+
+```powershell
+npm run cover -- --slug article-slug --force
+```
+
+只重新叠加标题层，不重新调用生图接口：
+
+```powershell
+npm run cover -- --slug article-slug --recomposite
+```
+
+生成后运行：
+
+```powershell
+npm run check:all
+```
+
+如果检查通过，`.webp` 封面文件和文章 front matter 一起提交。
+
+### 10.4 手动封面
 
 自定义封面写法：
 
@@ -291,6 +395,7 @@ cover: /assets/posts/my-cover.png
 - 不要使用外链
 
 当前自动封面是海报式 SVG，会根据文章标题、分类、日期生成。自定义封面适合你后续使用真实截图、游戏画面、工具界面或手工设计图。
+生图工具生成的 `.webp` 会优先作为文章封面和社交分享图；不需要修改 `build.js`。
 
 推荐封面比例：
 
@@ -582,6 +687,12 @@ summary: 这里写摘要。
 status: published
 ```
 
+生成封面：
+
+```powershell
+npm run cover -- --slug article-slug
+```
+
 检查：
 
 ```powershell
@@ -662,4 +773,3 @@ git push
 - 不要把草稿设为 `published` 后不跑检查
 - 不要在标签名前写 `#`
 - 不要把 `content/site.json` 的 `baseUrl` 留成 Pages 默认域名
-

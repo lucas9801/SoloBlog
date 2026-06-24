@@ -3,4 +3,6 @@ dist/
 .wrangler/
 .edge-*/
 screenshots/
+.cache/
+.env
 *.log

@@ -6,6 +6,7 @@ category: 工具链
 tags: [工具链, 自动化, 工程效率]
 summary: 工具链的价值不在复杂，而在减少重复劳动、降低人为错误，并让关键流程可以被复现。
 status: published
+cover: /assets/posts/game-team-toolchain.webp
 ---
 
 小团队工具链不应该追求“大而全”。最重要的是让高频流程稳定、清晰、可复现。

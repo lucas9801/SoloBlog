@@ -996,6 +996,8 @@ function pageLayout({
     ${extraHead}
     ${jsonLdScripts(structuredData)}
     <script src="${assetUrl("/src/theme-init.js")}"></script>
+    <link rel="preload" href="${assetUrl("/assets/fonts/InterVariable.woff2")}" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="${assetUrl("/assets/fonts/JetBrainsMono.woff2")}" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="${assetUrl("/src/styles.css")}" />
     <title>${escapeHtml(fullTitle)}</title>
   </head>

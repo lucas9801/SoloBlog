@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "node scripts/lint.js",
     "build": "node scripts/build.js",
+    "check": "node scripts/check-all.js",
     "check:all": "node scripts/check-all.js",
     "check:output": "node scripts/check-output.js",
     "check:layout": "node scripts/check-layout.js",
@@ -19,7 +20,15 @@
     "test:preview": "node scripts/test-preview.js",
     "test:views": "node scripts/test-views.js",
     "new:post": "node scripts/new-post.js",
+    "cover": "node scripts/gen-cover.js",
     "deploy:cloudflare": "npm run build && npx wrangler pages deploy dist --project-name soloblog-4w3",
     "preview": "node scripts/preview.js"
+  },
+  "dependencies": {
+    "sharp": "^0.35.2"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8"
   }
 }

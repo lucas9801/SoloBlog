@@ -61,6 +61,44 @@ npm run new:post -- "Unity 性能预算" --slug unity-performance-budget --date 
 
 `--cover` 只接受本地 `/assets/...` 路径，并且文件必须已经存在。不设置时构建脚本会按文章内容自动生成封面；自动封面会在构建时刷新，如果要保留手工设计的封面，需要把路径写进 `cover` 字段。
 
+生成真实图片封面：
+
+```powershell
+npm run cover -- --slug article-slug
+```
+
+第一次使用前，在项目根目录创建 `.env`：
+
+```env
+LUMIO_API_KEY=你的 API key
+```
+
+`.env` 已加入 `.gitignore`，不会提交到仓库。默认接口是 `https://api.lumio.games`，通常不用额外配置 URL。
+
+常用封面命令：
+
+```powershell
+# 只看 prompt，不调用接口
+npm run cover -- --slug article-slug --dry-run
+
+# 给所有还没有 cover 的文章生成封面
+npm run cover -- --all
+
+# 强制重新生图
+npm run cover -- --slug article-slug --force
+
+# 只重新叠加标题层，不重新调用生图接口
+npm run cover -- --slug article-slug --recomposite
+```
+
+工具会输出 `assets/posts/<slug>.webp`，并自动写回文章 front matter：
+
+```yaml
+cover: /assets/posts/article-slug.webp
+```
+
+生成后把 `.webp` 文件和文章一起提交。`.cache/` 是中间缓存，不提交。
+
 发布前完整检查：
 
 ```powershell
@@ -679,9 +717,13 @@ npm run new:post -- "文章标题" --slug article-slug
 category: Unity
 tags: [Unity, 性能]
 summary: 这里写摘要。
-# cover: /assets/posts/my-cover.svg
-# cover 可省略；省略时构建脚本会按文章自动生成封面
 status: published
+```
+
+生成封面：
+
+```powershell
+npm run cover -- --slug article-slug
 ```
 
 检查和构建：

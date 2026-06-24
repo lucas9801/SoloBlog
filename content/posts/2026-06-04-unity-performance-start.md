@@ -8,6 +8,7 @@ series: 性能与渲染排查
 seriesOrder: 2
 summary: 面对卡顿问题时，先建立性能预算，再用 Profiler 区分 CPU、GPU、内存和 IO 的瓶颈。
 status: published
+cover: /assets/posts/unity-performance-start.webp
 ---
 
 Unity 项目的性能问题经常混在一起。解决前先判断瓶颈属于 CPU、GPU、内存还是 IO。

@@ -9,6 +9,7 @@ seriesOrder: 1
 summary: 一份用于定位渲染性能问题的实践清单，覆盖帧调试、Draw Call、Overdraw、纹理和 Shader 分支。
 featured: true
 status: published
+cover: /assets/posts/render-optimization-checklist.webp
 ---
 
 渲染优化不应该从猜测开始。更稳妥的方式是先把问题拆成可观察的指标，再逐项排除。

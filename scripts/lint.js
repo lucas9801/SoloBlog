@@ -291,17 +291,19 @@ if (site.homePostsPerPage !== 6) {
 if (!css.includes(".site-header")) failures.push("CSS must define real blog header.");
 if (!css.includes(".article-content")) failures.push("CSS must define article content styles.");
 if (
-  !css.includes("--shadow-sm: none;") ||
-  /--shadow-sm:\s*0\s+\d/.test(css) ||
+  !css.includes("@font-face") ||
+  !css.includes("--bg: #f6f8fb;") ||
+  !css.includes("--bg: #090d12;") ||
+  !css.includes("--muted: #9aa7b8;") ||
+  !css.includes("--glow-brand") ||
+  !css.includes("--surface-inset") ||
   /background-size:\s*\d/.test(bodyRule) ||
   /linear-gradient|radial-gradient/.test(bodyRule) ||
   css.includes("rgba(4, 8, 14, 0.54)") ||
   css.includes("rgba(4, 8, 14, 0.68)") ||
-  /font-weight:\s*9\d\d/.test(css) ||
-  /box-shadow:\s*0\s+0\s+0\s+3px/.test(css) ||
-  /box-shadow:\s*inset/.test(css)
+  /font-weight:\s*(650|750|9\d\d)/.test(css)
 ) {
-  failures.push("Visual system must keep the technical archive style restrained without full-page grid decoration, soft card shadows, heavy cover masks, heavy font weights, or strong focus shadows.");
+  failures.push("Visual system must use the cold technical redesign tokens, self-hosted fonts, restrained page body, and standard font weights.");
 }
 if (!css.includes("@media (max-width: 720px)")) failures.push("CSS must include mobile breakpoint.");
 if (
@@ -322,8 +324,8 @@ if (!/\[hidden]\s*\{[\s\S]*?display:\s*none\s*!important;/.test(css)) {
 if (!css.includes("scroll-padding-top") || !css.includes("scroll-margin-top")) {
   failures.push("Article anchors must account for the sticky header on desktop and mobile.");
 }
-if (!/\.article-content h2\s*\{[\s\S]*?font-weight:\s*750;/.test(css)) {
-  failures.push("Article h2 headings should use a restrained 750 weight for long-form reading.");
+if (!/\.article-content h2\s*\{[\s\S]*?font-weight:\s*var\(--fw-extrabold\);/.test(css)) {
+  failures.push("Article h2 headings should use the redesign heading weight token.");
 }
 if (!buildScript.includes("search-index.json")) failures.push("Build must generate search index.");
 if (!buildScript.includes("rss.xml")) failures.push("Build must generate RSS.");
@@ -707,8 +709,8 @@ if (
   !checkLayoutScript.includes("article hero is too tall for a focused technical reading page") ||
   !checkLayoutScript.includes("desktop article text column is too narrow for technical reading") ||
   !checkLayoutScript.includes("desktop article text column is too wide for comfortable long-form reading") ||
-  !css.includes("font-size: clamp(31px, 3vw, 42px);") ||
-  !css.includes("color-mix(in srgb, var(--surface-soft) 42%, transparent)")
+  !css.includes("font-size: var(--fs-h1);") ||
+  !css.includes("color-mix(in srgb, var(--surface-soft) 36%, transparent)")
 ) {
   failures.push("Article page chrome must keep series navigation in the side column and preserve a focused reading header.");
 }
