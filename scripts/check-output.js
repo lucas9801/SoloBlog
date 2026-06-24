@@ -1142,7 +1142,7 @@ async function main() {
     if (html.includes("@@INLINE_HTML_")) failures.push(`${relative} contains an unreplaced inline token.`);
     if (/[?&]v=local\b/.test(html)) failures.push(`${relative} contains an unversioned local asset URL.`);
     if (html.includes("/assets/hero-game-tech.png")) failures.push(`${relative} references the retired hero PNG.`);
-    if (relative === "dist/index.html" && !/class="hero-cover" src="\/assets\/hero\/solus-hero\.svg\?v=[a-f0-9]{12}"/.test(html)) {
+    if (relative === "dist/index.html" && !/class="hero-cover" src="\/assets\/hero\/solus-hero\.webp\?v=[a-f0-9]{12}"/.test(html)) {
       failures.push("dist/index.html must use the dedicated SOLUS hero asset.");
     }
     if (relative === "dist/index.html" && html.includes('class="hero-cover" src="/assets/posts/')) {

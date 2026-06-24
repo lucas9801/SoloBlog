@@ -71,7 +71,7 @@ async function writeFixtureProject(target) {
         postsPerPage: 9,
         archivePostsPerPage: 1,
         socialImage: "/assets/og/solus-og.png",
-        heroCover: "/assets/hero/solus-hero.svg",
+        heroCover: "/assets/hero/solus-hero.webp",
         views: { enabled: false },
         comments: { enabled: false },
         hero: {
@@ -220,7 +220,7 @@ try {
 
   const home = await readFile(path.join(tempRoot, "dist", "index.html"), "utf8");
   assert.match(home, /<a class="button-link" href="#latest-posts">最新文章<\/a>/);
-  assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.svg\?v=[a-f0-9]{12}" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
+  assert.match(home, /<img class="hero-cover" src="\/assets\/hero\/solus-hero\.webp\?v=[a-f0-9]{12}" alt="" width="1200" height="675" decoding="async" fetchpriority="high" \/>/);
   assert.match(home, /<img src="\/assets\/posts\/inline\.svg\?v=[a-f0-9]{12}" alt="Markdown Followup 封面" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(home, /<img src="\/assets\/posts\/archive-latest\.svg\?v=[a-f0-9]{12}" alt="Archive Latest 封面" width="1200" height="675" loading="lazy" decoding="async" \/>/);
   assert.match(home, /<section id="latest-posts" class="section-block">/);

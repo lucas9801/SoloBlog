@@ -32,6 +32,7 @@ const requiredFiles = [
   "public/site.webmanifest",
   "wrangler.toml",
   "assets/hero/solus-hero.svg",
+  "assets/hero/solus-hero.webp",
   ".node-version",
   "docs/cloudflare-pages.md",
   "docs/dynamic-features.md",
@@ -346,7 +347,7 @@ if (site.heroCover) {
   if (site.heroCover.startsWith("/assets/posts/")) {
     failures.push("site heroCover must use a dedicated hero asset, not a text-bearing article cover.");
   }
-  if (site.heroCover !== "/assets/hero/solus-hero.svg") {
+  if (site.heroCover !== "/assets/hero/solus-hero.webp") {
     failures.push("site heroCover must point to the dedicated SOLUS hero asset.");
   }
 }
