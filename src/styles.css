@@ -489,30 +489,34 @@ pre {
   overflow: hidden;
   width: min(1360px, 100%);
   min-height: 198px;
+  min-height: 236px;
   margin: 0 auto;
-  padding: clamp(18px, 2vw, 24px) clamp(24px, 3vw, 40px);
+  padding: clamp(20px, 2.4vw, 30px) clamp(24px, 3vw, 44px);
   display: grid;
-  grid-template-columns: minmax(0, 1.28fr) minmax(260px, 0.72fr);
-  gap: 28px;
+  grid-template-columns: minmax(0, 720px) 1fr;
+  gap: 0;
   align-items: center;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--line));
   border-radius: var(--radius-md);
   background:
-    linear-gradient(120deg, color-mix(in srgb, var(--surface) 78%, transparent), color-mix(in srgb, var(--surface-soft) 58%, transparent)),
+    radial-gradient(80% 110% at 86% 45%, rgba(34, 211, 238, 0.13), transparent 58%),
+    linear-gradient(90deg, rgba(3, 8, 14, 0.9) 0%, rgba(5, 10, 16, 0.78) 40%, rgba(5, 10, 16, 0.42) 68%, rgba(5, 10, 16, 0.1) 100%),
     linear-gradient(90deg, color-mix(in srgb, var(--brand-glow) 10%, transparent) 1px, transparent 1px),
     linear-gradient(color-mix(in srgb, var(--brand-glow) 7%, transparent) 1px, transparent 1px),
-    var(--surface);
-  background-size: 40px 40px;
+    var(--code-bg);
+  background-size: auto, auto, 40px 40px, 40px 40px, auto;
+  box-shadow: var(--shadow-sm);
 }
 
 :root[data-theme="dark"] .hero-inner {
   background:
-    radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--brand-glow) 8%, transparent), transparent 60%),
-    linear-gradient(120deg, color-mix(in srgb, var(--surface) 78%, transparent), color-mix(in srgb, var(--surface-soft) 58%, transparent)),
+    radial-gradient(80% 110% at 86% 45%, rgba(34, 211, 238, 0.12), transparent 58%),
+    linear-gradient(90deg, rgba(3, 8, 14, 0.92) 0%, rgba(5, 10, 16, 0.8) 40%, rgba(5, 10, 16, 0.44) 68%, rgba(5, 10, 16, 0.12) 100%),
     linear-gradient(90deg, color-mix(in srgb, var(--brand-glow) 10%, transparent) 1px, transparent 1px),
     linear-gradient(color-mix(in srgb, var(--brand-glow) 7%, transparent) 1px, transparent 1px),
-    var(--surface);
+    var(--code-bg);
   background-size: auto, auto, 40px 40px, 40px 40px, auto;
+  box-shadow: var(--shadow-md);
 }
 
 .hero-inner::before {
@@ -529,30 +533,40 @@ pre {
 }
 
 .hero-visual {
-  position: relative;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  height: 148px;
-  min-height: 0;
   margin: 0;
-  border: 1px solid color-mix(in srgb, var(--brand) 18%, var(--line));
-  border-radius: var(--radius-sm);
-  background: var(--code-bg);
+  border: 0;
+  border-radius: inherit;
+  background: #070b11;
 }
 
 .hero-cover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .hero-copy {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .hero-copy {
   width: min(680px, 100%);
+}
+
+.hero-copy::before {
+  position: absolute;
+  z-index: -1;
+  inset: -20px -32px -18px -24px;
+  background:
+    radial-gradient(120% 110% at 0% 50%, rgba(2, 6, 12, 0.58), transparent 70%),
+    linear-gradient(90deg, rgba(2, 6, 12, 0.68), rgba(2, 6, 12, 0));
+  content: "";
+  pointer-events: none;
 }
 
 .eyebrow {
@@ -567,19 +581,21 @@ pre {
 .hero-copy h1 {
   max-width: 760px;
   margin: 0;
-  color: var(--text);
+  color: #f8fbff;
   font-size: clamp(31px, 3vw, 39px);
   line-height: 1.08;
   font-weight: var(--fw-extrabold);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
 .hero-copy > p:not(.eyebrow) {
   max-width: 620px;
   margin: 8px 0 0;
-  color: var(--muted);
+  color: #d6e2f0;
   font-size: 15px;
   line-height: 1.68;
   font-weight: 500;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.58);
 }
 
 .hero-actions {
@@ -635,6 +651,32 @@ pre {
 }
 
 :root[data-theme="dark"] .button-link:hover {
+  color: #061018;
+}
+
+.hero-actions .button-link {
+  border-color: #22d3ee;
+  background: #22d3ee;
+  color: #061018;
+}
+
+.hero-actions .ghost-link {
+  border-color: rgba(214, 226, 240, 0.34);
+  background: rgba(8, 15, 25, 0.44);
+  color: #edf5ff;
+  backdrop-filter: blur(10px);
+}
+
+.hero-actions .button-link:hover,
+.hero-actions .ghost-link:hover {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.28), 0 0 20px rgba(0, 212, 255, 0.18);
+  color: #9eefff;
+}
+
+.hero-actions .button-link:hover {
+  background: #67e8f9;
+  border-color: #67e8f9;
   color: #061018;
 }
 
@@ -4057,15 +4099,25 @@ body.is-reading-mode .quick-action-read {
   }
 
   .hero-inner {
-    min-height: 0;
-    padding: 16px 22px;
+    min-height: 260px;
+    padding: 18px 22px;
     grid-template-columns: 1fr;
-    gap: 0;
-    align-items: start;
+    align-items: center;
   }
 
   .hero-visual {
-    display: none;
+    display: block;
+  }
+
+  .hero-cover {
+    object-position: 62% 50%;
+  }
+
+  .hero-copy::before {
+    inset: -16px -18px -16px -18px;
+    background:
+      radial-gradient(120% 120% at 0% 50%, rgba(2, 6, 12, 0.68), transparent 76%),
+      linear-gradient(90deg, rgba(2, 6, 12, 0.74), rgba(2, 6, 12, 0.16));
   }
 
   .hero-copy h1 {
